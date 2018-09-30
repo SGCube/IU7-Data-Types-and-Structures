@@ -98,21 +98,42 @@ int exp_sum(int e1[], int e2[])
 	int d = 0;
 	for (int i = EXP_N - 1; i >= 0; i--)
 	{
-		if (e1[i] + e2[i] + d > 10)
+		e1[i] = e1[i] + e2[i] + d;
+		if (e1[i] >= 10)
 		{
-			e1[i] = (e1[i] + e2[i] + d) % 10;
+			e1[i] = (e1[i]) % 10;
 			d = 1;
 		}
-		else
-		{
-			e1[i] = e1[i] + e2[i] + d;
+		else	
 			d = 0;
-		}
 	}
 	if (d == 1)
 		return EXP_OVERFLOW;
+	return OK;
+}
+
+/**
+ * \fn int exp_operate(int e1[], int e2[])
+ * \brief Sum or subtract exponents 
+**/
+int exp_operate(int e1[], int e2[])
+{
+	if (e1[EXP_N] == e2[EXP_N])
+		return exp_sum(e1, e2);
+	
+	if (compare(e1, EXP_N, e2, EXP_N) == LESS)
+	{
+		if (e1[EXP_N] == '+')
+			e2[EXP_N] = '-';
+		else
+			e1[EXP_N] = '+';
+		subtract(e2, EXP_N, e1, EXP_N);
+		for (int i = 0; i < EXP_N; i++)
+			e1[i] = e2[i];
+	}
 	else
-		return OK;
+		subtract(e1, EXP_N, e2, EXP_N);
+	return OK;
 }
 
 /**
@@ -201,7 +222,7 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 		}
 	}
 	
-	add_exp += rexp[EXP_N + 1];
+	add_exp -= rexp[EXP_N + 1];
 	if (add_exp < 0)
 	{
 		rexp[EXP_N] = '-';
@@ -215,20 +236,44 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 		k--;
 	}
 	
-	if (rexp[EXP_N] == expon[EXP_N])
-		return exp_sum(rexp, expon);
+	return exp_operate(rexp, expon);
+}
+
+/**
+ * \fn int normalize(int mantis[], int expon[])
+ * \brief Normalize real number output format to 0. E+
+**/
+int normalize(int mantis[], int expon[])
+{
+	int dot_pos[EXP_N + 1];
+	for (int i = 0; i < EXP_N; i++)
+		dot_pos[i] = 0;
+	dot_pos[EXP_N] = '+';
 	
-	if (compare(rexp, EXP_N, expon, EXP_N) == LESS)
+	int add_exp = expon[EXP_N + 1];
+	int i = 0;
+	
+	if (expon[EXP_N + 1] == 0)
+		while (mantis[i] == 0 && i < MANTIS_N)
+		{
+			add_exp--;
+			i++;
+		}
+	
+	if (add_exp < 0)
 	{
-		if (rexp[EXP_N] == '+')
-			rexp[EXP_N] = '-';
-		else
-			rexp[EXP_N] = '+';
-		subtract(expon, EXP_N, rexp, EXP_N);
-		for (int i = 0; i < EXP_N; i++)
-			rexp[i] = expon[i];
+		for (int k = expon[EXP_N + 1] - add_exp; k < MANTIS_N; k++)
+			mantis[k + add_exp - expon[EXP_N + 1]] = mantis[k];
+		dot_pos[EXP_N] = '-';
+		add_exp /= -1;
 	}
-	else
-		subtract(rexp, EXP_N, expon, EXP_N);
-	return OK;
+	i = EXP_N - 1;
+	while (add_exp > 0)
+	{
+		dot_pos[i] = add_exp % 10;
+		add_exp /= 10;
+		i--;
+	}
+	expon[EXP_N + 1] = 0;
+	return exp_operate(expon, dot_pos);
 }

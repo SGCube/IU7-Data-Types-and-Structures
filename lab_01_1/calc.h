@@ -47,11 +47,28 @@ int compare(int *d1, int n1, int *d2, int n2);
 **/
 void subtract(int a[], int n1, int b[], int n2);
 
+/**
+ * \fn int exp_sum(int e1[], int e2[])
+ * \brief Sum exponents or return overflow error code
+**/
+int exp_sum(int e1[], int e2[]);
+
+/**
+ * \fn int exp_operate(int e1[], int e2[])
+ * \brief Sum or subtract exponents 
+**/
+int exp_operate(int e1[], int e2[]);
 
 /**
  * \fn int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
  * \brief Divide real number by integer number
 **/
 int divide(int mant[], int expon[], int numb[], int res[], int rexp[]);
+
+/**
+ * \fn int normalize(int mantis[], int expon[])
+ * \brief Normalize real number output format to 0. E+
+**/
+int normalize(int mantis[], int expon[]);
 
 #endif

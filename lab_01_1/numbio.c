@@ -159,14 +159,6 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 	if (!(str[i] == ' ' && (str[i+1] == 'E' || str[i+1] == 'e') &&
 		str[i+2] == ' '))
 		return ERR_FORMAT;
-		
-	/*cдвиг цифр
-	for (int k = right; k >= left; k--)
-	{
-		mant[k + MANTIS_N - right - 1] = mant[k];
-		mant[k] = 0;
-	}
-	*/
 	
 	///порядок
 	j = 0;
