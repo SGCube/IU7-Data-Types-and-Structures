@@ -121,7 +121,10 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 	{
 		mant[MANTIS_N] = str[0];
 		i++;
+		slen--;
 	}
+	if (slen >= MANTIS_N + EXP_N + 5)
+		return ERR_FORMAT;
 	
 	///считывание до пробела
 	
@@ -154,8 +157,10 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 		right = j - 1;
 	
 	///проверка соответствия формату
-	if (j == 0)
+	if (j > MANTIS_N)
 		return ERR_FORMAT;
+	if (j == 0)
+		return ERR_FORMAT; // 0 E 0
 	if (!(str[i] == ' ' && (str[i+1] == 'E' || str[i+1] == 'e') &&
 		str[i+2] == ' '))
 		return ERR_FORMAT;

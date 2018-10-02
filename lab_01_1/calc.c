@@ -179,10 +179,10 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 	rexp[EXP_N] = '+';
 	rexp[EXP_N + 1] = -1;
 	
-	if (is_zero(mant, MANTIS_N))
-		return OK;
 	if (is_zero(numb, MANTIS_N))
 		return DIV_BY_ZERO;
+	if (is_zero(mant, MANTIS_N))
+		return OK;
 	
 	int nlen = numb_len(numb);
 	int *pb = mant;
@@ -227,8 +227,9 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 		}
 		else
 		{
+			if (pe - pb > 1)
+				pb++;
 			pe++;
-			pb++;
 		}
 		
 		if (pe - pb < expon[EXP_N + 1] && rexp[EXP_N + 1] == -1)
