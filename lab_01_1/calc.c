@@ -137,6 +137,31 @@ int exp_operate(int e1[], int e2[])
 }
 
 /**
+ * \fn int rounding(int mantis[], int extra_digit)
+ * \brief Rounds number
+**/
+int rounding(int mantis[], int extra_digit)
+{
+	int d = 0;
+	if (extra_digit < 5)
+		return 0;
+	d = (mantis[MANTIS_N - 1] + 1) / 10;
+	mantis[MANTIS_N - 1] = (mantis[MANTIS_N - 1] + 1) % 10;
+	for (int i = MANTIS_N - 2; i >= 0 && d == 1; i--)
+	{
+		d = (mantis[i] + 1) / 10;
+		mantis[i] = (mantis[i] + 1) % 10;
+	}
+	if (d == 1)
+	{
+		for (int i = MANTIS_N - 1; i > 0; i--)
+			mantis[i] = mantis[i - 1];
+		mantis[0] = 1;
+	}
+	return d;
+}
+
+/**
  * \fn int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
  * \brief Divide real number by integer number
 **/
@@ -196,7 +221,7 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 		res_i++;
 		if (pe - mant >= MANTIS_N)
 		{
-			for (int *pc = pe - nlen; pc < pe; pc++)
+			for (int *pc = pe - nlen - 1; pc < pe; pc++)
 				*pc = *(pc + 1);
 			*(pe - 1) = 0;
 		}
@@ -214,15 +239,16 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 		extra_digit = 0;
 	else
 	{
-		while (compare(pb, pe - pb + 1, numb + MANTIS_N - nlen, nlen) ==
-			GREATER)
+		while (compare(pb, pe - pb, numb + MANTIS_N - nlen, nlen) ==
+			GREATER && extra_digit < 9)
 		{
-			subtract(pb, pe - pb + 1, numb + MANTIS_N - nlen, nlen);
+			subtract(pb, pe - pb, numb + MANTIS_N - nlen, nlen);
 			extra_digit++;
 		}
 	}
 	
-	add_exp -= rexp[EXP_N + 1];
+	
+	add_exp -= rexp[EXP_N + 1] - rounding(res, extra_digit);
 	if (add_exp < 0)
 	{
 		rexp[EXP_N] = '-';

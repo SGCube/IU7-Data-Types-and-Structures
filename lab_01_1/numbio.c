@@ -171,8 +171,13 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 //вывод вещественного числа
 void print_numb(int mantis[], int expon[])
 {
-	printf("%c0.", mantis[MANTIS_N]);
+	int right = 0;
 	for (int i = 0; i < MANTIS_N; i++)
+		if (mantis[i] != 0)
+			right = i;
+	
+	printf("%c0.", mantis[MANTIS_N]);
+	for (int i = 0; i <= right; i++)
 		printf("%d", mantis[i]);
 	printf(" E %c", expon[EXP_N]);
 	for (int i = 0; i < EXP_N; i++)
