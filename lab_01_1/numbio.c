@@ -174,7 +174,7 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 	j = 0;
 	i += 3;
 	///считывание порядка
-	return str_to_int(&str[i], len - i, expon, EXP_N);
+	return str_to_int(&str[i], slen - i, expon, EXP_N);
 }
 
 //вывод вещественного числа
