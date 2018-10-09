@@ -113,6 +113,7 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 	
 	int i = 0, j = 0;
 	int left = -1, right = -1;
+	int len = slen;
 	
 	///мантисса
 	
@@ -121,13 +122,13 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 	{
 		mant[MANTIS_N] = str[0];
 		i++;
-		slen--;
+		len--;
 	}
-	if (slen >= MANTIS_N + EXP_N + 5)
+	if (len >= MANTIS_N + EXP_N + 5)
 		return ERR_FORMAT;
 	
 	///считывание до пробела
-	
+	short int is_notnull = 0;
 	while(str[i] != ' ' && i < slen)
 	{
 		if (str[i] == '.')
@@ -140,6 +141,10 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 		else
 		{
 			mant[j] = str[i] - '0';
+			if (mant[j] != 0)
+				is_notnull = 2;
+			else if (is_notnull != 2)
+				is_notnull = 1;
 			if (left == -1 && (mant[j] != 0 || expon[EXP_N + 1] != -1))
 				left = j;
 			if (expon[EXP_N + 1] != -1 && mant[j] != 0)
@@ -159,8 +164,8 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 	///проверка соответствия формату
 	if (j > MANTIS_N)
 		return ERR_FORMAT;
-	if (j == 0)
-		return ERR_FORMAT; // 0 E 0
+	if (!is_notnull)
+		return ERR_FORMAT;
 	if (!(str[i] == ' ' && (str[i+1] == 'E' || str[i+1] == 'e') &&
 		str[i+2] == ' '))
 		return ERR_FORMAT;
@@ -168,9 +173,8 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 	///порядок
 	j = 0;
 	i += 3;
-	
 	///считывание порядка
-	return str_to_int(&str[i], slen - i, expon, EXP_N);
+	return str_to_int(&str[i], len - i, expon, EXP_N);
 }
 
 //вывод вещественного числа
