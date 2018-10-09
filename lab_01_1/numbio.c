@@ -124,7 +124,7 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 		i++;
 		len--;
 	}
-	if (len >= MANTIS_N + EXP_N + 5)
+	if (len >= MANTIS_N + EXP_N + 6)
 		return ERR_FORMAT;
 	
 	///считывание до пробела
@@ -133,8 +133,16 @@ int str_to_real(char str[], int slen, int mant[], int expon[])
 	{
 		if (str[i] == '.')
 		{
-			expon[EXP_N + 1] = j;
-			i++;
+			if (expon[EXP_N + 1] == -1)
+			{
+				expon[EXP_N + 1] = j;
+				i++;
+				len--;
+				if (len >= MANTIS_N + EXP_N + 5)
+					return ERR_FORMAT;
+			}
+			else
+				return ERR_FORMAT;
 		}
 		else if (str[i] < '0' || str[i] > '9')
 			return ERR_DIGIT;

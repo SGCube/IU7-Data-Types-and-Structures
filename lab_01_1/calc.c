@@ -124,7 +124,7 @@ int exp_operate(int e1[], int e2[])
 	if (compare(e1, EXP_N, e2, EXP_N) == LESS)
 	{
 		if (e1[EXP_N] == '+')
-			e2[EXP_N] = '-';
+			e1[EXP_N] = '-';
 		else
 			e1[EXP_N] = '+';
 		subtract(e2, EXP_N, e1, EXP_N);
@@ -202,8 +202,7 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 		else
 			pe++;
 	}
-	if (pe - pb >= expon[EXP_N + 1])
-		add_exp -= pe - pb - expon[EXP_N + 1];
+	add_exp -= pe - pb;
 	
 	while (res_i < MANTIS_N)
 	{

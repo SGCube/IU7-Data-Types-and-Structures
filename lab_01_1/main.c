@@ -21,13 +21,6 @@ int main()
 	if (rc != OK)
 		return rc;
 	
-	rc = normalize(r_mantis, r_exp);
-	if (rc == EXP_OVERFLOW)
-	{
-		printf("Exponent overflow!\n");
-		return rc;
-	}
-	
 	rc = read_int(int_digits);
 	if (rc == ERR_DIGIT)
 		printf("Incorrect digit!\n");
