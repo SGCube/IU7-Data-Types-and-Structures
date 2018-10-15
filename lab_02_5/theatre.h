@@ -35,6 +35,7 @@ struct spectac
 	} u_spec;
 };
 
+void errmsg(int rc);
 int add_new_record(struct spectac **rep, int *len);
 void repert_print(struct spectac *rep, int len);
 

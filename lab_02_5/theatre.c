@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "theatre.h"
+
+#define OK 0
 
 #define ERR_ALLOC -1
 #define ERR_INPUT -2
@@ -60,12 +63,12 @@ int add_new_record(struct spectac **rep, int *len)
 	if (fgets(temp.director, MAX_SLEN + 1, stdin) == NULL)
 		return ERR_INPUT;
 	printf("Enter minimal ticket price: ");
-	if (scanf("%d", temp->min_tprice) != 1)
+	if (scanf("%d", &(temp.min_tprice)) != 1)
 		return ERR_INPUT;
 	if (temp.min_tprice < 0)
 		return ERR_INPUT;
 	printf("Enter maximal ticket price: ");
-	if (scanf("%d", temp->max_tprice) != 1)
+	if (scanf("%d", &(temp.max_tprice)) != 1)
 		return ERR_INPUT;
 	if (temp.max_tprice < 0)
 		return ERR_INPUT;
@@ -78,7 +81,7 @@ int add_new_record(struct spectac **rep, int *len)
 	{
 		temp.type = CHILD;
 		printf("Enter recommended age: ");
-		if (scanf("%d", temp.u_spec.child->age) != 1)
+		if (scanf("%d", &(temp.u_spec.child.age)) != 1)
 			return ERR_INPUT;
 		if (temp.u_spec.child.age < 0 || temp.u_spec.child.age > 17)
 			return ERR_AGE;
@@ -102,13 +105,13 @@ int add_new_record(struct spectac **rep, int *len)
 				MIN_SLEN + 1, stdin) == NULL)
 				return ERR_INPUT;
 			printf("Enter minimal age: ");
-			if (scanf("%d", temp.u_spec.child.music->min_age) != 1)
+			if (scanf("%d", &(temp.u_spec.child.music.min_age)) != 1)
 				return ERR_INPUT;
 			if (temp.u_spec.child.music.min_age < 0 ||
 				temp.u_spec.child.music.min_age > temp.u_spec.child.age)
 				return ERR_AGE;
 			printf("Enter duration (in minutes): ");
-			if (scanf("%d", temp.u_spec.child.music->duration) != 1)
+			if (scanf("%d", &(temp.u_spec.child.music.duration)) != 1)
 				return ERR_INPUT;
 			if (temp.u_spec.child.music.duration < 0)
 				return ERR_INPUT;
@@ -135,9 +138,9 @@ int add_new_record(struct spectac **rep, int *len)
 	else
 		return ERR_TYPE;
 	
-	if (len % RECORD_N == 0)
+	if (*len % RECORD_N == 0)
 	{
-		void *t = realloc(*rep, (len + RECORD_N) * sizeof(struct spectac));
+		void *t = realloc(*rep, (*len + RECORD_N) * sizeof(struct spectac));
 		if (!t)
 			return ERR_ALLOC;
 		else
