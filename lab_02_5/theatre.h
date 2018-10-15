@@ -12,7 +12,7 @@ typedef enum {PLAY, DRAMA, COMEDY} adult_t;
 struct spectac
 {
 	char theatre[MAX_SLEN + 1];
-	char name[MAX_SLEN + 1];
+	char title[MAX_SLEN + 1];
 	char director[MAX_SLEN + 1];
 	int min_tprice;
 	int max_tprice;
@@ -35,6 +35,7 @@ struct spectac
 	} u_spec;
 };
 
+int add_new_record(struct spectac **rep, int *len);
 void repert_print(struct spectac *rep, int len);
 
 #endif

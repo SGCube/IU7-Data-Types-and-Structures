@@ -56,27 +56,18 @@ int main(void)
 			}
 			rc = read_repert(&repert, &rep_len, f);
 			fclose(f);
-			if (rc == ERR_ALLOC)
-				fprintf(stderr, "Memory allocation error!\n");
-			else if (rc == ERR_INPUT)
-				fprintf(stderr, "Read error!\n");
-			else if (rc == ERR_FILE)
-				fprintf(stderr, "Couldn't open a file!\n");
-			else if (rc == ERR_EMPTY)
-				fprintf(stderr, "File is empty!\n");
-			else if (rc == ERR_TYPE)
-				fprintf(stderr, "Wrong type of spectacle!\n");
-			else if (rc == ERR_AGE)
-				fprintf(stderr, "Wrong children age for spectacle!\n");
-			else if (rc == ERR_LONG_STR)
-				fprintf(stderr, "Too long string in input!\n");
-			else if (rc == NOT_ENOUGH)
-				fprintf(stderr, "Not enough data!\n");
 			if (rc != OK)
-				return rc;
-			printf("\n");
-			printf("%d - out!\n", rep_len);
-			repert_print(repert, rep_len);
+				errmsg(rc);
+			else
+				repert_print(repert, rep_len);
+		}
+		else if (ch == '2')
+		{
+			rc = add_new_record(&repert, &rep_len);
+			if (rc != OK)
+				errmsg(rc);
+			else
+				repert_print(repert, rep_len);
 		}
 		else
 			ch = 0;

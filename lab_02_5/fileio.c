@@ -72,7 +72,7 @@ int read_repert(struct spectac **rep, int *rep_len, FILE *f)
 			if (cur == 0 || cur == 1 || cur == 4 || cur == 5)
 				*strptr = '\0';
 			if (cur == 0)
-				strptr = spc->name;
+				strptr = spc->title;
 			else if (cur == 1)
 				strptr = spc->director;
 			else if (cur == 2)
