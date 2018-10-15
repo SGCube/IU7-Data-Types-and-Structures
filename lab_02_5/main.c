@@ -52,22 +52,41 @@ int main(void)
 			if (!f)
 			{
 				fprintf(stderr, "Couldn't open a file!\n");
+				if (repert)
+					free(repert);
 				return ERR_FILE;
 			}
 			rc = read_repert(&repert, &rep_len, f);
 			fclose(f);
 			if (rc != OK)
+			{
 				errmsg(rc);
-			else
-				repert_print(repert, rep_len);
+				if (repert)
+					free(repert);
+				return ERR_FILE;
+			}
+			repert_print(stdout, repert, rep_len);
 		}
 		else if (ch == '2')
 		{
 			rc = add_new_record(&repert, &rep_len);
 			if (rc != OK)
+			{
 				errmsg(rc);
-			else
-				repert_print(repert, rep_len);
+				if (repert)
+					free(repert);
+				return ERR_FILE;
+			}
+			FILE *f = fopen("repert.txt", "w");
+			if (!f)
+			{
+				fprintf(stderr, "Couldn't open a file for writing!\n");
+				if (repert)
+					free(repert);
+				return ERR_FILE;
+			}
+			repert_print(f, repert, rep_len);
+			fclose(f);
 		}
 		else
 			ch = 0;

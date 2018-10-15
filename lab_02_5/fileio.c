@@ -43,12 +43,16 @@ int read_repert(struct spectac **rep, int *rep_len, FILE *f)
 		if (ch == '\n' || sc == EOF)
 		{
 			if (cur != 7)
-				return NOT_ENOUGH;
+			{
+				if (cur == 0 && slen == 0)
+					sc = EOF;
+				else
+					return NOT_ENOUGH;
+			}
 			else
 			{
 				len++;
 				*rep_len = len;
-				printf("%d - in!\n", *rep_len);
 				slen = 0;
 				cur = 0;
 				if (len % RECORD_N == 0)
