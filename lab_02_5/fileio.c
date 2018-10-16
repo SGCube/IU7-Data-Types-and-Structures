@@ -55,15 +55,8 @@ int read_repert(struct spectac **rep, int *rep_len, FILE *f)
 				*rep_len = len;
 				slen = 0;
 				cur = 0;
-				if (len % RECORD_N == 0)
-				{
-					void *t = realloc(*rep,
-						(len + RECORD_N) * sizeof(struct spectac));
-					if (!t)
-						return ERR_ALLOC;
-					else
-						*rep = (struct spectac *) t;
-				}
+				if (repert_alloc(rep, len) == ERR_ALLOC)
+					return ERR_ALLOC;
 				spc = &((*rep)[len]);
 				strptr = spc->theatre;
 			}

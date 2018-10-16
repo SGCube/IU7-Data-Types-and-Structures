@@ -35,8 +35,16 @@ struct spectac
 	} u_spec;
 };
 
+struct key_int
+{
+	int index;
+	int value;
+};
+
 void errmsg(int rc);
+int repert_alloc(struct spectac **rep, int len);
 int add_new_record(struct spectac **rep, int *len);
+void delete_record(struct spectac *rep, int *len, int ind);
 void repert_print(FILE *f, struct spectac *rep, int len);
 
 #endif

@@ -18,22 +18,48 @@
 
 void errmsg(int rc)
 {
-	if (rc == ERR_ALLOC)
-		fprintf(stderr, "Memory allocation error!\n");
-	else if (rc == ERR_INPUT)
-		fprintf(stderr, "Read error!\n");
-	else if (rc == ERR_FILE)
-		fprintf(stderr, "Couldn't open a file!\n");
-	else if (rc == ERR_EMPTY)
-		fprintf(stderr, "File is empty!\n");
-	else if (rc == ERR_TYPE)
-		fprintf(stderr, "Wrong type of spectacle!\n");
-	else if (rc == ERR_AGE)
-		fprintf(stderr, "Wrong children age for spectacle!\n");
-	else if (rc == ERR_LONG_STR)
-		fprintf(stderr, "Too long string in input!\n");
-	else if (rc == NOT_ENOUGH)
-		fprintf(stderr, "Not enough data!\n");
+	switch (rc)
+	{
+		case ERR_ALLOC:
+			fprintf(stderr, "Memory allocation error!\n");
+			break;
+		case ERR_INPUT:
+			fprintf(stderr, "Read error!\n");
+			break;
+		case ERR_FILE:
+			fprintf(stderr, "Couldn't open a file!\n");
+			break;
+		case ERR_EMPTY:
+			fprintf(stderr, "File is empty!\n");
+			break;
+		case ERR_TYPE:
+			fprintf(stderr, "Wrong type of spectacle!\n");
+			break;
+		case ERR_AGE:
+			fprintf(stderr, "Wrong children age for spectacle!\n");
+			break;
+		case ERR_LONG_STR:
+			fprintf(stderr, "Too long string in input!\n");
+			break;
+		case NOT_ENOUGH:
+			fprintf(stderr, "Not enough data!\n");
+			break;
+		default:
+			fprintf(stderr, "Unknown error!\n");
+	}
+}
+
+int repert_alloc(struct spectac **rep, int len)
+{
+	if (len % RECORD_N == 0)
+	{
+		void *t = realloc(*rep, (len + RECORD_N) * sizeof(struct spectac));
+		if (!t)
+			return ERR_ALLOC;
+		else
+			*rep = (struct spectac *) t;
+	}
+	return OK;
 }
 
 int add_new_record(struct spectac **rep, int *len)
@@ -150,23 +176,26 @@ int add_new_record(struct spectac **rep, int *len)
 	else
 		return ERR_TYPE;
 	
-	if (*len % RECORD_N == 0)
-	{
-		void *t = realloc(*rep, (*len + RECORD_N) * sizeof(struct spectac));
-		if (!t)
-			return ERR_ALLOC;
-		else
-			*rep = (struct spectac *) t;
-	}
+	if (repert_alloc(rep, *len) == ERR_ALLOC)
+		return ERR_ALLOC;
 	(*rep)[*len] = temp;
 	*len += 1;
 	return OK;
+}
+
+void delete_record(struct spectac *rep, int *len, int ind)
+{
+	for (int i = ind - 1; i < *len; i++)
+		rep[i] = rep[i+1];
+	*len -= 1;
 }
 
 void repert_print(FILE *f, struct spectac *rep, int len)
 {
 	for (int i = 0; i < len; i++)
 	{
+		if (f == stdout)
+			fprintf(f, "%3d|", (i + 1));
 		fprintf(f, "%s|%s|%s|%d|%d|", rep[i].theatre, rep[i].title,
 			rep[i].director, rep[i].min_tprice, rep[i].max_tprice);
 		if (rep[i].type == CHILD)

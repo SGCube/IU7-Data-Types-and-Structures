@@ -14,12 +14,15 @@
 #define ERR_AGE -7
 #define ERR_LONG_STR -8
 #define NOT_ENOUGH -9
+#define ERR_INDEX -10
 
 int main(void)
 {
 	int rc = OK, rep_len = 0;
 	char ch = 0;
+	int i = 0;
 	struct spectac *repert = NULL;
+	//struct key_int *keytable = NULL;
 	
 	repert = malloc(RECORD_N * sizeof(struct spectac));
 	if (!repert)
@@ -77,6 +80,35 @@ int main(void)
 					free(repert);
 				return ERR_FILE;
 			}
+			FILE *f = fopen("repert.txt", "w");
+			if (!f)
+			{
+				fprintf(stderr, "Couldn't open a file for writing!\n");
+				if (repert)
+					free(repert);
+				return ERR_FILE;
+			}
+			repert_print(f, repert, rep_len);
+			fclose(f);
+		}
+		else if (ch == '3')
+		{
+			fprintf(stdout, "Enter index of record to remove: ");
+			if (fscanf(stdin, "%d", &i) != 1)
+			{
+				fprintf(stderr, "Index input error!\n");
+				if (repert)
+					free(repert);
+				return ERR_INPUT;
+			}
+			else if (i < 1 || i > rep_len)
+			{
+				fprintf(stderr, "Invalid index!\n");
+				if (repert)
+					free(repert);
+				return ERR_INDEX;
+			}
+			delete_record(repert, &rep_len, i);
 			FILE *f = fopen("repert.txt", "w");
 			if (!f)
 			{
