@@ -45,7 +45,7 @@ int main(void)
 			"3 - add new record\n"
 			"4 - remove record\n"
 			"5 - search for musical kids spectacles by age & duration\n"
-			"6 - sort records\n"
+			"6 - sort records by max ticket price\n"
 			"other - quit\n"
 			"\nEnter action: ");
 		if (scanf("%c", &ch) != 1)
@@ -98,6 +98,8 @@ int main(void)
 			fc = search_record(repert, rep_len);
 			if (fc < 0)
 				errmsg(fc);
+			if (fc == 0)
+				fprintf(stdout, "There is no such records!\n");
 		}
 		else if (ch == '6')
 			sort_record(repert, rep_len);

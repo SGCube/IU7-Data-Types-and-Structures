@@ -1,0 +1,41 @@
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|D
+Bolshoy theatre|Sobaka na sene|Artur Evremov|300|700|C|6|F
+Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|D
+Bolshoy theatre|Sobaka na sene|Artur Evremov|300|700|C|6|F
+Kukolniy theatre|Princess Diana|Maria Sevva|500|1200|C|12|M|Chaikovsky|Russia|12|60
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|P
+Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|D
+Bolshoy theatre|Sobaka na sene|Artur Evremov|300|700|C|6|F
+Kukolniy theatre|Princess Diana|Maria Sevva|500|1200|C|12|M|Chaikovsky|Russia|12|60
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|P
+Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|D
+Bolshoy theatre|Sobaka na sene|Artur Evremov|300|700|C|6|F
+Kukolniy theatre|Princess Diana|Maria Sevva|500|1200|C|12|M|Chaikovsky|Russia|12|60
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|P
+Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|D
+Bolshoy theatre|Sobaka na sene|Artur Evremov|300|700|C|6|F
+Kukolniy theatre|Princess Diana|Maria Sevva|500|1200|C|12|M|Chaikovsky|Russia|12|60
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|P
+Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|D
+Bolshoy theatre|Sobaka na sene|Artur Evremov|300|700|C|6|F
+Kukolniy theatre|Princess Diana|Maria Sevva|500|1200|C|12|M|Chaikovsky|Russia|12|60
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|P
+Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|D
+Bolshoy theatre|Sobaka na sene|Artur Evremov|300|700|C|6|F
+Kukolniy theatre|Princess Diana|Maria Sevva|500|1200|C|12|M|Chaikovsky|Russia|12|60
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|P
+Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|D
+Bolshoy theatre|Sobaka na sene|Artur Evremov|300|700|C|6|F
+Kukolniy theatre|Princess Diana|Maria Sevva|500|1200|C|12|M|Chaikovsky|Russia|12|60
+Theatre of operetta|Anna Karenina|Alina Chevik|800|2000|A|P
+Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
+Bolshoy Theatre|War & Piece|Genie|15000|25000|A|P
+Bolshoy Theatre|War & Piece|Genie2|15000|25000|A|P
+Kremlin Palace|Schelkunchik|Igor Kramnik|800|2500|C|4|M|Peter Chaikovsky|Russia|4|180
