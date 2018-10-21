@@ -41,11 +41,11 @@ int search_by_director(struct spectac *rep, int len, char *str)
 	return k;
 }
 
-int search_by_minprice(struct spectac *rep, int len, int value)
+int search_by_minprice(struct spectac *rep, int len, int val)
 {
 	int k = 0;
 	for (int i = 0; i < len; i++)
-		if (rep[i].min_tprice == value)
+		if (rep[i].min_tprice == val)
 		{
 			k++;
 			fprintf(stdout, "%3d|%3d|", k, (i + 1));
@@ -54,17 +54,17 @@ int search_by_minprice(struct spectac *rep, int len, int value)
 	return k; 
 }
 
-int search_by_maxprice(struct spectac *rep, int len, int value)
+int search_by_maxprice(struct spectac *rep, int len, int val)
 {
 	int k = 0;
 	for (int i = 0; i < len; i++)
-		if (rep[i].max_tprice == value)
+		if (rep[i].max_tprice == val)
 		{
 			k++;
 			fprintf(stdout, "%3d|%3d|", k, (i + 1));
 			record_print(stdout, rep[i]);
 		}
-	return k; 
+	return k;
 }
 
 int search_by_type(struct spectac *rep, int len, spect_type t)

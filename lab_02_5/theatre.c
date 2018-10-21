@@ -24,34 +24,34 @@ void errmsg(int rc)
 	switch (rc)
 	{
 		case ERR_ALLOC:
-			fprintf(stderr, "Memory allocation error!\n");
+			fprintf(stdout, "Memory allocation error!\n");
 			break;
 		case ERR_INPUT:
-			fprintf(stderr, "Read error!\n");
+			fprintf(stdout, "Read error!\n");
 			break;
 		case ERR_FILE:
-			fprintf(stderr, "Couldn't open a file!\n");
+			fprintf(stdout, "Couldn't open a file!\n");
 			break;
 		case ERR_EMPTY:
-			fprintf(stderr, "File is empty!\n");
+			fprintf(stdout, "File is empty!\n");
 			break;
 		case ERR_VALUE:
-			fprintf(stderr, "Invalid value!\n");
+			fprintf(stdout, "Invalid value!\n");
 			break;
 		case ERR_TYPE:
-			fprintf(stderr, "Wrong type of spectacle!\n");
+			fprintf(stdout, "Wrong type of spectacle!\n");
 			break;
 		case ERR_AGE:
-			fprintf(stderr, "Wrong children age for spectacle!\n");
+			fprintf(stdout, "Wrong children age for spectacle!\n");
 			break;
 		case ERR_LONG_STR:
-			fprintf(stderr, "Too long string in input!\n");
+			fprintf(stdout, "Too long string in input!\n");
 			break;
 		case NOT_ENOUGH:
-			fprintf(stderr, "Not enough data!\n");
+			fprintf(stdout, "Not enough data!\n");
 			break;
 		default:
-			fprintf(stderr, "Unknown error!\n");
+			fprintf(stdout, "Unknown error!\n");
 	}
 }
 

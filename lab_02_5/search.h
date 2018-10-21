@@ -6,8 +6,8 @@
 int search_by_theatre(struct spectac *rep, int len, char *str);
 int search_by_title(struct spectac *rep, int len, char *str);
 int search_by_director(struct spectac *rep, int len, char *str);
-int search_by_minprice(struct spectac *rep, int len, int value);
-int search_by_maxprice(struct spectac *rep, int len, int value);
+int search_by_minprice(struct spectac *rep, int len, int val);
+int search_by_maxprice(struct spectac *rep, int len, int val);
 int search_by_type(struct spectac *rep, int len, spect_type t);
 /*int search_by_age(struct spectac *rep, int len, int value);
 int search_by_ctype(struct spectac *rep, int len, child_t t);
