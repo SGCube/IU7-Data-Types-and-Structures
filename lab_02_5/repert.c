@@ -212,12 +212,14 @@ int search_record(struct spectac *rep, int len)
 void sort_record(struct spectac *rep, int len)
 {
 	int i;
+	fflush(stdin);
 	fprintf(stdout, "Choose method:\n"
 				"1 - Bubble sort of whole repertoire\n"
 				"2 - Bubble sort of keytable\n"
 				"3 - Quick sort of whole repertoire\n"
-				"4 - Quick sort of keytable\n");
-	if (scanf("%d", &i) || i < 1 || i > 4)
+				"4 - Quick sort of keytable\n"
+				"Enter method: ");
+	if (scanf("%d", &i) != 1 || i < 1 || i > 4)
 	{
 		fprintf(stdout, "Invalid index for method!\n");
 		return;
@@ -249,6 +251,7 @@ void sort_record(struct spectac *rep, int len)
 			bsort_key(keys, len);
 		else
 			qsort_key(keys, keys + len);
+		repert_print_by_table(stdout, rep, keys, len);
 		FILE *f = fopen("repert.txt", "w");
 		if (!f)
 			fprintf(stdout, "Couldn't open a file for writing!\n");
