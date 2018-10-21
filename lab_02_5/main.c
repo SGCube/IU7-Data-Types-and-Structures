@@ -95,29 +95,12 @@ int main(void)
 		}
 		else if (ch == '5')
 		{
-			fc = search_record(repert, rep_len, i);
+			fc = search_record(repert, rep_len);
 			if (fc < 0)
 				errmsg(fc);
 		}
 		else if (ch == '6')
-		{
-			struct keytable *keys = create_keytable(repert, rep_len);
-			if (!keys)
-				fprintf(stdout, "Keytable memory allocation error!\n");
-			else
-			{
-				bsort_table(keys, rep_len);
-				FILE *f = fopen("repert.txt", "w");
-				if (!f)
-					fprintf(stderr, "Couldn't open a file for writing!\n");
-				else
-				{
-					repert_print_by_table(f, repert, keys, rep_len);
-					fclose(f);
-				}
-				free(keys);
-			}
-		}
+			sort_record(repert, rep_len);
 		else
 			ch = 0;
 	}

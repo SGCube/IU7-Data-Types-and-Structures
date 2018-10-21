@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
 #include "sort.h"
 
 typedef enum { FALSE, TRUE } t_bool;
@@ -51,9 +49,9 @@ void qsort_key(struct keytable *pb, struct keytable *pe)
 	pleft = pb;
 	pright = pe;
 	if (pleft < pm)
-		qsort_table(pleft, pm);
+		qsort_key(pleft, pm);
 	if (pright > pm)
-		qsort_table(pm + 1, pright);
+		qsort_key(pm + 1, pright);
 }
 
 void bsort_rep(struct spectac *rep, int len)
@@ -76,7 +74,7 @@ void bsort_rep(struct spectac *rep, int len)
 	}
 }
 
-void qsort_key(struct spectac *pb, struct spectac *pe)
+void qsort_rep(struct spectac *pb, struct spectac *pe)
 {
 	struct spectac *pleft = pb, *pright = pe;
 	struct spectac *pm = pb + (pe - pb) / 2;
@@ -102,8 +100,8 @@ void qsort_key(struct spectac *pb, struct spectac *pe)
 	pleft = pb;
 	pright = pe;
 	if (pleft < pm)
-		qsort_table(pleft, pm);
+		qsort_rep(pleft, pm);
 	if (pright > pm)
-		qsort_table(pm + 1, pright);
+		qsort_rep(pm + 1, pright);
 }
 

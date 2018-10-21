@@ -1,9 +1,23 @@
-#ifndef __REPERT_H__
-#define __REPERT_H__
+#ifndef __THEATRE_H__
+#define __THEATRE_H__
 
 #define RECORD_N 40
 #define MAX_SLEN 50
 #define MIN_SLEN 25
+
+#define OK 0
+
+#define ERR_ALLOC -1
+#define ERR_INPUT -2
+#define ERR_CHOICE -3
+#define ERR_FILE - 4
+#define ERR_EMPTY -5
+#define ERR_TYPE -6
+#define ERR_AGE -7
+#define ERR_LONG_STR -8
+#define NOT_ENOUGH -9
+#define ERR_INDEX -10
+#define ERR_VALUE -11
 
 typedef enum {CHILD, ADULT} spect_type;
 typedef enum {FTALE, CPLAY, MUSIC} child_t;

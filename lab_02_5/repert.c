@@ -2,24 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "theatre.h"
 #include "sort.h"
 #include "fileio.h"
 #include "repert.h"
-
-#define OK 0
-
-#define ERR_ALLOC -1
-#define ERR_INPUT -2
-#define ERR_CHOICE -3
-#define ERR_FILE - 4
-#define ERR_EMPTY -5
-#define ERR_TYPE -6
-#define ERR_AGE -7
-#define ERR_LONG_STR -8
-#define NOT_ENOUGH -9
-#define ERR_INDEX -10
-#define ERR_VALUE -11
 
 void errmsg(int rc)
 {
@@ -215,7 +200,7 @@ int search_record(struct spectac *rep, int len)
 	for (int i = 0; i < len; i++)
 		if (rep[i].type == CHILD && rep[i].u_spec.child.type == MUSIC &&
 			rep[i].u_spec.child.age <= age &&
-			rep[i].u_spec.child.musical < dur)
+			rep[i].u_spec.child.music.duration < duration)
 		{
 			k++;
 			fprintf(stdout, "%3d|%3d|", k, (i + 1));
@@ -226,6 +211,7 @@ int search_record(struct spectac *rep, int len)
 
 void sort_record(struct spectac *rep, int len)
 {
+	int i;
 	fprintf(stdout, "Choose method:\n"
 				"1 - Bubble sort of whole repertoire\n"
 				"2 - Bubble sort of keytable\n"
@@ -247,7 +233,7 @@ void sort_record(struct spectac *rep, int len)
 			fprintf(stdout, "Couldn't open a file for writing!\n");
 		else
 		{
-			repert_print_by(f, rep, len);
+			repert_print(f, rep, len);
 			fclose(f);
 		}
 	}
