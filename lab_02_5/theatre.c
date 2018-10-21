@@ -216,14 +216,14 @@ int search_record(struct spectac *rep, int len, int attr)
 			if (fgets(str, MAX_SLEN + 1, stdin) == NULL)
 				return ERR_INPUT;
 			strtok(str, "\n");
-			k = search_by_theatre(rep, len, str);
+			k = search_by_title(rep, len, str);
 			break;
 		case 3:
 			printf("Enter director's name: ");
 			if (fgets(str, MAX_SLEN + 1, stdin) == NULL)
 				return ERR_INPUT;
 			strtok(str, "\n");
-			k = search_by_theatre(rep, len, str);
+			k = search_by_director(rep, len, str);
 			break;
 		case 4:
 			printf("Enter minimal ticket price: ");

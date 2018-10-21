@@ -9,7 +9,7 @@ int search_by_theatre(struct spectac *rep, int len, char *str)
 		if (strcmp(rep[i].theatre, str) == 0)
 		{
 			k++;
-			fprintf(stdout, "%3d|%3d|", (k + 1), (i + 1));
+			fprintf(stdout, "%3d|%3d|", k, (i + 1));
 			record_print(stdout, rep[i]);
 		}
 	return k;
@@ -22,7 +22,7 @@ int search_by_title(struct spectac *rep, int len, char *str)
 		if (strcmp(rep[i].title, str) == 0)
 		{
 			k++;
-			fprintf(stdout, "%3d|%3d|", (k + 1), (i + 1));
+			fprintf(stdout, "%3d|%3d|", k, (i + 1));
 			record_print(stdout, rep[i]);
 		}
 	return k;
@@ -35,7 +35,7 @@ int search_by_director(struct spectac *rep, int len, char *str)
 		if (strcmp(rep[i].director, str) == 0)
 		{
 			k++;
-			fprintf(stdout, "%3d|%3d|", (k + 1), (i + 1));
+			fprintf(stdout, "%3d|%3d|", k, (i + 1));
 			record_print(stdout, rep[i]);
 		}
 	return k;
@@ -48,7 +48,7 @@ int search_by_minprice(struct spectac *rep, int len, int value)
 		if (rep[i].min_tprice == value)
 		{
 			k++;
-			fprintf(stdout, "%3d|%3d|", (k + 1), (i + 1));
+			fprintf(stdout, "%3d|%3d|", k, (i + 1));
 			record_print(stdout, rep[i]);
 		}
 	return k; 
@@ -61,7 +61,7 @@ int search_by_maxprice(struct spectac *rep, int len, int value)
 		if (rep[i].max_tprice == value)
 		{
 			k++;
-			fprintf(stdout, "%3d|%3d|", (k + 1), (i + 1));
+			fprintf(stdout, "%3d|%3d|", k, (i + 1));
 			record_print(stdout, rep[i]);
 		}
 	return k; 
@@ -74,7 +74,7 @@ int search_by_type(struct spectac *rep, int len, spect_type t)
 		if (rep[i].type == t)
 		{
 			k++;
-			fprintf(stdout, "%3d|%3d|", (k + 1), (i + 1));
+			fprintf(stdout, "%3d|%3d|", k, (i + 1));
 			record_print(stdout, rep[i]);
 		}
 	return k; 
