@@ -45,6 +45,8 @@ void errmsg(int rc);
 int repert_alloc(struct spectac **rep, int len);
 int add_new_record(struct spectac **rep, int *len);
 void delete_record(struct spectac *rep, int *len, int ind);
+int search_record(struct spectac *rep, int len, int attr);
+void record_print(FILE *f, struct spectac rep);
 void repert_print(FILE *f, struct spectac *rep, int len);
 
 #endif

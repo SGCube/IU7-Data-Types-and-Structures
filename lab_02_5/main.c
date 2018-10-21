@@ -15,6 +15,7 @@
 #define ERR_LONG_STR -8
 #define NOT_ENOUGH -9
 #define ERR_INDEX -10
+#define ERR_VALUE -11
 
 int main(void)
 {
@@ -40,7 +41,7 @@ int main(void)
 			"1 - view repertoire\n"
 			"2 - add new record\n"
 			"3 - remove record\n"
-			"4 - find record\n"
+			"4 - search for records\n"
 			"5 - sort records\n"
 			"other - quit\n"
 			"\nEnter action: ");
@@ -89,9 +90,9 @@ int main(void)
 				fclose(f);
 			}
 		}
-		else if (ch == '3' && rep_len == 0)
+		else if (ch >= '3' && ch <= '5' && rep_len == 0)
 			fprintf(stdout, "There is no records!\n");
-		else if (ch == '3' && rep_len > 0)
+		else if (ch == '3')
 		{
 			fprintf(stdout, "Enter index of record to remove: ");
 			if (fscanf(stdin, "%d", &i) != 1)
@@ -109,6 +110,31 @@ int main(void)
 					repert_print(f, repert, rep_len);
 					fclose(f);
 				}
+			}
+		}
+		else if (ch == '4')
+		{
+			fprintf(stdout, "Choose attribute:\n"\
+				"1 - theatre\n"
+				"2 - title\n"
+				"3 - director\n"
+				"4 - minimal ticket price\n"
+				"5 - maximal ticket price\n"
+				"6 - age category\n"
+				"7 - recommended age (child)\n"
+				"8 - spectacle type (child)\n"
+				"9 - spectacle type (adult)\n"
+				"10 - composer (musical)\n"
+				"11 - country (musical)\n"
+				"12 - minimal allowed age (musical)\n"
+				"13 - duration (musical)\n");
+			if (scanf("%d", &i) != 1 || i < 1 || i > 13)
+				fprintf(stdout, "Invalid type of attribute!\n");
+			else
+			{
+				int sc = search_record(repert, rep_len, i);
+				if (sc != OK)
+					errmsg(sc);
 			}
 		}
 		else

@@ -14,6 +14,8 @@
 #define ERR_AGE -7
 #define ERR_LONG_STR -8
 #define NOT_ENOUGH -9
+#define ERR_INDEX -10
+#define ERR_VALUE -11
 
 int read_repert(struct spectac **rep, int *rep_len, FILE *f)
 {
