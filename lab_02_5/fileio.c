@@ -2,7 +2,19 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "fileio.h"
-#include "repert.h"
+
+int repert_alloc(struct spectac **rep, int len)
+{
+	if (len % RECORD_N == 0)
+	{
+		void *t = realloc(*rep, (len + RECORD_N) * sizeof(struct spectac));
+		if (!t)
+			return ERR_ALLOC;
+		else
+			*rep = (struct spectac *) t;
+	}
+	return OK;
+}
 
 int read_repert(struct spectac **rep, int *rep_len, FILE *f)
 {

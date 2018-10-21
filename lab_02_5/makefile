@@ -2,7 +2,7 @@ CC := gcc
 
 CFLAGS := -std=c99 -Wall -Werror -pedantic
 
-OBJS := repert.o fileio.o sort.o
+OBJS := fileio.o repert.o sort.o
 
 ifeq ($(mode), debug)
     CFLAGS += -g3 -ggdb

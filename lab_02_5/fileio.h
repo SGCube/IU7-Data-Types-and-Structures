@@ -3,6 +3,7 @@
 #ifndef __FILEIO_H__
 #define __FILEIO_H__
 
+int repert_alloc(struct spectac **rep, int len);
 int read_repert(struct spectac **rep, int *rep_len, FILE *f);
 void record_print(FILE *f, struct spectac rep);
 void repert_print(FILE *f, struct spectac *rep, int len);

@@ -42,19 +42,6 @@ void errmsg(int rc)
 	}
 }
 
-int repert_alloc(struct spectac **rep, int len)
-{
-	if (len % RECORD_N == 0)
-	{
-		void *t = realloc(*rep, (len + RECORD_N) * sizeof(struct spectac));
-		if (!t)
-			return ERR_ALLOC;
-		else
-			*rep = (struct spectac *) t;
-	}
-	return OK;
-}
-
 struct keytable *create_keytable(struct spectac *rep, int len)
 {
 	struct keytable *keys;
