@@ -3,6 +3,7 @@
 #include "theatre.h"
 #include "fileio.h"
 #include "sort.h"
+#include "repert.h"
 
 #define OK 0
 

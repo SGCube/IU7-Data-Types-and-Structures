@@ -153,18 +153,6 @@ int read_repert(struct spectac **rep, int *rep_len, FILE *f)
 	return OK;
 }
 
-void write_repert(struct spectac *rep, int rep_len)
-{
-	FILE *f = fopen("repert.txt", "w");
-	if (!f)
-		fprintf(stdout, "Couldn't open a file for writing!\n");
-	else
-	{
-		repert_print(f, rep, rep_len);
-		fclose(f);
-	}
-}
-
 void record_print(FILE *f, struct spectac rep)
 {
 	fprintf(f, "%s|%s|%s|%d|%d|", rep.theatre, rep.title,

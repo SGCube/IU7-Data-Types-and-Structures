@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "search.h"
+#include "fileio.h"
 
 #define ERR_VALUE -11
 

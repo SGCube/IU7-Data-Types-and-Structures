@@ -5,6 +5,7 @@
 #include "theatre.h"
 #include "sort.h"
 #include "fileio.h"
+#include "repert.h"
 
 #define OK 0
 
@@ -271,6 +272,18 @@ void sort_record(struct spectac *rep, int len)
 			fclose(f);
 		}
 		free(keys);
+	}
+}
+
+void write_repert(struct spectac *rep, int rep_len)
+{
+	FILE *f = fopen("repert.txt", "w");
+	if (!f)
+		fprintf(stdout, "Couldn't open a file for writing!\n");
+	else
+	{
+		repert_print(f, rep, rep_len);
+		fclose(f);
 	}
 }
 
