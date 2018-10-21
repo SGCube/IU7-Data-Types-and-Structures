@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "theatre.h"
 #include "fileio.h"
+#include "sort.h"
 
 #define OK 0
 
@@ -19,11 +20,11 @@
 
 int main(void)
 {
-	int rc = OK, rep_len = 0;
+	int rc = OK, rep_len = 0, fc = OK;
 	char ch = 0;
 	int i = 0;
+	short int to_write();
 	struct spectac *repert = NULL;
-	//struct key_int *keytable = NULL;
 	
 	repert = malloc(RECORD_N * sizeof(struct spectac));
 	if (!repert)
@@ -38,11 +39,12 @@ int main(void)
 	{
 		setbuf(stdin, NULL);
 		printf("\nChoose action:\n"
-			"1 - view repertoire\n"
-			"2 - add new record\n"
-			"3 - remove record\n"
-			"4 - search for records\n"
-			"5 - sort records\n"
+			"1 - read repertoire from file\n"
+			"2 - view repertoire\n"
+			"3 - add new record\n"
+			"4 - remove record\n"
+			"5 - search for musical kids spectacles by age & duration\n"
+			"6 - sort records\n"
 			"other - quit\n"
 			"\nEnter action: ");
 		if (scanf("%c", &ch) != 1)
@@ -63,36 +65,21 @@ int main(void)
 			rc = read_repert(&repert, &rep_len, f);
 			fclose(f);
 			if (rc != OK)
-			{
 				errmsg(rc);
-				if (repert)
-					free(repert);
-				return ERR_FILE;
-			}
-			repert_print(stdout, repert, rep_len);
 		}
 		else if (ch == '2')
-		{
-			rc = add_new_record(&repert, &rep_len);
-			if (rc != OK)
-			{
-				errmsg(rc);
-				if (repert)
-					free(repert);
-				return rc;
-			}
-			FILE *f = fopen("repert.txt", "w");
-			if (!f)
-				fprintf(stderr, "Couldn't open a file for writing!\n");
-			else
-			{
-				repert_print(f, repert, rep_len);
-				fclose(f);
-			}
-		}
-		else if (ch >= '3' && ch <= '5' && rep_len == 0)
-			fprintf(stdout, "There is no records!\n");
+			repert_print(stdout, repert, rep_len);
 		else if (ch == '3')
+		{
+			fc = add_new_record(&repert, &rep_len);
+			if (fc != OK)
+				errmsg(rc);
+			else
+				write_repert(repert, rep_len);
+		}
+		else if (ch >= '4' && ch <= '6' && rep_len == 0)
+			fprintf(stdout, "There is no records!\n");
+		else if (ch == '4')
 		{
 			fprintf(stdout, "Enter index of record to remove: ");
 			if (fscanf(stdin, "%d", &i) != 1)
@@ -102,39 +89,32 @@ int main(void)
 			else
 			{
 				delete_record(repert, &rep_len, i);
-				FILE *f = fopen("repert.txt", "w");
-				if (!f)
-					fprintf(stdout, "Couldn't open a file for writing!\n");
-				else
-				{
-					repert_print(f, repert, rep_len);
-					fclose(f);
-				}
+				write_repert(repert, rep_len);
 			}
 		}
-		else if (ch == '4')
+		else if (ch == '5')
 		{
-			fprintf(stdout, "Choose attribute:\n"\
-				"1 - theatre\n"
-				"2 - title\n"
-				"3 - director\n"
-				"4 - minimal ticket price\n"
-				"5 - maximal ticket price\n"
-				"6 - age category\n"
-				"7 - spectacle type (child)\n"
-				"8 - spectacle type (adult)\n"
-				"9 - recommended age (child)\n"
-				"10 - composer (musical)\n"
-				"11 - country (musical)\n"
-				"12 - minimal allowed age (musical)\n"
-				"13 - duration (musical)\n");
-			if (scanf("%d", &i) != 1 || i < 1 || i > 13)
-				fprintf(stdout, "Invalid type of attribute!\n");
+			fc = search_record(repert, rep_len, i);
+			if (fc < 0)
+				errmsg(fc);
+		}
+		else if (ch == '6')
+		{
+			struct keytable *keys = create_keytable(repert, rep_len);
+			if (!keys)
+				fprintf(stdout, "Keytable memory allocation error!\n");
 			else
 			{
-				int sc = search_record(repert, rep_len, i);
-				if (sc != OK)
-					errmsg(sc);
+				bsort_table(keys, rep_len);
+				FILE *f = fopen("repert.txt", "w");
+				if (!f)
+					fprintf(stderr, "Couldn't open a file for writing!\n");
+				else
+				{
+					repert_print_by_table(f, repert, keys, rep_len);
+					fclose(f);
+				}
+				free(keys);
 			}
 		}
 		else
@@ -142,6 +122,8 @@ int main(void)
 	}
 	while (rc == OK && ch != 0);
 	
-	free(repert);
+	if (repert)
+		free(repert);
 	return OK;
 }
+

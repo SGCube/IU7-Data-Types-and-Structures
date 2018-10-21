@@ -16,5 +16,6 @@ int search_by_composer(struct spectac *rep, int len, char *str);
 int search_by_country(struct spectac *rep, int len, char *str);
 int search_by_minage(struct spectac *rep, int len, int val);
 int search_by_duration(struct spectac *rep, int len, int val);
+int search_record(struct spectac *rep, int len);
 
 #endif

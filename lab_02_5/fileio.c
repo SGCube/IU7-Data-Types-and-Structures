@@ -32,8 +32,8 @@ int read_repert(struct spectac **rep, int *rep_len, FILE *f)
 		return ERR_EMPTY;
 	else if (sc != 1 || ch == '|' || ch == '\n')
 		return ERR_INPUT;
-	
 	rewind(f);
+	
 	while (sc != EOF)
 	{
 		if (sc != EOF)
@@ -152,3 +152,77 @@ int read_repert(struct spectac **rep, int *rep_len, FILE *f)
 	}
 	return OK;
 }
+
+void write_repert(struct spectac *rep, int rep_len)
+{
+	FILE *f = fopen("repert.txt", "w");
+	if (!f)
+		fprintf(stdout, "Couldn't open a file for writing!\n");
+	else
+	{
+		repert_print(f, rep, rep_len);
+		fclose(f);
+	}
+}
+
+void record_print(FILE *f, struct spectac rep)
+{
+	fprintf(f, "%s|%s|%s|%d|%d|", rep.theatre, rep.title,
+		rep.director, rep.min_tprice, rep.max_tprice);
+	if (rep.type == CHILD)
+		fprintf(f, "C|");
+	else
+		fprintf(f, "A|");
+	if (rep.type == ADULT)
+	{
+		if (rep.u_spec.adult == PLAY)
+			fprintf(f, "P");
+		else if (rep.u_spec.adult == DRAMA)
+			fprintf(f, "D");
+		else if (rep.u_spec.adult == COMEDY)
+			fprintf(f, "C");
+	}
+	else
+	{
+		fprintf(f, "%d|", rep.u_spec.child.age);
+		if (rep.u_spec.child.type == FTALE)
+			fprintf(f, "F");
+		else if (rep.u_spec.child.type == CPLAY)
+			fprintf(f, "P");
+		else if (rep.u_spec.child.type == MUSIC)
+		{
+			fprintf(f, "M|%s|%s|%d|%d",
+				rep.u_spec.child.music.composer,
+				rep.u_spec.child.music.country,
+				rep.u_spec.child.music.min_age,
+				rep.u_spec.child.music.duration);
+		}
+	}
+	fprintf(f, "\n");
+}
+
+void repert_print(FILE *f, struct spectac *rep, int len)
+{
+	for (int i = 0; i < len; i++)
+	{
+		if (f == stdout)
+			fprintf(f, "%3d|", (i + 1));
+		record_print(f, rep[i]);
+	}
+	if (len == 0 && f == stdout)
+		fprintf(f, "There is no records!\n");
+}
+
+void repert_print_by_table(FILE *f, struct spectac *rep,
+	struct keytable *keys, int len)
+{
+	for (int i = 0; i < len; i++)
+	{
+		if (f == stdout)
+			fprintf(f, "%3d|", (i + 1));
+		record_print(f, rep[keys[i].index]);
+	}
+	if (len == 0 && f == stdout)
+		fprintf(f, "There is no records!\n");
+}
+

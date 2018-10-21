@@ -39,4 +39,3 @@ Bolshoy theatre|Sobaka na sene|Artur Evremov|5000|12000|A|C
 Bolshoy Theatre|War & Piece|Genie|15000|25000|A|P
 Bolshoy Theatre|War & Piece|Genie2|15000|25000|A|P
 Kremlin Palace|Schelkunchik|Igor Kramnik|800|2500|C|4|M|Peter Chaikovsky|Russia|4|180
-Vedogon' Theatre|Anna Karenina|Ivan Solenov|400|800|A|P

@@ -1,5 +1,5 @@
-#ifndef __THEATRE_H__
-#define __THEATRE_H__
+#ifndef __REPERT_H__
+#define __REPERT_H__
 
 #define RECORD_N 40
 #define MAX_SLEN 50
@@ -35,18 +35,10 @@ struct spectac
 	} u_spec;
 };
 
-struct key_int
+struct keytable
 {
 	int index;
-	int value;
+	int val;
 };
-
-void errmsg(int rc);
-int repert_alloc(struct spectac **rep, int len);
-int add_new_record(struct spectac **rep, int *len);
-void delete_record(struct spectac *rep, int *len, int ind);
-int search_record(struct spectac *rep, int len, int attr);
-void record_print(FILE *f, struct spectac rep);
-void repert_print(FILE *f, struct spectac *rep, int len);
 
 #endif
