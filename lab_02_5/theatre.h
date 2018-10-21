@@ -21,8 +21,8 @@ struct spectac
 	{	
 		struct
 		{
-			int age;
 			child_t type;
+			int age;
 			struct
 			{
 				char composer[MAX_SLEN];

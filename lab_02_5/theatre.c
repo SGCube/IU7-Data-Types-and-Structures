@@ -74,17 +74,6 @@ int add_new_record(struct spectac **rep, int *len)
 	assert(*len >= 0);
 	char ch;
 	struct spectac temp;
-	/*char theatre[MAX_SLEN + 1];
-	char title[MAX_SLEN + 1];
-	char director[MAX_SLEN + 1];
-	char composer[MAX_SLEN + 1];
-	char country[MIN_SLEN + 1];
-	int min_tprice, max_tprice;
-	spect_type type;
-	child_t type;
-	adult_t adult;
-	int age;
-	int min_age, duration;*/
 	
 	fflush(stdin);
 	printf("Enter name of theatre: ");
@@ -114,7 +103,7 @@ int add_new_record(struct spectac **rep, int *len)
 	printf("Choose spectale's age category:\n"
 		"0 - for children; 1 - for adults\n");
 	if (scanf("%c", &ch) != 1)
-		return ERR_TYPE;
+		return ERR_INPUT;
 	if (ch == '0')
 	{
 		temp.type = CHILD;
@@ -128,7 +117,7 @@ int add_new_record(struct spectac **rep, int *len)
 		
 		fflush(stdin);
 		if (scanf("%c", &ch) != 1)
-			return ERR_TYPE;
+			return ERR_INPUT;
 		if (ch == '0')
 			temp.u_spec.child.type = FTALE;
 		else if (ch == '1')
@@ -150,8 +139,8 @@ int add_new_record(struct spectac **rep, int *len)
 			printf("Enter minimal age: ");
 			if (scanf("%d", &(temp.u_spec.child.music.min_age)) != 1)
 				return ERR_INPUT;
-			if (temp.u_spec.child.music.min_age < 0 ||
-				temp.u_spec.child.music.min_age > temp.u_spec.child.age)
+			if (temp.u_spec.child.music.min_age < temp.u_spec.child.age ||
+				temp.u_spec.child.music.min_age >= 18)
 				return ERR_AGE;
 			printf("Enter duration (in minutes): ");
 			if (scanf("%d", &(temp.u_spec.child.music.duration)) != 1)
@@ -169,7 +158,7 @@ int add_new_record(struct spectac **rep, int *len)
 		printf("Choose spectale's genre:\n"
 			"0 - play; 1 - drama; 2 - comedy\n");
 		if (scanf("%c", &ch) != 1)
-			return ERR_TYPE;
+			return ERR_INPUT;
 		if (ch == '0')
 			temp.u_spec.adult = PLAY;
 		else if (ch == '1')
@@ -253,18 +242,70 @@ int search_record(struct spectac *rep, int len, int attr)
 			if (ch == '1')
 				k = search_by_type(rep, len, ADULT);
 		case 7:
+			printf("Choose spectale's genre:\n"
+				"0 - fairy tale; 1 - play; 2 - musical\n");
+			if (scanf("%c", &ch) != 1)
+				return ERR_INPUT;
+			if (ch != '0' && ch != '1' && ch != '2')
+				return ERR_TYPE;
+			if (ch == '0')
+				k = search_by_ctype(rep, len, FTALE);
+			if (ch == '1')
+				k = search_by_ctype(rep, len, CPLAY);
+			if (ch == '2')
+				k = search_by_ctype(rep, len, MUSIC);
 			break;
 		case 8:
+			printf("Choose spectale's genre:\n"
+				"0 - play; 1 - drama; 2 - comedy\n");
+			if (scanf("%c", &ch) != 1)
+				return ERR_INPUT;
+			if (ch != '0' && ch != '1' && ch != '2')
+				return ERR_TYPE;
+			if (ch == '0')
+				k = search_by_atype(rep, len, PLAY);
+			if (ch == '1')
+				k = search_by_atype(rep, len, DRAMA);
+			if (ch == '2')
+				k = search_by_atype(rep, len, COMEDY);
 			break;
 		case 9:
+			printf("Enter recommended age: ");
+			if (scanf("%d", &i) != 1)
+				return ERR_INPUT;
+			if (i < 0 || i > 17)
+				return ERR_AGE;
+			k = search_by_age(rep, len, i);
 			break;
 		case 10:
+			printf("Enter composer's name: ");
+			if (fgets(str, MAX_SLEN + 1, stdin) == NULL)
+				return ERR_INPUT;
+			strtok(str, "\n");
+			k = search_by_composer(rep, len, str);
 			break;
 		case 11:
+			printf("Enter country: ");
+			if (fgets(str, MAX_SLEN + 1, stdin) == NULL)
+				return ERR_INPUT;
+			strtok(str, "\n");
+			k = search_by_country(rep, len, str);
 			break;
 		case 12:
+			printf("Enter minimal age: ");
+			if (scanf("%d", &i) != 1)
+				return ERR_INPUT;
+			if (i < 0 || i > 17)
+				return ERR_AGE;
+			k = search_by_minage(rep, len, i);
 			break;
 		case 13:
+			printf("Enter duration (in minutes): ");
+			if (scanf("%d", &i) != 1)
+				return ERR_INPUT;
+			if (i < 0)
+				return ERR_VALUE;
+			k = search_by_duration(rep, len, i);
 			break;
 		default:
 			fprintf(stdout, "Invalid type of attribute!\n");
@@ -274,66 +315,6 @@ int search_record(struct spectac *rep, int len, int attr)
 	if (k == 0)
 		fprintf(stdout, "There is no such records!\n");
 	return OK;
-	/*{
-		printf("Enter recommended age: ");
-		if (scanf("%d", &(temp.u_spec.child.age)) != 1)
-			return ERR_INPUT;
-		if (temp.u_spec.child.age < 0 || temp.u_spec.child.age > 17)
-			return ERR_AGE;
-	}
-	{
-		printf("Choose spectale's genre:\n"
-			"0 - fairy tale; 1 - play; 2 - musical\n");
-		if (scanf("%c", &ch) != 1)
-			return ERR_TYPE;
-	}
-	{
-		temp.u_spec.child.type = MUSIC;
-		printf("Enter composer's name: ");
-		if (fgets(temp.u_spec.child.music.composer,
-			MAX_SLEN + 1, stdin) == NULL)
-			return ERR_INPUT;
-		strtok(temp.u_spec.child.music.composer, "\n");
-	}
-	{
-		printf("Enter country: ");
-		if (fgets(temp.u_spec.child.music.country,
-			MIN_SLEN + 1, stdin) == NULL)
-			return ERR_INPUT;
-		strtok(temp.u_spec.child.music.country, "\n");
-	}
-	{
-		printf("Enter minimal age: ");
-		if (scanf("%d", &(temp.u_spec.child.music.min_age)) != 1)
-			return ERR_INPUT;
-		if (temp.u_spec.child.music.min_age < 0 ||
-			temp.u_spec.child.music.min_age > temp.u_spec.child.age)
-			return ERR_AGE;
-	}
-	{
-		printf("Enter duration (in minutes): ");
-		if (scanf("%d", &(temp.u_spec.child.music.duration)) != 1)
-			return ERR_INPUT;
-		if (temp.u_spec.child.music.duration < 0)
-			return ERR_INPUT;
-	}
-	{
-		printf("Choose spectale's genre:\n"
-			"0 - play; 1 - drama; 2 - comedy\n");
-		if (scanf("%c", &ch) != 1)
-			return ERR_TYPE;
-		if (ch == '0')
-			temp.u_spec.adult = PLAY;
-		else if (ch == '1')
-			temp.u_spec.adult = DRAMA;
-		else if (ch == '2')
-			temp.u_spec.adult = COMEDY;
-		else
-			return ERR_TYPE;
-	}
-	else
-		return ERR_TYPE;
-	}*/
 }
 
 void record_print(FILE *f, struct spectac rep)
