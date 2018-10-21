@@ -9,4 +9,9 @@ void repert_print(FILE *f, struct spectac *rep, int len);
 void repert_print_by_table(FILE *f, struct spectac *rep,
 	struct keytable *keys, int len);
 
+void record_printf(struct spectac rep);
+void repert_printf(struct spectac *rep, int len);
+void repert_printf_by_table(struct spectac *rep, struct keytable *keys,
+	int len);
+
 #endif

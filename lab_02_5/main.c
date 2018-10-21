@@ -69,7 +69,7 @@ int main(void)
 				errmsg(rc);
 		}
 		else if (ch == '2')
-			repert_print(stdout, repert, rep_len);
+			repert_printf(repert, rep_len);
 		else if (ch == '3')
 		{
 			fc = add_new_record(&repert, &rep_len);

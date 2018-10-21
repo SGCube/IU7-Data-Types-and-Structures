@@ -201,3 +201,74 @@ void repert_print_by_table(FILE *f, struct spectac *rep,
 		fprintf(f, "There is no records!\n");
 }
 
+
+void record_printf(struct spectac rep)
+{
+	printf("%-*s %-*s %-*s %-*d %-*d ", MAX_SLEN, rep.theatre,
+		MAX_SLEN, rep.title, MAX_SLEN, rep.director,
+		PRICE_DIGITS, rep.min_tprice, PRICE_DIGITS, rep.max_tprice);
+	if (rep.type == CHILD)
+		printf("Child ");
+	else
+		printf("Adult ");
+	if (rep.type == ADULT)
+	{
+		if (rep.u_spec.adult == PLAY)
+			printf("%-10s ", "Play");
+		else if (rep.u_spec.adult == DRAMA)
+			printf("%-10s ", "Drama");
+		else if (rep.u_spec.adult == COMEDY)
+			printf("%-10s ", "Comedy");
+	}
+	else
+	{
+		if (rep.u_spec.child.type == FTALE)
+			printf("%-10s ", "Fairy tale");
+		else if (rep.u_spec.child.type == CPLAY)
+			printf("%-10s ", "Play");
+		else if (rep.u_spec.child.type == MUSIC)
+			printf("%-10s ", "Musical");
+		printf("%-3d ", rep.u_spec.child.age);
+		if (rep.u_spec.child.type == MUSIC)
+		{
+			printf("%-*s %-*s %d", MAX_SLEN,
+				rep.u_spec.child.music.composer, MIN_SLEN,
+				rep.u_spec.child.music.country,
+				rep.u_spec.child.music.duration);
+		}
+	}
+	printf("\n");
+}
+
+void repert_printf(struct spectac *rep, int len)
+{
+	printf("  # %-*s %-*s %-*s %-*s %-*s %5s %10s %3s %-*s %-*s %s\n\n",
+		MAX_SLEN, "Theatre", MAX_SLEN, "Title", MAX_SLEN, "Director",
+		PRICE_DIGITS, "MinPrice", PRICE_DIGITS, "MaxPrice", "Type",
+		"Genre", "Age", MAX_SLEN, "Composer", MIN_SLEN, "Country",
+		"Duration");
+	for (int i = 0; i < len; i++)
+	{
+		printf("%3d ", (i + 1));
+		record_printf(rep[i]);
+	}
+	if (len == 0)
+		printf("There is no records!\n");
+}
+
+void repert_printf_by_table(struct spectac *rep, struct keytable *keys,
+	int len)
+{
+	printf("  # %-*s %-*s %-*s %-*s %-*s %5s %10s %3s %-*s %-*s %s\n\n",
+		MAX_SLEN, "Theatre", MAX_SLEN, "Title", MAX_SLEN, "Director",
+		PRICE_DIGITS, "MinPrice", PRICE_DIGITS, "MaxPrice", "Type",
+		"Genre", "Age", MAX_SLEN, "Composer", MIN_SLEN, "Country",
+		"Duration");
+	for (int i = 0; i < len; i++)
+	{
+		printf("%3d ", (i + 1));
+		record_printf(rep[keys[i].index]);
+	}
+	if (len == 0)
+		printf("There is no records!\n");
+}

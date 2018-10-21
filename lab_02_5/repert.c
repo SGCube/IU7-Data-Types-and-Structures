@@ -196,17 +196,22 @@ int search_record(struct spectac *rep, int len)
 	if (scanf("%d", &duration) != 1 || duration < 0)
 		return ERR_VALUE;
 	
+	printf("  # Rep# %-*s %-*s %-*s %-*s %-*s %5s %10s %3s %-*s %-*s %s\n\n",
+		MAX_SLEN, "Theatre", MAX_SLEN, "Title", MAX_SLEN, "Director",
+		PRICE_DIGITS, "MinPrice", PRICE_DIGITS, "MaxPrice", "Type",
+		"Genre", "Age", MAX_SLEN, "Composer", MIN_SLEN, "Country",
+		"Duration");
 	int k = 0;
 	for (int i = 0; i < len; i++)
 		if (rep[i].type == CHILD && rep[i].u_spec.child.type == MUSIC &&
-			rep[i].u_spec.child.age <= age &&
+			rep[i].u_spec.child.age >= age &&
 			rep[i].u_spec.child.music.duration < duration)
 		{
 			k++;
-			fprintf(stdout, "%3d|%3d|", k, (i + 1));
-			record_print(stdout, rep[i]);
+			printf("%3d %4d ", k, (i + 1));
+			record_printf(rep[i]);
 		}
-	return k; 
+	return k;
 }
 
 void sort_record(struct spectac *rep, int len)
@@ -251,7 +256,7 @@ void sort_record(struct spectac *rep, int len)
 			bsort_key(keys, len);
 		else
 			qsort_key(keys, keys + len);
-		repert_print_by_table(stdout, rep, keys, len);
+		repert_printf_by_table(rep, keys, len);
 		FILE *f = fopen("repert.txt", "w");
 		if (!f)
 			fprintf(stdout, "Couldn't open a file for writing!\n");

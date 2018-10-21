@@ -2,8 +2,9 @@
 #define __THEATRE_H__
 
 #define RECORD_N 40
-#define MAX_SLEN 50
-#define MIN_SLEN 25
+#define MAX_SLEN 20
+#define MIN_SLEN 15
+#define PRICE_DIGITS 8
 
 #define OK 0
 
