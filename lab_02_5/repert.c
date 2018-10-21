@@ -234,7 +234,7 @@ void sort_record(struct spectac *rep, int len)
 		if (i == 1)
 			bsort_rep(rep, len);
 		else
-			qsort_rep(rep, rep + len);
+			qsort_rep(rep, rep + len - 1);
 		FILE *f = fopen("repert.txt", "w");
 		if (!f)
 			fprintf(stdout, "Couldn't open a file for writing!\n");
@@ -255,7 +255,7 @@ void sort_record(struct spectac *rep, int len)
 		if (i == 2)
 			bsort_key(keys, len);
 		else
-			qsort_key(keys, keys + len);
+			qsort_key(keys, keys + len - 1);
 		repert_printf_by_table(rep, keys, len);
 		FILE *f = fopen("repert.txt", "w");
 		if (!f)
