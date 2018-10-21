@@ -78,47 +78,38 @@ int main(void)
 				errmsg(rc);
 				if (repert)
 					free(repert);
-				return ERR_FILE;
+				return rc;
 			}
 			FILE *f = fopen("repert.txt", "w");
 			if (!f)
-			{
 				fprintf(stderr, "Couldn't open a file for writing!\n");
-				if (repert)
-					free(repert);
-				return ERR_FILE;
+			else
+			{
+				repert_print(f, repert, rep_len);
+				fclose(f);
 			}
-			repert_print(f, repert, rep_len);
-			fclose(f);
 		}
-		else if (ch == '3')
+		else if (ch == '3' && rep_len == 0)
+			fprintf(stdout, "There is no records!\n");
+		else if (ch == '3' && rep_len > 0)
 		{
 			fprintf(stdout, "Enter index of record to remove: ");
 			if (fscanf(stdin, "%d", &i) != 1)
-			{
-				fprintf(stderr, "Index input error!\n");
-				if (repert)
-					free(repert);
-				return ERR_INPUT;
-			}
+				fprintf(stdout, "Index input error!\n");
 			else if (i < 1 || i > rep_len)
+				fprintf(stdout, "Invalid index!\n");
+			else
 			{
-				fprintf(stderr, "Invalid index!\n");
-				if (repert)
-					free(repert);
-				return ERR_INDEX;
+				delete_record(repert, &rep_len, i);
+				FILE *f = fopen("repert.txt", "w");
+				if (!f)
+					fprintf(stdout, "Couldn't open a file for writing!\n");
+				else
+				{
+					repert_print(f, repert, rep_len);
+					fclose(f);
+				}
 			}
-			delete_record(repert, &rep_len, i);
-			FILE *f = fopen("repert.txt", "w");
-			if (!f)
-			{
-				fprintf(stderr, "Couldn't open a file for writing!\n");
-				if (repert)
-					free(repert);
-				return ERR_FILE;
-			}
-			repert_print(f, repert, rep_len);
-			fclose(f);
 		}
 		else
 			ch = 0;
