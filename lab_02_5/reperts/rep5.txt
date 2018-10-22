@@ -1,0 +1,5 @@
+The Bolshoi Theatre|Bat|Alexander Zuev|1000|15000|C|15|M|Vladimir Ivanov|Russia|10|150
+Operetta Theater|Dog in the manger|Roman Samghin|500|8000|A|P
+Satire theater|Love and pigeons|Vladimir Ivanov|800|2000|C|18|P
+Moon theater|Anna Karenina|Valery Arkhipov|200|5000|C|13|F
+Theater Mossovet|Pygmalion|Vladimir Ivanov|150|600|A|D
