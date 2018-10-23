@@ -1,0 +1,40 @@
+The Bolshoy Theatre|Bat|Alexander Zuev|1000|15000|C|12|M|Vladimir Ivanov|Russia|15|150
+Operetta Theater|Dog in the manger|Roman Samghin|500|8000|A|P
+Satire theater|Love and pigeons|Vladimir Ivanov|800|2000|C|17|P
+Moon theater|Anna Karenina|Valery Arkhipov|200|5000|C|13|F
+Theatre Mossovet|Pygmalion|Vladimir Ivanov|150|600|A|D
+Moon theatre|Cinderella|Timur Becov|500|4000|C|15|F
+M. Gorky Moscow art theatre|Master and Margarita|Valery Belyakovich|100|1500|A|P
+Maly theatre|Wolves and sheep|Zinaida Andreeva|600|9000|C|5|M|Roman Samghin|Holland|5|120
+The theater of Satire|Fatal attraction|Andrey Zhitinkin|500|1500|A|D
+Pushkin's Theatre|The Marriage of Figaro|Evgeny Pisarev|150|8000|A|P
+Satire theatre|The taming of the shrew|Sergei Vasilevsky|400|6000|C|10|F
+Satire theatre|Nightmare on the street Lorcin|Yulia Farsh|250|3000|C|10|M|Zinaida Andreeva|USA|12|200
+Theatre Satire|Roads that choose us|Valery Arkhipov|500|2000|A|D
+Mossovet theatre|Crime and punishment|Yulia Presserman|1000|5500|C|14|P
+Satire Theatre|Suitcase|Jim Kerry|350|3600|C|15|M|Georg Krimmov|UK|10|120
+Operetta theatre|Merry widow|Konstantin Khvatynets|500|1600|C|17|F
+Peter Fomenko's workshop|The wolves and the sheep|Ma Zhen Hong|300|8000|A|D
+Satire theatre|Never too late|Julia Polinina|360|900|C|15|P
+Mossovet theatre|Crime and punishment|Yulia Presserman|1000|5500|C|14|P
+The Bolshoy Theatre|Schelkunchik|Alexander Zuev|1200|3600|C|0|M|Peter Tchaikovsky|Russia|4|180
+The Bolshoy Theatre|Bat|Alexander Zuev|1000|15000|C|12|M|Vladimir Ivanov|Russia|15|150
+Operetta Theater|Dog in the manger|Roman Samghin|500|8000|A|P
+Satire theater|Love and pigeons|Vladimir Ivanov|800|2000|C|17|P
+Moon theater|Anna Karenina|Valery Arkhipov|200|5000|C|13|F
+Theatre Mossovet|Pygmalion|Vladimir Ivanov|150|600|A|D
+Moon theatre|Cinderella|Timur Becov|500|4000|C|15|F
+M. Gorky Moscow art theatre|Master and Margarita|Valery Belyakovich|100|1500|A|P
+Maly theatre|Wolves and sheep|Zinaida Andreeva|600|9000|C|5|M|Roman Samghin|Holland|5|120
+The theater of Satire|Fatal attraction|Andrey Zhitinkin|500|1500|A|D
+Pushkin's Theatre|The Marriage of Figaro|Evgeny Pisarev|150|8000|A|P
+Satire theatre|The taming of the shrew|Sergei Vasilevsky|400|6000|C|10|F
+Satire theatre|Nightmare on the street Lorcin|Yulia Farsh|250|3000|C|10|M|Zinaida Andreeva|USA|12|200
+Theatre Satire|Roads that choose us|Valery Arkhipov|500|2000|A|D
+Mossovet theatre|Crime and punishment|Yulia Presserman|1000|5500|C|14|P
+Satire Theatre|Suitcase|Jim Kerry|350|3600|C|15|M|Georg Krimmov|UK|10|120
+Operetta theatre|Merry widow|Konstantin Khvatynets|500|1600|C|17|F
+Peter Fomenko's workshop|The wolves and the sheep|Ma Zhen Hong|300|8000|A|D
+Satire theatre|Never too late|Julia Polinina|360|900|C|15|P
+Mossovet theatre|Crime and punishment|Yulia Presserman|1000|5500|C|14|P
+The Bolshoy Theatre|Schelkunchik|Alexander Zuev|1200|3600|C|0|M|Peter Tchaikovsky|Russia|4|180

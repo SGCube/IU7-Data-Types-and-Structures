@@ -62,7 +62,7 @@ void bsort_rep(struct spectac *rep, int len)
 	{
 		sorted = TRUE;
 		for (int j = 1; j < len - i; j++)
-			if (rep[j - 1].min_tprice > rep[j].min_tprice)
+			if (rep[j - 1].max_tprice > rep[j].max_tprice)
 			{
 				temp = rep[j];
 				rep[j] = rep[j - 1];
@@ -80,14 +80,14 @@ void qsort_rep(struct spectac *pb, struct spectac *pe)
 	struct spectac *pm = pb + (pe - pb) / 2;
 	while (pleft < pright)
 	{
-		while (pright->min_tprice >= pm->min_tprice && pleft < pright)
+		while (pright->max_tprice >= pm->max_tprice && pleft < pright)
 			pright--;
 		if (pleft != pright)
 		{
 			*pleft = *pright;
 			pleft++;
 		}
-		while (pleft->min_tprice <= pm->min_tprice && pleft < pright)
+		while (pleft->max_tprice <= pm->max_tprice && pleft < pright)
 			pleft++;
 		if (pleft != pright)
 		{
