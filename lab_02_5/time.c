@@ -45,40 +45,49 @@ int test_set(void)
 	{
 		tick_t start, end;
 		int n = 0;
-		//tick_t times[4] = { 0, 0, 0, 0 };
-		struct spectac *data = malloc(RECORD_N * sizeof(struct spectac));
-		rc = read_repert(&data, &n, f[i]);
-		struct keytable *keys = create_keytable(data, n);
-		
+		tick_t times[4] = { 0, 0, 0, 0 };
+		for (int j = 0; j < 100; j++)
+		{
+			struct spectac *data = malloc(RECORD_N * sizeof(struct spectac));
+			rc = read_repert(&data, &n, f[i]);
+			struct keytable *keys = create_keytable(data, n);
+			
+			start = tick();
+			bsort_key(keys, n);
+			end = tick();
+			times[0] += end - start;
+			
+			start = tick();
+			bsort_rep(data, n);
+			end = tick();
+			times[1] += end - start;
+			
+			rewind(f[i]);
+			rc = read_repert(&data, &n, f[i]);
+			free(keys);
+			keys = create_keytable(data, n); 
+			
+			start = tick();
+			qsort_key(keys, keys + n - 1);
+			end = tick();
+			times[2] += end - start;
+			
+			start = tick();
+			qsort_rep(data, data + n - 1);
+			end = tick();
+			times[3] += end - start;
+			
+			free(data);
+			free(keys);
+		}
+		for (int j = 0; j < 3; j++)
+			times[j] /= n;
 		printf("%3d ", n);
-		start = tick();
-		bsort_key(keys, n);
-		end = tick();
-		printf("%8lu ", end - start);
-		start = tick();
-		bsort_rep(data, n);
-		end = tick();
-		printf("%8lu ", end - start);
-		
-		rewind(f[i]);
-		rc = read_repert(&data, &n, f[i]);
-		free(keys);
-		keys = create_keytable(data, n); 
-		
-		start = tick();
-		qsort_key(keys, keys + n - 1);
-		end = tick();
-		printf("%8lu ", end - start);
-		start = tick();
-		qsort_rep(data, data + n - 1);
-		end = tick();
-		printf("%8lu ", end - start);
-		
-		printf("%8u %8u\n", n * sizeof(struct keytable),
-			n * sizeof(struct spectac));
-		
-		free(data);
-		free(keys);
+		for (int j = 0; j < 3; j++)
+			printf("%8lu ", times[j]);
+		unsigned int kmem = n * sizeof(struct keytable);
+		unsigned int tmem = n * sizeof(struct spectac);
+		printf("%8u %8u %.2f%%\n", kmem, tmem, (float )kmem / tmem * 100);
 		fclose(f[i]);
 	}
 	
