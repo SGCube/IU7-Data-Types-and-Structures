@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "theatre.h"
-#inclide "fileio.h"
+#include "fileio.h"
+#include "repert.h"
 #include "sort.h"
 
 #define OK 0
@@ -16,72 +17,71 @@ tick_t tick(void)
 	return d;
 }
 
-void time_write(FILE *f, int *pa, int *pb, int n)
-{
-	assert(f);
-	assert(pa && pb);
-	assert(n > 0);
-	
-	tick_t t1, t2;
-	
-	fprintf(f, "%u\t", n);
-	t1 = tick();
-	mysort(pa, n, sizeof(int), compar_int);
-	t2 = tick();
-	fprintf(f, "%lu\t", t2 - t1);
-	
-	t1 = tick();
-	qsort(pb, n, sizeof(int), compar_int);
-	t2 = tick();
-	fprintf(f, "%lu\n", t2 - t1);
-}
-
-int main()
+int test_set(void)
 {
 	setbuf(stdin, NULL);
 	int rc = OK;
 	
-	FILE *f[] = { fopen("rep1.txt", "w"),
-		fopen("rep5.txt", "w"),
-		fopen("rep10.txt", "w"),
-		fopen("rep20.txt", "w"),
-		fopen("rep40.txt", "w"),
-		fopen("rep80.txt", "w"),
-		fopen("rep120.txt", "w"),
-		fopen("rep600.txt", "w") };
+	FILE *f[] = { fopen("data/data1.txt", "w"),
+		fopen("data/data5.txt", "w"),
+		fopen("data/data10.txt", "w"),
+		fopen("data/data20.txt", "w"),
+		fopen("data/data40.txt", "w"),
+		fopen("data/data80.txt", "w"),
+		fopen("data/data120.txt", "w"),
+		fopen("data/data600.txt", "w") };
+	int narr[] = { 1, 5, 10, 20, 40, 80, 120, 600 };
 		
-	int (*t_func[3])(int **, int **, int) = {
-		time_sorted,
-		time_random,
-		time_inverted };
-		
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 8; i++)
 		if (!f[i])
 		{
-			fprintf(stderr, "Couldn't create output file!");
+			fprintf(stderr, "Couldn't read a file!");
 			rc = ERR_FILE;
 			break;
 		}
 	
-	for (int j = 0; j < 3; j++)
+	printf("  N %17s %17s\n", "Bubble", "Quick sort");
+	printf("    %8s %8s %8s %8s\n", "by keys", "by data",
+		"by keys", "by data");
+	for (int i = 0; i < 8; i++)
 	{
-		for (int i = 1; i <= N; i++)
+		tick_t start, end;
+		int n = narr[i];
+		struct spectac *data = NULL;
+		rc = read_repert(&data, &n, f[i]);
+		struct spectac *datar = malloc(n * sizeof(struct spectac));
+		for (int j = 0; j < n; j++)
+			datar[j] = data[j];
+		struct keytable *keys = create_keytable(data, n);
+		struct keytable *keysr = create_keytable(data, n);
+		printf("%3d ", n);
+		start = tick();
+		bsort_key(keysr, n);
+		end = tick();
+		printf("%8lu ", end - start);
+		start = tick();
+		bsort_rep(datar, n);
+		end = tick();
+		printf("%8lu ", end - start);
+		for (int j = 0; j < n; j++)
 		{
-			rc = t_func[j](&pa, &pb, i);
-			if (rc == OK)
-			{
-				time_write(f[j], pa, pb, i);
-				free(pa);
-				free(pb);
-			}
-			else
-				fprintf(stderr, "Memory allocation error!\n");
+			keysr[j] = keys[j];
+			datar[j] = data[j];
 		}
+		start = tick();
+		qsort_key(keysr, keysr + n -1);
+		end = tick();
+		printf("%8lu ", end - start);
+		start = tick();
+		qsort_rep(datar, datar + n -1);
+		end = tick();
+		printf("%8lu ", end - start);
+		free(data);
+		free(datar);
+		free(keys);
+		free(keysr);
+		fclose(f[i]);
 	}
-	
-	for (int i = 0; i < 3; i++)
-		if (f[i])
-			fclose(f[i]);
 	
 	return rc;
 }

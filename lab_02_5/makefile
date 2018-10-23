@@ -2,7 +2,7 @@ CC := gcc
 
 CFLAGS := -std=c99 -Wall -Werror -pedantic
 
-OBJS := fileio.o repert.o sort.o
+OBJS := fileio.o sort.o repert.o time.o
 
 ifeq ($(mode), debug)
     CFLAGS += -g3 -ggdb
@@ -13,9 +13,6 @@ ifeq ($(mode), release)
 endif
 
 app.exe: $(OBJS) main.o
-	$(CC) $^ -o $@
-	
-test.exe: $(OBJS) test.o
 	$(CC) $^ -o $@
 	
 %.o: %.c *.h

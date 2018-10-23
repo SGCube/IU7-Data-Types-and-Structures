@@ -4,6 +4,7 @@
 #include "fileio.h"
 #include "sort.h"
 #include "repert.h"
+#include "time.h"
 
 #define OK 0
 
@@ -46,6 +47,7 @@ int main(void)
 			"4 - remove record\n"
 			"5 - search for musical kids spectacles by age & duration\n"
 			"6 - sort records by max ticket price\n"
+			"7 - time test demonstration\n"
 			"other - quit\n"
 			"\nEnter action: ");
 		if (scanf("%c", &ch) != 1)
@@ -103,6 +105,8 @@ int main(void)
 		}
 		else if (ch == '6')
 			sort_record(repert, rep_len);
+		else if (ch == '7')
+			test_set();
 		else
 			ch = 0;
 	}
