@@ -81,7 +81,7 @@ int test_set(void)
 			free(keys);
 		}
 		for (int j = 0; j < 3; j++)
-			times[j] /= n;
+			times[j] /= 100;
 		printf("%3d ", n);
 		for (int j = 0; j < 3; j++)
 			printf("%8lu ", times[j]);
