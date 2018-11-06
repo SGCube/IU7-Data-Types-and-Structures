@@ -31,3 +31,13 @@ int file_open(int argc, char **argv, FILE **f1, FILE **f2, FILE **fout)
 	}
 	return OK;
 }
+
+void file_close(FILE *f1, FILE *f2, FILE *fout)
+{
+	if (f1)
+		fclose(f1);
+	if (f2)
+		fclose(f2);
+	if (fout)
+		fclose(fout);
+}

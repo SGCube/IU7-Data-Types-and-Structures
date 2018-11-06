@@ -12,6 +12,7 @@ int main(int argc, char **argv)
 	matrix c = { 0, 0, 0, NULL, NULL, NULL };
 	
 	FILE *f1 = NULL, *f2 = NULL, *fout = NULL;
+	FILE *fa = stdin, *fb = stdin;
 	
 	if (file_open(argc, argv, &f1, &f2, &fout) == ERR_FILE)
 	{
@@ -19,10 +20,28 @@ int main(int argc, char **argv)
 		return ERR_FILE;
 	}
 	
-	if (argc == 1)
+	if (argc == 2)
+		fa = f1;
+	if (argc == 3)
+		fb = f2;
+	
+	rc = matrix_input(a, stdin);
+	if (rc != OK)
 	{
-		matrix_input(a);
+		printf("Error a!\n");
+		free_matrix(a);
+		return rc;
 	}
+	print_matrix(a, stdout);
+	rc = matrix_input(b, stdin);
+	if (rc != OK)
+	{
+		printf("Error b!\n");
+		free_matrix(a);
+		free_matrix(b);
+		return rc;
+	}
+	print_matrix(b, stdout);
 		
 	return rc;
 }
