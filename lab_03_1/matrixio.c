@@ -49,20 +49,26 @@ void print_matrix(matrix ma, FILE *f)
 
 void print_matrix_std(matrix ma, FILE *f)
 {
-	int cj = 0, ck = 0;
+	int ck = 0;
 	if (f == stdout && ma.nk == 0)
 		fprintf(f, "No non-zero values!\n");
 	if (f != stdout)
 		fprintf(f, "%d %d\n", ma.nr, ma.nc);
 	for (int i = 0; i < ma.nr; i++)
 	{
-		for (; ck < ma.ia[i]; ck++)
+		int ilast = ma.nk;
+		int cj = 0;
+		if (i < ma.nr - 1)
+			ilast = ma.ia[i + 1];
+		for (; ck < ilast; ck++)
 		{
-			for (; cj < ma.ja[ck] * (i + 1); cj++)
+			for (; cj < ma.ja[ck]; cj++)
 				fprintf(f, "0 ");
-			if (cj % ma.nc != 0)
-				fprintf(f, "%d ", ma.a[ck]);
+			fprintf(f, "%d ", ma.a[ck]);
+			cj++;
 		}
+		for (; cj < ma.nc; cj++)
+			fprintf(f, "0 ");
 		fprintf(f, "\n");
 	}
 }
