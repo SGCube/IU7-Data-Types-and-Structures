@@ -11,4 +11,6 @@ typedef struct
 	int *ia;	//indexes of first elements in rows
 } matrix;
 
+matrix sum(matrix a, matrix b);
+
 #endif

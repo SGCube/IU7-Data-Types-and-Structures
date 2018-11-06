@@ -2,7 +2,7 @@ CC := gcc
 
 CFLAGS := -std=c99 -Wall -Werror -pedantic
 
-OBJS := matrixio.o fileio.o
+OBJS := matrix.o matrixio.o fileio.o
 
 ifeq ($(mode), debug)
     CFLAGS += -g3 -ggdb
