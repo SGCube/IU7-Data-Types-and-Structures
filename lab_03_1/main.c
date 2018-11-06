@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "matrix.h"
+#include "matrixio.h"
+#include "fileio.h"
 #include "error.h"
 
 int main(int argc, char **argv)
@@ -9,7 +11,7 @@ int main(int argc, char **argv)
 	int rc = OK;
 	matrix a = { 0, 0, 0, NULL, NULL, NULL };
 	matrix b = { 0, 0, 0, NULL, NULL, NULL };
-	matrix c = { 0, 0, 0, NULL, NULL, NULL };
+	//matrix c = { 0, 0, 0, NULL, NULL, NULL };
 	
 	FILE *f1 = NULL, *f2 = NULL, *fout = NULL;
 	FILE *fa = stdin, *fb = stdin;
@@ -25,7 +27,7 @@ int main(int argc, char **argv)
 	if (argc == 3)
 		fb = f2;
 	
-	rc = matrix_input(a, stdin);
+	rc = read_matrix(&a, fa);
 	if (rc != OK)
 	{
 		printf("Error a!\n");
@@ -33,7 +35,9 @@ int main(int argc, char **argv)
 		return rc;
 	}
 	print_matrix(a, stdout);
-	rc = matrix_input(b, stdin);
+	print_matrix_std(a, stdout);
+	
+	rc = read_matrix(&b, fb);
 	if (rc != OK)
 	{
 		printf("Error b!\n");
@@ -42,6 +46,7 @@ int main(int argc, char **argv)
 		return rc;
 	}
 	print_matrix(b, stdout);
+	print_matrix_std(b, stdout);
 		
 	return rc;
 }

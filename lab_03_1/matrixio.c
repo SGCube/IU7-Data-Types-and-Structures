@@ -20,10 +20,13 @@ void free_matrix(matrix ma)
 
 void print_matrix(matrix ma, FILE *f)
 {
-	if (f == stdout && nk == 0)
+	if (f == stdout && ma.nk == 0)
 		fprintf(f, "No non-zero values!\n");
 	if (f != stdout)
-		fprintf(f, "%d %d\n", ma.nr, ma.nc, ma.nk);
+		fprintf(f, "%d %d %d\n", ma.nr, ma.nc, ma.nk);
+	
+	if (ma.nk == 0)
+		return;
 	
 	if (f == stdout)
 		fprintf(f, "A\t");
@@ -46,50 +49,50 @@ void print_matrix(matrix ma, FILE *f)
 
 void print_matrix_std(matrix ma, FILE *f)
 {
-	int ci = 0, cj = 0, ck = 0;
-	if (f == stdout && nk == 0)
+	int cj = 0, ck = 0;
+	if (f == stdout && ma.nk == 0)
 		fprintf(f, "No non-zero values!\n");
 	if (f != stdout)
 		fprintf(f, "%d %d\n", ma.nr, ma.nc);
-	for (int i = 0; i < nr; i++)
+	for (int i = 0; i < ma.nr; i++)
 	{
 		for (; ck < ma.ia[i]; ck++)
 		{
 			for (; cj < ma.ja[ck] * (i + 1); cj++)
 				fprintf(f, "0 ");
-			if (cj % nc != 0)
+			if (cj % ma.nc != 0)
 				fprintf(f, "%d ", ma.a[ck]);
 		}
 		fprintf(f, "\n");
 	}
 }
 
-int read_matrix(matrix ma, FILE *f)
+int read_matrix(matrix *ma, FILE *f)
 {
 	int x, rc;
 	if (f == stdin)
 		printf("Enter size of matrix: ");
-	int rc = fscanf(f, "%d %d", &ma.nr, &ma.nc);
+	rc = fscanf(f, "%d %d", &ma->nr, &ma->nc);
 	if (rc == EOF)
 		return ERR_EMPTY;
 	if (rc != 2)
 		return ERR_SIZE;
-	if (ma.nr < 1 || ma.nc < 1)
+	if (ma->nr < 1 || ma->nc < 1)
 		return ERR_SIZE;
 	
-	a = calloc(ALLOC_SIZE * sizeof(int));
-	ja = calloc(ALLOC_SIZE * sizeof(int));
-	ia = calloc(ma.nr * sizeof(int));
+	ma->a = calloc(ALLOC_SIZE, sizeof(int));
+	ma->ja = calloc(ALLOC_SIZE, sizeof(int));
+	ma->ia = calloc(ma->nr, sizeof(int));
 	
-	if (!a || !ja || !ia)
+	if (!ma->a || !ma->ja || !ma->ia)
 		return ERR_ALLOC;
 	
 	if (f == stdin)
 		printf("Enter matrix:\n");
-	for (int i = 0; i < ma.nr; i++)
+	for (int i = 0; i < ma->nr; i++)
 	{
-		ia[i] = -1;
-		for (int j = 0; j < ma.nc; j++)
+		ma->ia[i] = -1;
+		for (int j = 0; j < ma->nc; j++)
 		{
 			rc = fscanf(f, "%d", &x);
 			if (rc == EOF)
@@ -98,26 +101,29 @@ int read_matrix(matrix ma, FILE *f)
 				return ERR_MATRIX;
 			if (x != 0)
 			{
-				if (nk % ALLOC_SIZE == 0)
+				if (ma->nk % ALLOC_SIZE == 0)
 				{
-					void *ta = realloc(a, (nk + ALLOC_SIZE) * sizeof(int));
+					void *ta = realloc(ma->a,
+						(ma->nk + ALLOC_SIZE) * sizeof(int));
 					if (!ta)
 						return ERR_ALLOC;
-					a = (int *) ta;
+					ma->a = (int *) ta;
 					
-					void *tj = realloc(ja, (nk + ALLOC_SIZE) * sizeof(int));
+					void *tj = realloc(ma->ja,
+						(ma->nk + ALLOC_SIZE) * sizeof(int));
 					if (!tj)
 						return ERR_ALLOC;
-					ja = (int *) tj;
+					ma->ja = (int *) tj;
 				}
-				a[nk] = x;
-				ja[nk++] = j;
-				if (ia[i] == -1)
-					ia[i] = nk - 1;
+				ma->a[ma->nk] = x;
+				ma->ja[ma->nk] = j;
+				if (ma->ia[i] == -1)
+					ma->ia[i] = ma->nk;
+				ma->nk += 1;
 			}
 		}
-		if (ia[i] == -1)
-			ia[i] = nk;
+		if (ma->ia[i] == -1)
+			ma->ia[i] = ma->nk;
 	}
 	
 	return OK;
