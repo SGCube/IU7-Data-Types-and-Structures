@@ -10,4 +10,6 @@
 #define ERR_ALLOC -6
 #define ERR_MISSED_DATA -7
 
+void errmsg(int rc);
+
 #endif
