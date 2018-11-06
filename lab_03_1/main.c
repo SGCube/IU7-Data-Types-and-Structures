@@ -5,8 +5,11 @@
 
 int main(int argc, char **argv)
 {
+	setbuf(stdout, NULL);
 	int rc = OK;
-	struct matrix a, b, c;
+	matrix a = { 0, 0, 0, NULL, NULL, NULL };
+	matrix b = { 0, 0, 0, NULL, NULL, NULL };
+	matrix c = { 0, 0, 0, NULL, NULL, NULL };
 	
 	FILE *f1 = NULL, *f2 = NULL, *fout = NULL;
 	
@@ -18,7 +21,7 @@ int main(int argc, char **argv)
 	
 	if (argc == 1)
 	{
-		matrix_input(&a);
+		matrix_input(a);
 	}
 		
 	return rc;
