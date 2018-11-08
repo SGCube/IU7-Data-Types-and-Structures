@@ -41,30 +41,28 @@ int matrix_init(matrix *ma, int nr, int nc, int nk)
 	return OK;
 }
 
-int matrix_random(matrix *ma)
+int matrix_invert(matrix *ma, matrix mb)
 {
-	printf("Generating large random matrix\n");
-	printf("Enter number of non-null elements: ");
-	if (scanf("%d", &ma->nk) != 1 || ma->nk < 0 || ma->nk > ma->nr * ma->nc)
-		return ERR_AMOUNT;
-	
-	if (ma->nk == 0)
-	{
-		ma->a = calloc(1, sizeof(int));
-		ma->ja = calloc(1, sizeof(int));
-	}
-	else
-	{
-		ma->a = calloc(ma->nk, sizeof(int));
-		ma->ja = calloc(ma->nk, sizeof(int));
-	}
-	
-	ma->ia = calloc(ma->nr, sizeof(int));
+	ma->nr = mb.nr;
+	ma->nc = mb.nc;
+	ma->nk = mb.nk;
+	ma->a = calloc(mb.nk, sizeof(int));
+	ma->ja = calloc(mb.nk, sizeof(int));
+	ma->ia = calloc(mb.nr, sizeof(int));
 	if (!ma->a || !ma->ja || !ma->ia)
 		return ERR_ALLOC;
-	
-	if (ma->nk == 0)
-		return OK;
+	for (int k = 0; k < ma->nk; k++)
+	{
+		ma->a[k] = -mb.a[k];
+		ma->ja[k] = mb.ja[k];
+	}
+	for (int i = 0; i < ma->nr; i++)
+		ma->ia[i] = mb.ia[i];
+	return OK;
+}
+
+void matrix_random(matrix *ma)
+{
 	for (int i = 0; i < ma->nr; i++)
 		ma->ia[i] = -1;
 	
@@ -104,7 +102,61 @@ int matrix_random(matrix *ma)
 		else
 			ii = ma->ia[i];
 	}
+}
+
+int matrix_random_set(matrix *ma)
+{
+	printf("Generating large random matrix\n");
+	printf("Enter number of non-null elements: ");
+	if (scanf("%d", &ma->nk) != 1 || ma->nk < 0 || ma->nk > ma->nr * ma->nc)
+		return ERR_AMOUNT;
+	
+	if (ma->nk == 0)
+	{
+		ma->a = calloc(1, sizeof(int));
+		ma->ja = calloc(1, sizeof(int));
+	}
+	else
+	{
+		ma->a = calloc(ma->nk, sizeof(int));
+		ma->ja = calloc(ma->nk, sizeof(int));
+	}
+	
+	ma->ia = calloc(ma->nr, sizeof(int));
+	if (!ma->a || !ma->ja || !ma->ia)
+		return ERR_ALLOC;
+	
+	if (ma->nk == 0)
+		return OK;
+	matrix_random(ma);
 	return OK;
+}
+
+int *matrix_std_null(int ro, int co)
+{
+	if (ro < 1 || co < 1)
+		return NULL;
+	int *mstd = calloc(ro * co, sizeof(int *));
+	if (!mstd)
+		return NULL;
+	return mstd;
+}
+
+int *matrix_std(matrix ma)
+{
+	int *mstd = matrix_std_null(ma.nr, ma.nc);
+	if (!mstd)
+		return NULL;
+	
+	for (int i = 0; i < ma.nr; i++)
+	{
+		int ilast = ma.nk;
+		if (i < ma.nr - 1)
+			ilast = ma.ia[i + 1];
+		for (int ck = 0; ck < ilast; ck++)
+			mstd[i * ma.nc + ma.ja[ck]] = ma.a[ck];
+	}
+	return mstd;
 }
 
 void sum(matrix a, matrix b, matrix *c)
@@ -114,11 +166,11 @@ void sum(matrix a, matrix b, matrix *c)
 	int x = 0;
 	do
 		ar++;
-	while (a.ia[ar] == acur && ar < a.nr);
+	while (ar < a.nr && a.ia[ar] == acur);
 	ar--;
 	do
 		br++;
-	while (b.ia[br] == bcur && br < b.nr);
+	while (br < b.nr && b.ia[br] == bcur);
 	br--;
 	
 	for (int i = 0; i < c->nr; i++)
@@ -168,14 +220,14 @@ void sum(matrix a, matrix b, matrix *c)
 		{
 			do
 				ar++;
-			while (a.ia[ar] == acur);
+			while (ar < a.nr && a.ia[ar] == acur);
 			ar--;
 		}
 		if (br < b.nr - 1 && bcur >= b.ia[br + 1])
 		{
 			do
 				br++;
-			while (b.ia[br] == bcur);
+			while (br < b.nr && b.ia[br] == bcur);
 			br--;
 		}
 	}
@@ -192,7 +244,7 @@ void sum(matrix a, matrix b, matrix *c)
 		{
 			do
 				ar++;
-			while (a.ia[ar] == acur);
+			while (ar < a.nr && a.ia[ar] == acur);
 			ar--;
 		}
 	}
@@ -209,7 +261,7 @@ void sum(matrix a, matrix b, matrix *c)
 		{
 			do
 				br++;
-			while (b.ia[br] == bcur);
+			while (br < b.nr && b.ia[br] == bcur);
 			br--;
 		}
 	}
@@ -222,4 +274,11 @@ void sum(matrix a, matrix b, matrix *c)
 		else
 			ii = c->ia[i];
 	}
+}
+
+void sum_std(int *a, int *b, int *c, int ro, int co)
+{
+	for (int i = 0; i < ro; i++)
+		for (int j = 0; j < co; j++)
+			c[i * co + j] = a[i * co + j] + b[i * co + j];
 }

@@ -12,7 +12,12 @@ typedef struct
 } matrix;
 
 int matrix_init(matrix *ma, int nr, int nc, int nk);
-int matrix_random(matrix *ma);
+int matrix_invert(matrix *ma, matrix mb);
+void matrix_random(matrix *ma);
+int matrix_random_set(matrix *ma);
+int *matrix_std_null(int ro, int co);
+int *matrix_std(matrix ma);
 void sum(matrix a, matrix b, matrix *c);
+void sum_std(int *a, int *b, int *c, int ro, int co);
 
 #endif

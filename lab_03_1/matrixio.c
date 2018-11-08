@@ -90,7 +90,7 @@ int read_matrix_std(matrix *ma, FILE *f)
 		return ERR_SIZE;
 	
 	if (f == stdin && ma->nr * ma->nc >= LARGE_SIZE)
-		return matrix_random(ma);
+		return matrix_random_set(ma);
 	
 	ma->a = calloc(ALLOC_SIZE, sizeof(int));
 	ma->ja = calloc(ALLOC_SIZE, sizeof(int));
@@ -167,12 +167,23 @@ int read_matrix(matrix *ma, FILE *f)
 	if (rc != 1 || ma->nk < 0 || ma->nk > ma->nr * ma->nc)
 		return ERR_AMOUNT;
 	
-	ma->a = calloc(ma->nk, sizeof(int));
-	ma->ja = calloc(ma->nk, sizeof(int));
+	if (ma->nk == 0)
+	{
+		ma->a = calloc(1, sizeof(int));
+		ma->ja = calloc(1, sizeof(int));
+	}
+	else
+	{
+		ma->a = calloc(ma->nk, sizeof(int));
+		ma->ja = calloc(ma->nk, sizeof(int));
+	}
 	ma->ia = calloc(ma->nr, sizeof(int));
 	
 	if (!ma->a || !ma->ja || !ma->ia)
 		return ERR_ALLOC;
+	
+	if (ma->nk == 0)
+		return OK;
 	
 	if (f == stdin)
 		printf("Enter non-zero elements:\n");
