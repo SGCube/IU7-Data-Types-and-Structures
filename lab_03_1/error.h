@@ -9,6 +9,9 @@
 #define ERR_MATRIX -5
 #define ERR_ALLOC -6
 #define ERR_MISSED_DATA -7
+#define ERR_AMOUNT -8
+
+#define LARGE_SIZE 100
 
 void errmsg(int rc);
 

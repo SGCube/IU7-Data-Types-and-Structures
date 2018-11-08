@@ -23,5 +23,8 @@ void errmsg(int rc)
 		case ERR_MISSED_DATA:
 			printf("Not enough data!\n");
 			break;
+		case ERR_AMOUNT:
+			printf("Invalid amount!\n");
+			break;
 	}
 }

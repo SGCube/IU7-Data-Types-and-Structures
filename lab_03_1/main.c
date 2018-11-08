@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "matrix.h"
 #include "matrixio.h"
 #include "fileio.h"
@@ -8,6 +9,7 @@
 int main(int argc, char **argv)
 {
 	setbuf(stdout, NULL);
+	srand(time(NULL));
 	int rc = OK;
 	matrix a = { 0, 0, 0, NULL, NULL, NULL };
 	matrix b = { 0, 0, 0, NULL, NULL, NULL };
@@ -40,8 +42,11 @@ int main(int argc, char **argv)
 	printf("Matrix A: \n");
 	print_matrix(a, stdout);
 	printf("\n");
-	print_matrix_std(a, stdout);
-	printf("\n");
+	if (a.nc * a.nr < 2 * LARGE_SIZE)
+	{
+		print_matrix_std(a, stdout);
+		printf("\n");
+	}
 	
 	rc = read_matrix(&b, fb);
 	if (rc != OK)
@@ -55,8 +60,11 @@ int main(int argc, char **argv)
 	printf("Matrix B: \n");
 	print_matrix(b, stdout);
 	printf("\n");
-	print_matrix_std(b, stdout);
-	printf("\n");
+	if (b.nc * b.nr < 2 * LARGE_SIZE)
+	{
+		print_matrix_std(b, stdout);
+		printf("\n");
+	}
 	
 	c.nr = a.nr;
 	c.nc = a.nc;
@@ -78,8 +86,11 @@ int main(int argc, char **argv)
 	printf("Matrix C: \n");
 	print_matrix(c, stdout);
 	printf("\n");
-	print_matrix_std(c, stdout);
-	printf("\n");
+	if (c.nc * c.nr < 2 * LARGE_SIZE)
+	{
+		print_matrix_std(c, stdout);
+		printf("\n");
+	}
 	
 	free_matrix(a);
 	free_matrix(b);

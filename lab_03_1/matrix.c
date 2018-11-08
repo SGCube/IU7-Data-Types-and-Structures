@@ -3,15 +3,21 @@
 #include "matrix.h"
 #include "error.h"
 
+#define RANDN 100
+
 void sum(matrix a, matrix b, matrix *c)
 {
 	int acur = 0, bcur = 0;
 	int ar = 0, br = 0;
 	int x = 0;
-	while (a.ia[ar] != 0)
+	do
 		ar++;
-	while (b.ia[br] != 0)
+	while (a.ia[ar] == acur && ar < a.nr);
+	ar--;
+	do
 		br++;
+	while (b.ia[br] == bcur && br < b.nr);
+	br--;
 	
 	for (int i = 0; i < c->nr; i++)
 		c->ia[i] = -1;
@@ -88,5 +94,13 @@ void sum(matrix a, matrix b, matrix *c)
 			c->ia[br] = c->nk;
 		bcur++;
 		c->nk += 1;
+	}
+	int ii = c->nk;
+	for (int i = c->nr - 1; i >= 0; i--)
+	{
+		if (c->ia[i] == -1)
+			c->ia[i] = ii;
+		else
+			ii = c->ia[i];
 	}
 }
