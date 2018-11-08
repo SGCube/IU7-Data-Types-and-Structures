@@ -6,95 +6,83 @@
 #include "fileio.h"
 #include "error.h"
 
+int readmatr(matrix *ma, FILE *f, char ltr)
+{
+	if (f == NULL)
+		return ERR_FILE;
+	if (f == stdin)
+	{
+		printf("Matrix %c read:\n", ltr);
+		return read_matrix_std(ma, f);
+	}
+	char ch;
+	printf("Matrix %c set in file?\n"
+		"1 - standart\n"
+		"other - vectors for non-null\n", ltr);
+	fflush(stdin);
+	scanf("%c", &ch);
+	if (ch == '1')
+		return read_matrix_std(ma, f);
+	return read_matrix(ma, f);
+}
+
+void printmatr(matrix ma, FILE *f)
+{
+	print_matrix(ma, f);
+	printf("\n");
+	if (ma.nc * ma.nr < 2 * LARGE_SIZE)
+	{
+		print_matrix_std(ma, f);	
+		printf("\n");
+	}
+}
+
 int main(int argc, char **argv)
 {
 	setbuf(stdout, NULL);
 	srand(time(NULL));
+	
 	int rc = OK;
 	matrix a = { 0, 0, 0, NULL, NULL, NULL };
 	matrix b = { 0, 0, 0, NULL, NULL, NULL };
 	matrix c = { 0, 0, 0, NULL, NULL, NULL };
 	
-	FILE *f1 = NULL, *f2 = NULL, *fout = NULL;
-	FILE *fa = stdin, *fb = stdin, *fc = stdout;
-	
+	FILE *f1 = stdin, *f2 = stdin, *fout = stdout;
 	if (file_open(argc, argv, &f1, &f2, &fout) == ERR_FILE)
 	{
-		printf("File open error!\n");
+		errmsg(rc);
 		return ERR_FILE;
 	}
 	
-	if (argc >= 2)
-		fa = f1;
-	if (argc >= 3)
-		fb = f2;
-	if (argc >= 4)
-		fc = fout;
-	
-	rc = read_matrix(&a, fa);
-	if (rc != OK)
-	{
-		errmsg(rc);
-		free_matrix(a);
-		file_close(fa, fb, fc);
-		return rc;
-	}
-	printf("Matrix A: \n");
-	print_matrix(a, stdout);
+	rc = readmatr(&a, f1, 'A');
 	printf("\n");
-	if (a.nc * a.nr < 2 * LARGE_SIZE)
+	if (rc == OK)
 	{
-		print_matrix_std(a, stdout);
+		rc = readmatr(&b, f2, 'B');
 		printf("\n");
 	}
-	
-	rc = read_matrix(&b, fb);
-	if (rc != OK)
+	if (rc == OK)
 	{
-		errmsg(rc);
-		free_matrix(a);
-		free_matrix(b);
-		file_close(fa, fb, fc);
-		return rc;
+		if (a.nr != b.nr || a.nc != b.nc)
+			rc = ERR_DIFF_SIZE;
 	}
-	printf("Matrix B: \n");
-	print_matrix(b, stdout);
-	printf("\n");
-	if (b.nc * b.nr < 2 * LARGE_SIZE)
+	if (rc == OK)
+		rc = matrix_init(&c, a.nr, a.nc, a.nk + b.nk);
+	if (rc == OK)
 	{
-		print_matrix_std(b, stdout);
-		printf("\n");
-	}
-	
-	c.nr = a.nr;
-	c.nc = a.nc;
-	c.nk = 0;
-	c.a = calloc(a.nk + b.nk, sizeof(int));
-	c.ja = calloc(a.nk + b.nk, sizeof(int));
-	c.ia = calloc(a.nr, sizeof(int));
-	if (!c.a || !c.ja || !c.ia)
-	{
-		printf("Memory allocation error!\n");
-		free_matrix(a);
-		free_matrix(b);
-		free_matrix(c);
-		file_close(fa, fb, fc);
-		return ERR_ALLOC;
-	}
-	
-	sum(a, b, &c);
-	printf("Matrix C: \n");
-	print_matrix(c, stdout);
-	printf("\n");
-	if (c.nc * c.nr < 2 * LARGE_SIZE)
-	{
-		print_matrix_std(c, stdout);
-		printf("\n");
+		sum(a, b, &c);
+		printf("Matrix A:\n");
+		printmatr(a, stdout);
+		printf("Matrix B:\n");
+		printmatr(b, stdout);
+		printf("Matrix C = A + B:\n");
+		printmatr(c, stdout);
 	}
 	
 	free_matrix(a);
 	free_matrix(b);
 	free_matrix(c);
-	file_close(fa, fb, fc);
+	file_close(f1, f2, fout);
+	errmsg(rc);
 	return rc;
 }

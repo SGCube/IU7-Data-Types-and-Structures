@@ -3,7 +3,7 @@
 #include "matrix.h"
 #include "error.h"
 
-#define RANDN 100
+#define RAND_N 100
 
 int compare(const void *x1, const void *x2)
 {
@@ -27,7 +27,7 @@ int matrix_random(matrix *ma)
 {
 	printf("Generating large random matrix\n");
 	printf("Enter number of non-null elements: ");
-	if (scanf("%d", &(ma->nk)) != 1 || ma->nk < 0 || ma->nk > ma->nr * ma->nc)
+	if (scanf("%d", &ma->nk) != 1 || ma->nk < 0 || ma->nk > ma->nr * ma->nc)
 		return ERR_AMOUNT;
 	
 	if (ma->nk == 0)

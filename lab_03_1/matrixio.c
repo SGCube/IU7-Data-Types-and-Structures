@@ -4,7 +4,6 @@
 #include "error.h"
 
 #define ALLOC_SIZE 20
-#define RAND_N 100
 
 void free_matrix(matrix ma)
 {
@@ -79,12 +78,17 @@ int read_matrix_std(matrix *ma, FILE *f)
 	int x, rc;
 	if (f == stdin)
 		printf("Enter size of matrix: ");
-	rc = fscanf(f, "%d %d", &ma->nr, &ma->nc);
+	
+	rc = fscanf(f, "%d", &ma->nr);
 	if (rc == EOF)
 		return ERR_EMPTY;
-	if (rc != 2)
+	if (rc != 1 || ma->nr < 1)
 		return ERR_SIZE;
-	if (ma->nr < 1 || ma->nc < 1)
+	
+	rc = fscanf(f, "%d", &ma->nc);
+	if (rc == EOF)
+		return ERR_MISSED_DATA;
+	if (rc != 1 || ma->nc < 1)
 		return ERR_SIZE;
 	
 	if (f == stdin && ma->nr * ma->nc >= LARGE_SIZE)
@@ -141,22 +145,32 @@ int read_matrix_std(matrix *ma, FILE *f)
 
 int read_matrix(matrix *ma, FILE *f)
 {
-	int x, rc;
+	int rc;
 	if (f == stdin)
 		printf("Enter size of matrix: ");
-	rc = fscanf(f, "%d %d", &ma->nr, &ma->nc);
+	
+	rc = fscanf(f, "%d", &ma->nr);
 	if (rc == EOF)
 		return ERR_EMPTY;
-	if (rc != 2)
-		return ERR_SIZE;
-	if (ma->nr < 1 || ma->nc < 1)
+	if (rc != 1 || ma->nr < 1)
 		return ERR_SIZE;
 	
-	if (f == stdin && ma->nr * ma->nc >= LARGE_SIZE)
-		return matrix_random(ma);
+	rc = fscanf(f, "%d", &ma->nc);
+	if (rc == EOF)
+		return ERR_MISSED_DATA;
+	if (rc != 1 || ma->nc < 1)
+		return ERR_SIZE;
 	
-	ma->a = calloc(ALLOC_SIZE, sizeof(int));
-	ma->ja = calloc(ALLOC_SIZE, sizeof(int));
+	if (f == stdin)
+		printf("Enter number of non-null elements: ");
+	rc = fscanf(f, "%d", &ma->nk);
+	if (rc == EOF)
+		return ERR_MISSED_DATA;
+	if (rc != 1 || ma->nk < 0 || ma->nk > ma->nr * ma->nc)
+		return ERR_AMOUNT;
+	
+	ma->a = calloc(ma->nk, sizeof(int));
+	ma->ja = calloc(ma->nk, sizeof(int));
 	ma->ia = calloc(ma->nr, sizeof(int));
 	
 	if (!ma->a || !ma->ja || !ma->ia)
@@ -164,42 +178,39 @@ int read_matrix(matrix *ma, FILE *f)
 	
 	if (f == stdin)
 		printf("Enter non-zero elements:\n");
-	for (int i = 0; i < ma->nr; i++)
+	for (int k = 0; k < ma->nk; k++)
 	{
-		ma->ia[i] = -1;
-		for (int j = 0; j < ma->nc; j++)
-		{
-			rc = fscanf(f, "%d", &x);
-			if (rc == EOF)
-				return ERR_MISSED_DATA;
-			if (rc != 1)
-				return ERR_MATRIX;
-			if (x != 0)
-			{
-				if (ma->nk % ALLOC_SIZE == 0)
-				{
-					void *ta = realloc(ma->a,
-						(ma->nk + ALLOC_SIZE) * sizeof(int));
-					if (!ta)
-						return ERR_ALLOC;
-					ma->a = (int *) ta;
-					
-					void *tj = realloc(ma->ja,
-						(ma->nk + ALLOC_SIZE) * sizeof(int));
-					if (!tj)
-						return ERR_ALLOC;
-					ma->ja = (int *) tj;
-				}
-				ma->a[ma->nk] = x;
-				ma->ja[ma->nk] = j;
-				if (ma->ia[i] == -1)
-					ma->ia[i] = ma->nk;
-				ma->nk += 1;
-			}
-		}
-		if (ma->ia[i] == -1)
-			ma->ia[i] = ma->nk;
+		rc = fscanf(f, "%d", &ma->a[k]);
+		if (rc == EOF)
+			return ERR_MISSED_DATA;
+		if (rc != 1)
+			return ERR_MATRIX;
+		if (ma->a[k] == 0)
+			return ERR_ZERO;
 	}
 	
+	if (f == stdin)
+		printf("Enter column index of elements:\n");
+	for (int k = 0; k < ma->nk; k++)
+	{
+		rc = fscanf(f, "%d", &ma->ja[k]);
+		if (rc == EOF)
+			return ERR_MISSED_DATA;
+		if (rc != 1 || ma->ja[k] < 0 || ma->ja[k] > ma->nc)
+			return ERR_INDEX;
+	}
+	
+	if (f == stdin)
+		printf("Enter first element index in rows:\n");
+	for (int i = 0; i < ma->nr; i++)
+	{
+		rc = fscanf(f, "%d", &ma->ia[i]);
+		if (rc == EOF)
+			return ERR_MISSED_DATA;
+		if (rc != 1 || ma->ia[i] < 0 || ma->ia[i] > ma->nk)
+			return ERR_INDEX;
+		if (i > 0 && ma->ia[i] < ma->ia[i-1])
+			return ERR_INDEX;
+	}
 	return OK;
 }
