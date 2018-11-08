@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 	printf("\n");
 	
 	int sizes[] = { 1, 2, 5, 10, 20, 50, 100, 500, 1000 };
-	float perc[] = { 0, 5, 10, 25, 50, 75, 100 };
+	float perc[] = { 0, 5, 10, 20, 30, 40, 50, 75, 100 };
 	
 	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
 	{
@@ -145,7 +145,8 @@ int main(int argc, char **argv)
 			if (k > kk)
 			{
 				kk = k;
-				rc = test_time(rows, cols, k, perc[p]);
+				float pp = (float)k / (rows * cols) * 100;
+				rc = test_time(rows, cols, k, pp);
 				if (rc != OK)
 				{
 					errmsg(rc);
