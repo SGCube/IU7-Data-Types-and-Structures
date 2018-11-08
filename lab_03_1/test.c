@@ -84,7 +84,6 @@ int test_time(int rows, int cols, int k, float p)
 		sum(a, b, &c);
 		end = tick();
 		times1 += end - start;
-		
 		kres = c.nk;
 		
 		start = tick();
@@ -95,6 +94,7 @@ int test_time(int rows, int cols, int k, float p)
 		free_matrix(c);
 		free(cstd);
 	}
+	
 	times1 /= REPEAT;
 	times2 /= REPEAT;
 	unsigned int mem_sp = (2 * k + rows + 3) * sizeof(int);
@@ -103,13 +103,16 @@ int test_time(int rows, int cols, int k, float p)
 	unsigned int mem2 = 3 * rows * cols * sizeof(int);
 	float time_eff = ((float)times2 - times1) / times2 * 100;
 	float mem_eff = ((float)mem2 - mem1) / mem2 * 100;
+	
 	printf("%4d %4d %7.2f%%\t", rows, cols, p);
 	printf("%8lu %8u %8lu %8u ", times1, mem1, times2, mem2);
 	printf("%7.2f%% %7.2f%%\n", time_eff, mem_eff);
+	
 	free_matrix(a);
 	free_matrix(b);
 	free(astd);
 	free(bstd);
+	
 	return OK;
 }
 
@@ -142,7 +145,12 @@ int main(int argc, char **argv)
 			if (k > kk)
 			{
 				kk = k;
-				test_time(rows, cols, k, perc[p]);
+				rc = test_time(rows, cols, k, perc[p]);
+				if (rc != OK)
+				{
+					errmsg(rc);
+					return rc;
+				}
 			}
 		}
 	}

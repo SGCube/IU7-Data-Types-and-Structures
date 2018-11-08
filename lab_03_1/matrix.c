@@ -28,14 +28,24 @@ int compare(const void *x1, const void *x2)
 	return *(int*)x1 - *(int*)x2;
 }
 
-int matrix_init(matrix *ma, int nr, int nc, int nk)
+int matrix_init(matrix *ma, int ro, int co, int k)
 {
-	ma->nr = nr;
-	ma->nc = nc;
+	if (ro < 1 || co < 1)
+		return ERR_ALLOC;
+	ma->nr = ro;
+	ma->nc = co;
 	ma->nk = 0;
-	ma->a = calloc(nk, sizeof(int));
-	ma->ja = calloc(nk, sizeof(int));
-	ma->ia = calloc(nr, sizeof(int));
+	if (k == 0)
+	{
+		ma->a = calloc(1, sizeof(int));
+		ma->ja = calloc(1, sizeof(int));
+	}
+	else
+	{
+		ma->a = calloc(k, sizeof(int));
+		ma->ja = calloc(k, sizeof(int));
+	}
+	ma->ia = calloc(ro, sizeof(int));
 	if (!ma->a || !ma->ja || !ma->ia)
 		return ERR_ALLOC;
 	return OK;
@@ -67,6 +77,7 @@ void matrix_random(matrix *ma)
 		ma->ia[i] = -1;
 	
 	int i, j, ii;
+	/*
 	short int not_ok = 0;
 	for (int k = 0; k < ma->nk; k++)
 	{
@@ -82,6 +93,17 @@ void matrix_random(matrix *ma)
 		ma->ja[k] = j;
 	}
 	qsort(ma->ja, ma->nk, sizeof(int), compare);
+	*/
+	
+	int dmin = ma->nc * ma->nr - ma->nk;
+	j = rand() % (dmin + 1);
+	for (int k = 0; k < ma->nk; k++)
+	{
+		ma->ja[k] = j;
+		j += 1 + rand() % (dmin - j + k + 1);
+	}
+	
+	
 	for (int k = 0; k < ma->nk; k++)
 	{
 		i = ma->ja[k] / ma->nr;
