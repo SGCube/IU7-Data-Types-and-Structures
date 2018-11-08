@@ -11,6 +11,7 @@ typedef struct
 	int *ia;	//indexes of first elements in rows
 } matrix;
 
+int matrix_random(matrix *ma);
 void sum(matrix a, matrix b, matrix *c);
 
 #endif

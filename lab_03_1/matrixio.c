@@ -6,77 +6,6 @@
 #define ALLOC_SIZE 20
 #define RAND_N 100
 
-int compare(const void *x1, const void *x2)
-{
-	return *(int*)x1 - *(int*)x2;
-}
-
-int matrix_random(matrix *ma)
-{
-	printf("Generating large random matrix\n");
-	printf("Enter number of non-null elements: ");
-	if (scanf("%d", &(ma->nk)) != 1 || ma->nk < 0 || ma->nk > ma->nr * ma->nc)
-		return ERR_AMOUNT;
-	
-	if (ma->nk == 0)
-	{
-		ma->a = calloc(1, sizeof(int));
-		ma->ja = calloc(1, sizeof(int));
-	}
-	else
-	{
-		ma->a = calloc(ma->nk, sizeof(int));
-		ma->ja = calloc(ma->nk, sizeof(int));
-	}
-	
-	ma->ia = calloc(ma->nr, sizeof(int));
-	if (!ma->a || !ma->ja || !ma->ia)
-		return ERR_ALLOC;
-	for (int i = 0; i < ma->nr; i++)
-		ma->ia[i] = -1;
-	
-	if (ma->nk == 0)
-		return OK;
-	
-	int i, j, ii;
-	short int not_ok = 0;
-	for (int k = 0; k < ma->nk; k++)
-	{
-		do
-		{
-			not_ok = 0;
-			j = rand() % (ma-> nr * ma-> nc);
-			for(int kk = k - 1; kk > 0 && !not_ok; kk--)
-				if (ma->ja[kk] == j)
-					not_ok = 1;
-		}
-		while(not_ok);
-		ma->ja[k] = j;
-	}
-	qsort(ma->ja, ma->nk, sizeof(int), compare);
-	for (int k = 0; k < ma->nk; k++)
-	{
-		i = ma->ja[k] / ma->nr;
-		j = ma->ja[k] % ma->nc;
-		do
-			ma->a[k] = rand() % (2 * RAND_N) - RAND_N;
-		while(ma->a[k] == 0);
-		ma->ja[k] = j;
-		
-		if (ma->ia[i] == -1)
-			ma->ia[i] = k;
-	}
-	ii = ma->nk;
-	for (int i = ma->nr - 1; i >= 0; i--)
-	{
-		if (ma->ia[i] == -1)
-			ma->ia[i] = ii;
-		else
-			ii = ma->ia[i];
-	}
-	return OK;
-}
-
 void free_matrix(matrix ma)
 {
 	ma.nr = 0;
@@ -145,7 +74,7 @@ void print_matrix_std(matrix ma, FILE *f)
 	}
 }
 
-int read_matrix(matrix *ma, FILE *f)
+int read_matrix_std(matrix *ma, FILE *f)
 {
 	int x, rc;
 	if (f == stdin)
@@ -170,6 +99,71 @@ int read_matrix(matrix *ma, FILE *f)
 	
 	if (f == stdin)
 		printf("Enter matrix:\n");
+	for (int i = 0; i < ma->nr; i++)
+	{
+		ma->ia[i] = -1;
+		for (int j = 0; j < ma->nc; j++)
+		{
+			rc = fscanf(f, "%d", &x);
+			if (rc == EOF)
+				return ERR_MISSED_DATA;
+			if (rc != 1)
+				return ERR_MATRIX;
+			if (x != 0)
+			{
+				if (ma->nk % ALLOC_SIZE == 0)
+				{
+					void *ta = realloc(ma->a,
+						(ma->nk + ALLOC_SIZE) * sizeof(int));
+					if (!ta)
+						return ERR_ALLOC;
+					ma->a = (int *) ta;
+					
+					void *tj = realloc(ma->ja,
+						(ma->nk + ALLOC_SIZE) * sizeof(int));
+					if (!tj)
+						return ERR_ALLOC;
+					ma->ja = (int *) tj;
+				}
+				ma->a[ma->nk] = x;
+				ma->ja[ma->nk] = j;
+				if (ma->ia[i] == -1)
+					ma->ia[i] = ma->nk;
+				ma->nk += 1;
+			}
+		}
+		if (ma->ia[i] == -1)
+			ma->ia[i] = ma->nk;
+	}
+	
+	return OK;
+}
+
+int read_matrix(matrix *ma, FILE *f)
+{
+	int x, rc;
+	if (f == stdin)
+		printf("Enter size of matrix: ");
+	rc = fscanf(f, "%d %d", &ma->nr, &ma->nc);
+	if (rc == EOF)
+		return ERR_EMPTY;
+	if (rc != 2)
+		return ERR_SIZE;
+	if (ma->nr < 1 || ma->nc < 1)
+		return ERR_SIZE;
+	
+	if (f == stdin && ma->nr * ma->nc >= LARGE_SIZE)
+		return matrix_random(ma);
+	
+	ma->a = calloc(ALLOC_SIZE, sizeof(int));
+	ma->ja = calloc(ALLOC_SIZE, sizeof(int));
+	ma->ia = calloc(ma->nr, sizeof(int));
+	
+	if (!ma->a || !ma->ja || !ma->ia)
+		return ERR_ALLOC;
+	
+	if (f == stdin)
+		printf("Enter non-zero elements:\n");
 	for (int i = 0; i < ma->nr; i++)
 	{
 		ma->ia[i] = -1;
