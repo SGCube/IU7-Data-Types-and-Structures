@@ -30,7 +30,7 @@ void printmatr(matrix ma, FILE *f)
 {
 	print_matrix(ma, f);
 	printf("\n");
-	if (ma.nc * ma.nr < 2 * LARGE_SIZE)
+	if (ma.nc * ma.nr < 2 * LARGE_SIZE && ma.nk > 0)
 	{
 		print_matrix_std(ma, f);	
 		printf("\n");

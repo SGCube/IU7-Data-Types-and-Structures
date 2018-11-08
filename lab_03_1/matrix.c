@@ -5,6 +5,24 @@
 
 #define RAND_N 100
 
+void debug_print(matrix ma)
+{
+	printf("A\t");
+	for (int i = 0; i < ma.nk; i++)
+		printf("%d ", ma.a[i]);
+	printf("\n");
+	
+	printf("JA\t");
+	for (int i = 0; i < ma.nk; i++)
+		printf("%d ", ma.ja[i]);
+	printf("\n");
+	
+	printf("IA\t");
+	for (int i = 0; i < ma.nr; i++)
+		printf("%d ", ma.ia[i]);
+	printf("\n");
+}
+
 int compare(const void *x1, const void *x2)
 {
 	return *(int*)x1 - *(int*)x2;
@@ -15,9 +33,9 @@ int matrix_init(matrix *ma, int nr, int nc, int nk)
 	ma->nr = nr;
 	ma->nc = nc;
 	ma->nk = 0;
-	ma->a = calloc(ma->nk + ma->nk, sizeof(int));
-	ma->ja = calloc(ma->nk + ma->nk, sizeof(int));
-	ma->ia = calloc(ma->nr, sizeof(int));
+	ma->a = calloc(nk, sizeof(int));
+	ma->ja = calloc(nk, sizeof(int));
+	ma->ia = calloc(nr, sizeof(int));
 	if (!ma->a || !ma->ja || !ma->ia)
 		return ERR_ALLOC;
 	return OK;
@@ -44,11 +62,11 @@ int matrix_random(matrix *ma)
 	ma->ia = calloc(ma->nr, sizeof(int));
 	if (!ma->a || !ma->ja || !ma->ia)
 		return ERR_ALLOC;
-	for (int i = 0; i < ma->nr; i++)
-		ma->ia[i] = -1;
 	
 	if (ma->nk == 0)
 		return OK;
+	for (int i = 0; i < ma->nr; i++)
+		ma->ia[i] = -1;
 	
 	int i, j, ii;
 	short int not_ok = 0;
@@ -161,6 +179,7 @@ void sum(matrix a, matrix b, matrix *c)
 			br--;
 		}
 	}
+	
 	while (acur < a.nk)
 	{
 		c->a[c->nk] = a.a[acur];
@@ -169,7 +188,15 @@ void sum(matrix a, matrix b, matrix *c)
 			c->ia[ar] = c->nk;
 		acur++;
 		c->nk += 1;
+		if (ar < a.nr - 1 && acur >= a.ia[ar + 1])
+		{
+			do
+				ar++;
+			while (a.ia[ar] == acur);
+			ar--;
+		}
 	}
+
 	while (bcur < b.nk)
 	{
 		c->a[c->nk] = b.a[bcur];
@@ -178,7 +205,15 @@ void sum(matrix a, matrix b, matrix *c)
 			c->ia[br] = c->nk;
 		bcur++;
 		c->nk += 1;
+		if (br < b.nr - 1 && bcur >= b.ia[br + 1])
+		{
+			do
+				br++;
+			while (b.ia[br] == bcur);
+			br--;
+		}
 	}
+
 	int ii = c->nk;
 	for (int i = c->nr - 1; i >= 0; i--)
 	{

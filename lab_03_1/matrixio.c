@@ -20,13 +20,11 @@ void free_matrix(matrix ma)
 
 void print_matrix(matrix ma, FILE *f)
 {
-	if (f == stdout && ma.nk == 0)
-		fprintf(f, "No non-zero values!\n");
 	if (f != stdout)
 		fprintf(f, "%d %d %d\n", ma.nr, ma.nc, ma.nk);
 	
-	if (ma.nk == 0)
-		return;
+	/*if (ma.nk == 0)
+		return;*/
 	
 	if (f == stdout)
 		fprintf(f, "A\t");
@@ -45,13 +43,13 @@ void print_matrix(matrix ma, FILE *f)
 	for (int i = 0; i < ma.nr; i++)
 		fprintf(f, "%d ", ma.ia[i]);
 	fprintf(f, "\n");
+	if (f == stdout && ma.nk == 0)
+		fprintf(f, "No non-zero values!\n");
 }
 
 void print_matrix_std(matrix ma, FILE *f)
 {
 	int ck = 0;
-	if (f == stdout && ma.nk == 0)
-		fprintf(f, "No non-zero values!\n");
 	if (f != stdout)
 		fprintf(f, "%d %d\n", ma.nr, ma.nc);
 	for (int i = 0; i < ma.nr; i++)
