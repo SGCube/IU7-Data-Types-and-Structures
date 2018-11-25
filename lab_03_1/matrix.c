@@ -71,40 +71,13 @@ int matrix_invert(matrix *ma, matrix mb)
 	return OK;
 }
 
-void matrix_random(matrix *ma)
+int matrix_random(matrix *ma)
 {
 	for (int i = 0; i < ma->nr; i++)
 		ma->ia[i] = -1;
 	
 	int i, j, ii;
-	/*
-	short int not_ok = 0;
-	for (int k = 0; k < ma->nk; k++)
-	{
-		do
-		{
-			not_ok = 0;
-			j = rand() % (ma-> nr * ma-> nc);
-			for(int kk = k - 1; kk > 0 && !not_ok; kk--)
-				if (ma->ja[kk] == j)
-					not_ok = 1;
-		}
-		while(not_ok);
-		ma->ja[k] = j;
-	}
-	qsort(ma->ja, ma->nk, sizeof(int), compare);
-	*/
-	
-	int dmin = ma->nc * ma->nr - ma->nk;
-	j = rand() % (dmin + 1);
-	for (int k = 0; k < ma->nk; k++)
-	{
-		ma->ja[k] = j;
-		j += 1 + rand() % (dmin - j + k + 1);
-	}
-	
-	
-	for (int k = 0; k < ma->nk; k++)
+	/*for (int k = 0; k < ma->nk; k++)
 	{
 		i = ma->ja[k] / ma->nr;
 		j = ma->ja[k] % ma->nc;
@@ -115,7 +88,33 @@ void matrix_random(matrix *ma)
 		
 		if (ma->ia[i] == -1)
 			ma->ia[i] = k;
+	}*/
+	int *jset = calloc(ma -> nr * ma -> nc, sizeof(int));
+	if (!jset)
+		return ERR_ALLOC;
+	for (int k = 0; k < ma->nk; k++)
+	{
+		do
+			j = rand() % (ma-> nr * ma-> nc);
+		while(jset[j]);
+		jset[j] = 1;
+		ma->ja[k] = j;
 	}
+	for (int js = 0, k = 0; js < ma -> nr * ma -> nc && k < ma->nk; js++)
+		if (jset[js])
+		{
+			i = js / ma->nr;
+			j = js % ma->nc;
+			do
+				ma->a[k] = rand() % (2 * RAND_N) - RAND_N;
+			while(ma->a[k] == 0);
+			ma->ja[k] = j;
+			
+			if (ma->ia[i] == -1)
+				ma->ia[i] = k;
+			k++;
+		}
+	
 	ii = ma->nk;
 	for (int i = ma->nr - 1; i >= 0; i--)
 	{
@@ -124,6 +123,7 @@ void matrix_random(matrix *ma)
 		else
 			ii = ma->ia[i];
 	}
+	return OK;
 }
 
 int matrix_random_set(matrix *ma)
@@ -150,8 +150,7 @@ int matrix_random_set(matrix *ma)
 	
 	if (ma->nk == 0)
 		return OK;
-	matrix_random(ma);
-	return OK;
+	return matrix_random(ma);
 }
 
 int *matrix_std_null(int ro, int co)
@@ -175,7 +174,7 @@ int *matrix_std(matrix ma)
 		int ilast = ma.nk;
 		if (i < ma.nr - 1)
 			ilast = ma.ia[i + 1];
-		for (int ck = 0; ck < ilast; ck++)
+		for (int ck = ma.ia[i]; ck < ilast; ck++)
 			mstd[i * ma.nc + ma.ja[ck]] = ma.a[ck];
 	}
 	return mstd;

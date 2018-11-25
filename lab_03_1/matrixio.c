@@ -23,9 +23,6 @@ void print_matrix(matrix ma, FILE *f)
 	if (f != stdout)
 		fprintf(f, "%d %d %d\n", ma.nr, ma.nc, ma.nk);
 	
-	/*if (ma.nk == 0)
-		return;*/
-	
 	if (f == stdout)
 		fprintf(f, "A\t");
 	for (int i = 0; i < ma.nk; i++)

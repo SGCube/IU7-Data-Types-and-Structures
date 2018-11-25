@@ -36,8 +36,16 @@ int test_time(int rows, int cols, int k, float p)
 	{
 		a.nk = k;
 		b.nk = k;
-		matrix_random(&a);
-		matrix_random(&b);
+		rc = matrix_random(&a);
+		if (rc == OK)
+			rc = matrix_random(&b);
+		if (rc != OK)
+		{
+			errmsg(rc);
+			free_matrix(a);
+			free_matrix(b);
+			return rc;
+		}
 	}
 	int *astd = matrix_std(a);
 	int *bstd = matrix_std(b);
@@ -130,7 +138,7 @@ int main(int argc, char **argv)
 		printf("%8s %8s ", "time", "memory");
 	printf("\n");
 	
-	int sizes[] = { 1, 2, 5, 10, 20, 50, 100, 500, 1000 };
+	int sizes[] = { 1, 2, 5, 10, 20, 50, 100 };
 	float perc[] = { 0, 5, 10, 20, 30, 40, 50, 75, 100 };
 	
 	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)

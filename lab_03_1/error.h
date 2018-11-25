@@ -14,7 +14,7 @@
 #define ERR_MISSED_DATA -10
 #define ERR_DIFF_SIZE -11
 
-#define LARGE_SIZE 100
+#define LARGE_SIZE 50
 
 void errmsg(int rc);
 

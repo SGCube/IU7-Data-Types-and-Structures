@@ -30,9 +30,19 @@ void printmatr(matrix ma, FILE *f)
 {
 	print_matrix(ma, f);
 	printf("\n");
-	if (ma.nc * ma.nr < 2 * LARGE_SIZE && ma.nk > 0)
+	if (ma.nc * ma.nr <= 2 * LARGE_SIZE && ma.nk > 0)
 	{
 		print_matrix_std(ma, f);	
+		printf("\n");
+	}
+}
+
+void print_matrs(int *a, int n, int m)
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+			printf("%d ", a[i * m + j]);
 		printf("\n");
 	}
 }
@@ -77,6 +87,30 @@ int main(int argc, char **argv)
 		printmatr(b, stdout);
 		printf("Matrix C = A + B:\n");
 		printmatr(c, stdout);
+		
+		printf("Would you like to operate standart sum? (1 - yes):\n");
+		char ch;
+		fflush(stdin);
+		
+		scanf("%c", &ch);
+		if (ch == '1')
+		{
+			int *ma = matrix_std(a);
+			int *mb = matrix_std(b);
+			int *mc = matrix_std_null(a.nr, a.nc);
+			if (!ma || !mb || !mc)
+				rc = ERR_ALLOC;
+			else
+			{
+				sum_std(ma, mb, mc, a.nr, a.nc);
+				printf("\nMatrix A:\n");
+				print_matrs(ma, a.nr, a.nc);
+				printf("\nMatrix B:\n");
+				print_matrs(mb, a.nr, a.nc);
+				printf("\nMatrix C = A + B:\n");
+				print_matrs(mc, a.nr, a.nc);
+			}
+		}
 	}
 	
 	free_matrix(a);
