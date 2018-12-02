@@ -1,18 +1,12 @@
 #ifndef __ARRAY_H__
 #define __ARRAY_H__
 
-typedef struct array_t array;
+#define ARR_SIZE 1000
 
-struct array_t
-{
-	char data[ARR_SIZE];
-	char *peak;
-};
-
-int peek_arr(array arr);
-int push_arr(array *arr, char ch);
-void pop_arr(array *arr);
-void print_arr(array arr);
-int is_palindrom_arr(array arr);
+int push_arr(char *stack, int *n, char ch);
+char pop_arr(char *stack, int *n);
+void print_arr(char *stack, int *n);
+int is_palindrom_arr(char *stack, int *n);
+void clear_arr(char *stack, int *n);
 
 #endif

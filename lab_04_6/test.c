@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "error.h"
 #include "stack.h"
 #include "array.h"
+#include "error.h"
+
+#define ARR_SIZE_BIG 1000
 
 typedef unsigned long int tick_t;
 
@@ -25,12 +27,15 @@ int time_measure(int len)
 	for (int j = 0; j < 1000; j++)
 	{
 		list *stack = NULL;
-		//frspc *space = NULL;
+		int stack_n = 0;
 		for (int k = 0; k < len; k++)
 		{
 			char ch = rand() % 4 + 'a';
 			start = tick();
-			rc = push_new(&stack, ch);
+			list *node = create_node_t(ch);
+			if (!node)
+				return ERR_ALLOC;
+			push(&stack, &stack_n, node);
 			end = tick();
 			if (rc != OK)
 				return rc;
@@ -38,20 +43,18 @@ int time_measure(int len)
 		}
 		
 		start = tick();
-		is_palindrom(stack);
+		is_palindrom(&stack, &stack_n);
 		end = tick();
 		tpal_list += end - start;
-		
+		list *node = NULL;
 		for (int k = 0; k < len; k++)
 		{
 			start = tick();
-			pop_free(&stack);
+			node = pop(&stack, &stack_n);
+			free(node);
 			end = tick();
-			/*if (rc != OK)
-				return rc;*/
 			tpop_list += end - start;
 		}
-		//free_spaces(&space);
 	}
 	tpush_list /= 1000;
 	tpal_list /= 1000;
@@ -60,12 +63,13 @@ int time_measure(int len)
 	
 	for (int j = 0; j < 1000; j++)
 	{
-		array arr = { .peak = NULL };
+		char arr[ARR_SIZE_BIG];
+		int arr_n = 0;
 		for (int k = 0; k < len; k++)
 		{
 			char ch = rand() % 4 + 'a';
 			start = tick();
-			rc = push_arr(&arr, ch);
+			rc = push_arr(arr, &arr_n, ch);
 			end = tick();
 			if (rc != OK)
 				return rc;
@@ -73,14 +77,14 @@ int time_measure(int len)
 		}
 		
 		start = tick();
-		is_palindrom_arr(arr);
+		is_palindrom_arr(arr, &arr_n);
 		end = tick();
 		tpal_arr += end - start;
 		
 		for (int k = 0; k < len; k++)
 		{
 			start = tick();
-			pop_arr(&arr);
+			pop_arr(arr, &arr_n);
 			end = tick();
 			tpop_arr += end - start;
 		}
@@ -96,7 +100,7 @@ int time_measure(int len)
 	float tpop_eff = ((float)tpop_arr - tpop_list) / tpop_arr * 100;
 	float tpal_eff = ((float)tpal_arr - tpal_list) / tpal_arr * 100;
 	float mem_eff = ((float)mem_arr - mem_list) / mem_arr * 100;
-	printf("%6.2f%% %7.2f%% %7.2f%% %7.2f%%\n",
+	printf("%7.2f%% %7.2f%% %7.2f%% %7.2f%%\n",
 		tpush_eff, tpop_eff, tpal_eff, mem_eff);
 	
 	return rc;

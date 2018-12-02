@@ -3,98 +3,101 @@
 #include "error.h"
 #include "stack.h"
 
-int push(list **peak, char ch, frspc **space)
+list *create_node(char ch, frspc **space)
 {
-	list *elem = NULL;
+	list *node = NULL;
 	if (!*space)
 	{
-		elem = malloc(sizeof(list));
-		if (!elem)
-			return ERR_ALLOC;
+		node = malloc(sizeof(list));
+		if (!node)
+			return NULL;
 	}
 	else
 	{
-		elem = (list *)(*space)->data;
+		node = (list *)(*space)->data;
 		frspc *tmp = *space;
 		(*space) = (*space)->next;
 		free(tmp);
 	}
-	elem->data = ch;
-	elem->next = *peak;
-	*peak = elem;
-	return OK;
+	node->data = ch;
+	node->next = NULL;
+	return node;
 }
 
-int pop(list **peak, frspc **space)
+list *create_node_t(char ch)
 {
-	frspc *tmp = malloc(sizeof(frspc));
-	if (!tmp)
-		return ERR_ALLOC;
-	tmp->next = *space;
-	*space = tmp;
-	(*space)->data = (void *)(*peak);
+	list *node = NULL;
+	node = malloc(sizeof(list));
+	if (!node)
+		return NULL;
+	node->data = ch;
+	node->next = NULL;
+	return node;
+}
+
+void push(list **peak, int *n, list *node)
+{
+	if (!node)
+		return;
+	node->next = *peak;
+	*peak = node;
+	*n += 1;
+}
+
+list *pop(list **peak, int *n)
+{
+	if (!*peak)
+		return NULL;
+	list *node = *peak;
 	(*peak) = (*peak)->next;
-	return OK;
+	*n -= 1;
+	return node;
 }
 
-int push_new(list **peak, char ch)
+int is_palindrom(list **peak, int *n)
 {
-	list *elem = NULL;
-	elem = malloc(sizeof(list));
-	if (!elem)
-		return ERR_ALLOC;
-	elem->data = ch;
-	elem->next = *peak;
-	*peak = elem;
-	return OK;
-}
-
-void pop_free(list **peak)
-{
-	list *tmp = *peak;
-	(*peak) = (*peak)->next;
-	free(tmp);
-}
-
-int peek(list *peak)
-{
-	list *tmp = peak;
-	int len = 0;
-	while (tmp)
-	{
-		tmp = tmp->next;
-		len++;
-	}
-	return len;
-}
-
-int is_palindrom(list *peak)
-{
-	int len = peek(peak);
-	if (len == 0)
+	int rc = 1;
+	if (!*peak || *n == 0)
 		return -1;
-	list *tmp1 = peak;
-	for (int k = 0; k < len / 2; k++)
+	
+	list *tmp = NULL, *tmp1 = NULL, *tmp2 = NULL;
+	int nt = 0, n1 = 0, n2 = 0;
+	int m = *n / 2 + *n % 2;
+	list *middle = NULL;
+	while (*n > m)
+		push(&tmp, &nt, pop(peak, n));
+	if (m % 2 == 1)
+		middle = pop(peak, n);
+	
+	while (*n > 0 && nt > 0 && rc == 1)
 	{
-		list *tmp2 = tmp1;
-		for (int j = k; j < len - k - 1; j++)
-			tmp2 = tmp2->next;
-		if (tmp1->data != tmp2->data)
-			return 0;
-		tmp1 = tmp1->next;
+		if ((*peak)->data != tmp->data)
+			rc = 0;
+		else
+		push(&tmp1, &n1, pop(peak, n));
+		push(&tmp2, &n2, pop(&tmp, &nt));
 	}
-	return 1;
+	
+	while (n1 > 0)
+		push(peak, n, pop(&tmp1, &n1));
+	push(peak, n, middle);
+	while (nt > 0)
+		push(peak, n, pop(&tmp, &nt));
+	while (n2 > 0)
+		push(peak, n, pop(&tmp2, &n2));
+	return rc;
 }
 
-void print_list(list *peak, frspc *space)
+void print_list(list *peak, int *n, frspc *space)
 {
-	list *tmp = peak;
-	if (!tmp)
+	list *tmp = NULL;
+	int ntmp = 0;
+	if (n == 0 || !peak)
 		printf("Stack is empty!");
-	while (tmp)
+	while (peak)
 	{
+		push(&tmp, &ntmp, pop(&peak, n));
 		printf("%c\t%p\n", tmp->data, (void *)tmp);
-		tmp = tmp->next;
 	}
 	printf("\n");
 	printf("List of free spaces:\n");
@@ -106,6 +109,8 @@ void print_list(list *peak, frspc *space)
 		printf("%p\n", stmp->data);
 		stmp = stmp->next;
 	}
+	while (tmp)
+		push(&peak, n, pop(&tmp, &ntmp));
 }
 
 void free_spaces(frspc **space)
@@ -117,4 +122,15 @@ void free_spaces(frspc **space)
 		free(tmp->data);
 		free(tmp);
 	}
+}
+
+void stack_free(list **peak, int *n)
+{
+	while (*peak)
+	{
+		list *node = *peak;
+		(*peak) = (*peak)->next;
+		free(node);
+	}
+	*n = 0;
 }

@@ -2,64 +2,82 @@
 #include "error.h"
 #include "array.h"
 
-int push_arr(array *arr, char ch)
+int push_arr(char *stack, int *n, char ch)
 {
-	if (!arr->peak)
-		arr->peak = arr->data;
-	else if (arr->peak - arr->data < ARR_SIZE)
-		arr->peak += 1;
-	else
+	if (*n == ARR_SIZE)
 		return ERR_OVERFLOW;
-	*(arr->peak) = ch;
+	stack[*n] = ch;
+	*n += 1;
 	return OK;
 }
 
-void pop_arr(array *arr)
+char pop_arr(char *stack, int *n)
 {
-	*(arr->peak) = 0;
-	if (arr->peak == arr->data)
-		arr->peak = NULL;
-	else
-		arr->peak -= 1;
-}
-
-int peek_arr(array arr)
-{
-	if (!arr.peak)
+	if (*n == 0)
 		return 0;
-	return arr.peak - arr.data + 1;
+	*n -= 1;
+	return stack[*n];
 }
 
-int is_palindrom_arr(array arr)
+int is_palindrom_arr(char *stack, int *n)
 {
-	int len = peek_arr(arr);
-	if (len == 0)
+	int rc = 1;
+	int nn = *n;
+	if (nn == 0)
 		return -1;
-	char *tmp1 = arr.peak;
-	for (int k = 0; k < len / 2; k++)
+	int m = nn / 2 + nn % 2;
+	char tmp1[ARR_SIZE], tmp2[ARR_SIZE];
+	char middle = 0;
+	int n1 = 0, n2 = 0;
+	
+	while (*n > m)
 	{
-		char *tmp2 = tmp1;
-		for (int j = k; j < len - k - 1; j++, tmp2--);
-		if (*tmp1 != *tmp2)
-			return 0;
-		tmp1--;
+		tmp1[n1] = pop_arr(stack, n);
+		n1++;
 	}
-	return 1;
+	if (nn % 2 == 1)
+		middle = pop_arr(stack, n);
+	while (*n > 0 && rc == 1)
+	{
+		tmp2[n2] = pop_arr(stack, n);
+		n2++;
+		if (tmp2[n2 - 1] != tmp1[n1 - n2])
+			rc = 0;
+	}
+	
+	while (n2 > 0)
+		push_arr(stack, n, tmp2[n2-- - 1]);
+	if (middle != 0)
+		push_arr(stack, n, middle);
+	while (n1 > 0)
+		push_arr(stack, n, tmp1[n1-- - 1]);
+	return rc;
 }
 
-void print_arr(array arr)
+void print_arr(char *stack, int *n)
 {
-	if (!arr.peak)
+	if (*n == 0)
 	{
 		printf("Stack is empty!\n");
 		return;
 	}
-	char *tmp = arr.peak;
-	do
+	char tmp[ARR_SIZE];
+	int ntmp = *n;
+	while (*n > 0)
 	{
-		printf("%c ", *tmp);
-		tmp -= 1;
+		tmp[*n - 1] = pop_arr(stack, n);
+		printf("%c ", tmp[*n]);
 	}
-	while(tmp >= arr.data);
+	while (*n < ntmp)
+		push_arr(stack, n, tmp[*n]);
 	printf("\n");
+}
+
+void clear_arr(char *stack, int *n)
+{
+	while (*n > 0)
+	{
+		stack[*n - 1] = 0;
+		*n -= 1;
+	}
 }
