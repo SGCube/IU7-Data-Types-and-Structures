@@ -77,18 +77,6 @@ int matrix_random(matrix *ma)
 		ma->ia[i] = -1;
 	
 	int i, j, ii;
-	/*for (int k = 0; k < ma->nk; k++)
-	{
-		i = ma->ja[k] / ma->nr;
-		j = ma->ja[k] % ma->nc;
-		do
-			ma->a[k] = rand() % (2 * RAND_N) - RAND_N;
-		while(ma->a[k] == 0);
-		ma->ja[k] = j;
-		
-		if (ma->ia[i] == -1)
-			ma->ia[i] = k;
-	}*/
 	int *jset = calloc(ma -> nr * ma -> nc, sizeof(int));
 	if (!jset)
 		return ERR_ALLOC;
