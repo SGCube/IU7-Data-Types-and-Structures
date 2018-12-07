@@ -202,7 +202,7 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 		else
 			pe++;
 	}
-	add_exp -= pe - pb;
+	add_exp -= pe - pb - 1;
 	
 	while (res_i < MANTIS_N)
 	{
@@ -231,7 +231,7 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 			pe++;
 		}
 		
-		if (pe - pb < expon[EXP_N + 1] && rexp[EXP_N + 1] == -1)
+		if (pe - numb < expon[EXP_N + 1] && rexp[EXP_N + 1] == -1)
 			rexp[EXP_N + 1] = res_i;
 	}
 	
@@ -247,8 +247,12 @@ int divide(int mant[], int expon[], int numb[], int res[], int rexp[])
 		}
 	}
 	
-	
-	add_exp -= rexp[EXP_N + 1] - rounding(res, extra_digit);
+	if (rexp[EXP_N + 1] >= 0)
+		add_exp -= rexp[EXP_N + 1];
+	rounding(res, extra_digit);
+	if (extra_digit < 5)
+		rounding(res, res[MANTIS_N - 1]);
+		
 	if (add_exp < 0)
 	{
 		rexp[EXP_N] = '-';
