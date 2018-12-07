@@ -81,7 +81,6 @@ void test_call(FILE *fres, FILE *frep,
 	//time fault
 	k = t_cmp * n_cmp;
 	fprintf(fres, "%8.5lf%%\n", fabs(t - k) / k * 100);
-	
 }
 
 void test()
@@ -94,8 +93,8 @@ void test()
 		return;
 	
 	fprintf(fres, "%7s  %7s\t%19s\t%19s\n", "T1", "T2", "array", "list");
-	fprintf(fres, "%16s\t%9s %9s\t%9s %9s\n", " ", "N Fault", "TimeFault",
-		"N Fault", "TimeFault");
+	fprintf(fres, "%16s\t%9s %9s\t%9s %9s\n", " ",
+		"N Fault", "TimeFault", "N Fault", "TimeFault");
 		
 	double rng[] = { 0.0, 1.0, 2.0, 4.0, 6.0 };
 	
