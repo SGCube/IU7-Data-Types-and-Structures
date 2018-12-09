@@ -8,6 +8,7 @@
 #define ERR_EMPTY -3
 #define ERR_WORD -4
 #define ERR_INPUT -5
+#define ERR_MEMORY -6
 
 #define ERR_LIB -10
 
