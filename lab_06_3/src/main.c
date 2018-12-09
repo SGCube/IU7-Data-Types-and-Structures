@@ -125,6 +125,7 @@ int main(int argc, char **argv)
 			"===========================\n"
 			"Enter action: ");
 		scanf("%c", &action);
+		printf("\n");
 		if (action == '1')
 		{
 			char *word = NULL;
@@ -166,12 +167,12 @@ int main(int argc, char **argv)
 			{
 				tree_t *node = tree_search(tree, word);
 				if (!node)
-					printf("Word was not found!\n");
+					printf("\nWord was not found.\n");
 				else
 				{
-					printf("Word is found!\nWord: ");
+					printf("\nWord is found!\nWord:\t");
 					print_node(node);
-					printf("Address: %p", (void *)node);
+					printf("Address:\t%p\n", (void *)node);
 				}
 			}
 		}
@@ -179,12 +180,17 @@ int main(int argc, char **argv)
 		{
 			printf("\n");
 			print_tree(tree, 0);
+		}
+		else
+			action = 0;
+		
+		if (action > '1')
+		{
 			printf("\nEnter any key to continue");
 			fflush(stdin);
 			getchar();
 		}
-		else
-			action = 0;
+		
 	}
 	while (action);
 	
