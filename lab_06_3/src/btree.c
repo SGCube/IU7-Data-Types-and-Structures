@@ -86,7 +86,7 @@ ARR_DLL tree_t* ARR_DECL del_node(tree_t **root, char *data)
 	int br = 0;
 	while (node)
 	{
-		int cmp = strcmp(node->data, data);
+		int cmp = strcmp(data, node->data);
 		if (cmp < 0)		//поиск в левом поддереве
 		{
 			br = -1;
