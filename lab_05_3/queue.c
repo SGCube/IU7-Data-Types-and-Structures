@@ -47,8 +47,9 @@ void print_queue(list **pin, list **pout)
 	list *tpin = NULL, *tpout = NULL;
 	while (*pout)
 	{
+		void *addr = *pout;
 		int tmp = pop_queue(pin, pout);
-		printf("%d ", tmp);
+		printf("%d\t%p\n", tmp, addr);
 		push_queue(tmp, &tpin, &tpout);
 	}
 	while (tpout)

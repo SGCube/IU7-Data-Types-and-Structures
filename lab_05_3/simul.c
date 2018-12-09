@@ -314,6 +314,9 @@ int simulate_list(double t1_a, double t1_b, double t2_a, double t2_b)
 			printf("Handled: %d\n", noaall);
 			printf("Current length: %d\n", k);
 			printf("Average length: %d\n\n", kavg / noaall);
+			printf("Current queue state:\n");
+			print_queue(&pin, &pout);
+			printf("\n");
 			noa = 0;
 		}
 	}
