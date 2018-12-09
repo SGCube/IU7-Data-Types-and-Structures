@@ -6,7 +6,7 @@
 
 #define BUF_SIZE 20
 
-ARR_DLL size_t ARR_DECL getword(char **lineptr, size_t *n, FILE *stream)
+ARR_DLL size_t ARR_DECL getline(char **lineptr, size_t *n, FILE *stream)
 {
 	if (stream == NULL || lineptr == NULL || n == NULL)
 		return -1;
@@ -17,25 +17,36 @@ ARR_DLL size_t ARR_DECL getword(char **lineptr, size_t *n, FILE *stream)
 	}
 	
 	size_t len = 0;
-	char ch = '\n';
+	char buff[BUF_SIZE];
+	char *ptr = *lineptr;
+	char *t;
+	size_t buff_len = 0;
 
-	while (fscanf(stream, "%c", &ch) == 1 && ch != '\n' && ch != ' ')
+	do
 	{
-		if (len + 1 >= *n)
+		if (fgets(buff, BUF_SIZE, stream) == NULL)
+			return -1;
+		buff_len = strlen(buff);
+		if (len + buff_len + 1 > *n)
 		{
-			char *t = (char *)realloc(*lineptr,
-				(*n + BUF_SIZE) * sizeof(char));
+			t = (char *)realloc(*lineptr,
+				(len + BUF_SIZE) * sizeof(char));
 			if (!t)
 				return -1;
 			*lineptr = t;
-			*n += BUF_SIZE;
+			*n = len + BUF_SIZE;
 		}
-		*(*lineptr + len++) = ch;
+		ptr = *lineptr + len;
+		len += buff_len;
+		for (const char *pc = buff; *pc != '\0'; pc++, ptr++)
+			*ptr = *pc;
 	}
+	while (!feof(stream) && buff[buff_len - 1] != '\n');
 	
 	if (len == 0)
 		return -1;
-	*(lineptr + len) = '\0';
+	(*lineptr)[len - 1] = '\0';
+	*n = len + 1;
 	return len;
 }
 
@@ -59,15 +70,16 @@ ARR_DLL char* ARR_DECL fsearch(FILE *f, const char *word, int *rc)
 		*rc = ERR_EMPTY;
 		return NULL;
 	}
+	rewind(f);
 	
 	char *cword = NULL;
 	short int found = 0;
 	size_t n = 0;
-	while (getword(&cword, &n, f) != -1 && !found)
-	{
+	
+	while (getline(&cword, &n, f) != -1 && !found)
 		if (strcmp(cword, word) == 0)
 			found = 1;
-	}
+		
 	if (found)
 		return cword;
 	if (cword)

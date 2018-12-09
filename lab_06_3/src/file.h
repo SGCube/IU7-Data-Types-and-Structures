@@ -10,7 +10,7 @@
 
 #define ARR_DECL __cdecl
 
-ARR_DLL size_t ARR_DECL getword(char **lineptr, size_t *n, FILE *stream);
+ARR_DLL size_t ARR_DECL getline(char **lineptr, size_t *n, FILE *stream);
 
 ARR_DLL char* ARR_DECL fsearch(FILE *f, const char *word, int *rc);
 

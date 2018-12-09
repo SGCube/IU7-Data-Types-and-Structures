@@ -3,13 +3,13 @@
 
 #include "error.h"
 
-typedef size_t (__cdecl *fn_getword_t)(char **, size_t *, FILE *f);
+typedef size_t (__cdecl *fn_getline_t)(char **, size_t *, FILE *f);
 typedef char* (__cdecl *fn_fsearch_t)(FILE *f, char*, int *);
 
 int main(int argc, char **argv)
 {
 	HMODULE filelib;
-	fn_getword_t getword;
+	fn_getline_t getline;
 	fn_fsearch_t fsearch;
 	
 	filelib = LoadLibrary("lib\\file.dll");
@@ -20,8 +20,8 @@ int main(int argc, char **argv)
     }
 	
 	fsearch = (fn_fsearch_t) GetProcAddress(filelib, "fsearch");
-	getword = (fn_getword_t) GetProcAddress(filelib, "getword");
-	if (!fsearch || !getword)
+	getline = (fn_getline_t) GetProcAddress(filelib, "getline");
+	if (!fsearch || !getline)
 	{
         printf("Can not load functions.\n");
 		FreeLibrary(filelib);
@@ -47,9 +47,10 @@ int main(int argc, char **argv)
 	size_t n = 0;
 	
 	setbuf(stdout, NULL);
+	fflush(stdin);
 	printf("Enter a word to search: ");
 	
-	if (getword(&word, &n, f) == -1)
+	if (getline(&word, &n, stdin) == -1)
 	{
 		fprintf(stderr, "Word input error.\n");
 		FreeLibrary(filelib);
@@ -57,6 +58,8 @@ int main(int argc, char **argv)
 			free(word);
 		return ERR_WORD;
 	}
+	
+	printf("Word: %s\n", word);
 	
 	int rc = OK;
 	char *cword = fsearch(f, word, &rc);
