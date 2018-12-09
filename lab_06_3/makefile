@@ -1,7 +1,7 @@
 CC := gcc
 CFLAGS := -std=c99 -Wall -Werror
-OBJS := btree.o hasht.o file.o
-LIB := btree.dll hasht.dll file.dll
+SRCDIR := src
+LIBDIR := lib
 
 ifeq ($(mode), debug)
     CFLAGS += -g3 -ggdb
@@ -11,24 +11,28 @@ ifeq ($(mode), release)
     CFLAGS += -DNDEBUG -g0
 endif
 
-app.exe: main.o
+vpath %.c $(SRCDIR)
+	
+app.exe: $(SRCDIR)/main.o
 	$(CC) $^ -o $@
 	
-test.exe: test.o
+test.exe: $(SRCDIR)/test.o
 	$(CC) $^ -o $@
 
-%.dll: dll/%.o
-	mkdir dll
-	gcc -shared $^ -Wl,--subsystem,windows -o dll/$<
+%.dll: $(SRCDIR)/%.o $(LIBDIR)
+	gcc -shared $< -Wl,--subsystem,windows -o $(LIBDIR)/$@
 	
-main.o: main.c *.h
-	$(CC) $(CFLAGS) -c $<
+$(SRCDIR)/main.o: main.c
+	$(CC) $(CFLAGS) -c $< -o $@
 	
-test.o: main.c *.h
-	$(CC) $(CFLAGS) -c $<
+$(SRCDIR)/test.o: test.c
+	$(CC) $(CFLAGS) -c $< -o $@
 	
-%.o: %.c *.h
-	$(CC) $(CFLAGS) -D ARR_EXPORTS -c $<
+%.o: %.c
+	$(CC) $(CFLAGS) -D ARR_EXPORTS -c $< -o $@
+	
+$(LIBDIR):
+	mkdir $(LIBDIR)
 	
 clean:
-	$(RM) *.o *.exe *.a *.dll
+	$(RM) *.o *.exe $(LIBDIR)/*.dll $(SRCDIR)/*.o
