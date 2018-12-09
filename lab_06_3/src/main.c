@@ -194,41 +194,6 @@ int main(int argc, char **argv)
 	}
 	while (action);
 	
-	/*char *word = NULL;
-	size_t n = 0;
-	
-	setbuf(stdout, NULL);
-	fflush(stdin);
-	printf("Enter a word to search: ");
-	
-	if (getline(&word, &n, stdin) == -1)
-	{
-		fprintf(stderr, "Word input error.\n");
-		FreeLibrary(filelib);
-		if (word)
-			free(word);
-		return ERR_WORD;
-	}*/
-	
-	//printf("Word: %s\n", word);
-	
-	/*int rc = OK;
-	char *cword = fsearch(f, word, &rc);
-	if (rc == ERR_EMPTY)
-	{
-		fprintf(stderr, "File is empty.\n");
-		FreeLibrary(filelib);
-		free(word);
-		return ERR_WORD;
-	}
-	if (rc == OK)
-	{
-		if (!cword)
-			printf("Word was not found in file!\n");
-		else
-			printf("Word is found!\n");
-	}*/
-	
 	fclose(f);
 	FreeLibrary(filelib);
 	FreeLibrary(treelib);

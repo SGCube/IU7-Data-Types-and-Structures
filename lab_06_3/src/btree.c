@@ -53,7 +53,9 @@ ARR_DLL void ARR_DECL print(tree_t *root, int depth)
 		for (int d = 0; d < depth; d++)
 			printf("\t");
 		print_node(root);
+		printf("L: ");
 		print(root->left, depth + 1);
+		printf("R: ");
 		print(root->right, depth + 1);
 	}
 }
