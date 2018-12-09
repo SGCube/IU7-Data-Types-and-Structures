@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 	fn_create_node_t create_node;
 	fn_tree_add_t tree_add;
 	fn_tree_search_t tree_search;
-	fn_tree_print_t tree_print;
+	fn_tree_print_t print_tree;
 	fn_print_node_t print_node;
 	
 	///*** file.dll *********************************************************
@@ -66,9 +66,9 @@ int main(int argc, char **argv)
 	tree_add = (fn_tree_add_t) GetProcAddress(treelib, "add");
 	tree_search = (fn_tree_search_t) GetProcAddress(treelib, "search");
 	print_node = (fn_print_node_t) GetProcAddress(treelib, "print_node");
-	tree_print = (fn_tree_print_t) GetProcAddress(treelib, "print");
+	print_tree = (fn_tree_print_t) GetProcAddress(treelib, "print");
 	
-	if (!create_node || !tree_add || !tree_search || !tree_print ||
+	if (!create_node || !tree_add || !tree_search || !print_tree ||
 		!print_node)
 	{
         printf("Can not load functions (btree.dll).\n");
@@ -174,6 +174,14 @@ int main(int argc, char **argv)
 					printf("Address: %p", (void *)node);
 				}
 			}
+		}
+		else if (action == '6')
+		{
+			printf("\n");
+			print_tree(tree, 0);
+			printf("\nEnter any key to continue");
+			fflush(stdin);
+			getchar();
 		}
 		else
 			action = 0;
