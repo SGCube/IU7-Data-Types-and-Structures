@@ -18,7 +18,8 @@ test.exe: test.o
 	$(CC) $^ -o $@
 
 %.dll: %.o
-	gcc -shared $^ -Wl,--subsystem,windows -o $<
+	mkdir dll
+	gcc -shared $^ -Wl,--subsystem,windows -o dll/$<
 	
 main.o: main.c *.h
 	$(CC) $(CFLAGS) -c $<
