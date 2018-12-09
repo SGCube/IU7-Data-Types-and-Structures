@@ -45,7 +45,10 @@ ARR_DLL size_t ARR_DECL getline(char **lineptr, size_t *n, FILE *stream)
 	
 	if (len == 0)
 		return -1;
-	(*lineptr)[len - 1] = '\0';
+	if ((*lineptr)[len - 1] == '\n')
+		(*lineptr)[len - 1] = '\0';
+	else
+		(*lineptr)[len] = '\0';
 	*n = len + 1;
 	return len;
 }
