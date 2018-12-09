@@ -10,4 +10,6 @@
 
 #define ARR_DECL __cdecl
 
-ARR_DLL int ARR_DECL fsearch(FILE *f, const char *word);
+ARR_DLL char* ARR_DECL fsearch(FILE *f, const char *word);
+
+#endif

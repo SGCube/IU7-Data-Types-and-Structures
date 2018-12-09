@@ -17,7 +17,7 @@ app.exe: main.o
 test.exe: test.o
 	$(CC) $^ -o $@
 
-%.dll: %.o
+%.dll: dll/%.o
 	mkdir dll
 	gcc -shared $^ -Wl,--subsystem,windows -o dll/$<
 	
