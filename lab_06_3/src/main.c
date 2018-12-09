@@ -12,6 +12,7 @@ typedef char* (__cdecl *fn_fsearch_t)(FILE *f, char*, int *);
 typedef tree_t* (__cdecl *fn_create_node_t)(char *);
 typedef tree_t* (__cdecl *fn_tree_add_t)(tree_t *, tree_t *);
 typedef tree_t* (__cdecl *fn_tree_search_t)(tree_t *, char *);
+typedef tree_t* (__cdecl *fn_del_node_t)(tree_t **, char *);
 typedef void (__cdecl *fn_print_node_t)(tree_t *);
 typedef void (__cdecl *fn_tree_print_t)(tree_t *, int);
 
@@ -31,6 +32,7 @@ int main(int argc, char **argv)
 	fn_create_node_t create_node;
 	fn_tree_add_t tree_add;
 	fn_tree_search_t tree_search;
+	fn_del_node_t del_node;
 	fn_tree_print_t print_tree;
 	fn_print_node_t print_node;
 	
@@ -65,11 +67,12 @@ int main(int argc, char **argv)
 	create_node = (fn_create_node_t) GetProcAddress(treelib, "create_node");
 	tree_add = (fn_tree_add_t) GetProcAddress(treelib, "add");
 	tree_search = (fn_tree_search_t) GetProcAddress(treelib, "search");
+	del_node = (fn_del_node_t) GetProcAddress(treelib, "del_node");
 	print_node = (fn_print_node_t) GetProcAddress(treelib, "print_node");
 	print_tree = (fn_tree_print_t) GetProcAddress(treelib, "print");
 	
-	if (!create_node || !tree_add || !tree_search || !print_tree ||
-		!print_node)
+	if (!create_node || !tree_add || !tree_search || !del_node ||
+		!print_tree || !print_node)
 	{
         printf("Can not load functions (btree.dll).\n");
 		FreeLibrary(filelib);
@@ -147,7 +150,7 @@ int main(int argc, char **argv)
 				n = 0;
 			}
 		}
-		else if (action == '3')
+		else if (action >= '3' && action <= '4')
 		{
 			char *word = NULL;
 			size_t n = 0;
@@ -165,7 +168,11 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				tree_t *node = tree_search(tree, word);
+				tree_t *node = NULL;
+				if (action == '3')
+					node = tree_search(tree, word);
+				else if (action == '4')
+					node = del_node(&tree, word);
 				if (!node)
 					printf("\nWord was not found.\n");
 				else
