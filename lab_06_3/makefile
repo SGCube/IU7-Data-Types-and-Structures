@@ -3,6 +3,8 @@ CFLAGS := -std=c99 -Wall -Werror
 SRCDIR := src
 LIBDIR := lib
 
+BTREE_OBJ := $(SRCDIR)/btree.o $(SRCDIR)/avltree.o
+
 ifeq ($(mode), debug)
     CFLAGS += -g3 -ggdb
 endif
@@ -19,6 +21,9 @@ app.exe: $(SRCDIR)/main.o
 test.exe: $(SRCDIR)/test.o
 	$(CC) $^ -o $@
 
+btree.dll: $(BTREE_OBJ) $(LIBDIR)
+	gcc -shared $(BTREE_OBJ) -Wl,--subsystem,windows -o $(LIBDIR)/$@
+	
 %.dll: $(SRCDIR)/%.o $(LIBDIR)
 	gcc -shared $< -Wl,--subsystem,windows -o $(LIBDIR)/$@
 	

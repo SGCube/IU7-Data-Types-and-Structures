@@ -1,0 +1,10 @@
+citron
+icecream
+banana
+egg
+apricot
+milk
+orange
+corn
+donut
+apple

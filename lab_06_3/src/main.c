@@ -15,6 +15,8 @@ typedef tree_t* (__cdecl *fn_tree_search_t)(tree_t *, char *);
 typedef tree_t* (__cdecl *fn_del_node_t)(tree_t **, char *);
 typedef void (__cdecl *fn_print_node_t)(tree_t *);
 typedef void (__cdecl *fn_tree_print_t)(tree_t *, int);
+typedef int (__cdecl *fn_height_t)(tree_t *);
+typedef tree_t* (__cdecl *fn_balance_t)(tree_t *);
 
 ///**************************************************************************
 
@@ -35,6 +37,8 @@ int main(int argc, char **argv)
 	fn_del_node_t del_node;
 	fn_tree_print_t print_tree;
 	fn_print_node_t print_node;
+	fn_height_t tree_height;
+	fn_balance_t tree_balance;
 	
 	///*** file.dll *********************************************************
 	
@@ -70,9 +74,11 @@ int main(int argc, char **argv)
 	del_node = (fn_del_node_t) GetProcAddress(treelib, "del_node");
 	print_node = (fn_print_node_t) GetProcAddress(treelib, "print_node");
 	print_tree = (fn_tree_print_t) GetProcAddress(treelib, "print");
+	tree_height = (fn_height_t) GetProcAddress(treelib, "height");
+	tree_balance = (fn_balance_t) GetProcAddress(treelib, "balance");
 	
 	if (!create_node || !tree_add || !tree_search || !del_node ||
-		!print_tree || !print_node)
+		!print_tree || !print_node || !tree_height || !tree_balance)
 	{
         printf("Can not load functions (btree.dll).\n");
 		FreeLibrary(filelib);
@@ -150,6 +156,8 @@ int main(int argc, char **argv)
 				n = 0;
 			}
 		}
+		else if (action == '2')
+			tree = tree_balance(tree);
 		else if (action >= '3' && action <= '4')
 		{
 			char *word = NULL;
