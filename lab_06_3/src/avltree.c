@@ -33,18 +33,22 @@ ARR_DLL int ARR_DECL height(tree_t *root)
 
 ARR_DLL tree_t* ARR_DECL balance(tree_t *tree)
 {
-	int dh = height(tree->left) - height(tree->right);
-	if (dh < -1)
+	if (tree->left)
+		tree->left = balance(tree->left);
+	if (tree->right)
+		tree->right = balance(tree->right);
+	int bfactor = height(tree->left) - height(tree->right);
+	if (bfactor < -1)
 	{
-		dh = height(tree->left->left) - height(tree->left->right);
-		if (dh > 1)
+		bfactor = height(tree->left->left) - height(tree->left->right);
+		if (bfactor > 1)
 			tree->left = rotate_left(tree->left);
 		return rotate_right(tree);
 	}
-	else if (dh > 1)
+	else if (bfactor > 1)
 	{
-		dh = height(tree->right->left) - height(tree->right->right);
-		if (dh < -1)
+		bfactor = height(tree->right->left) - height(tree->right->right);
+		if (bfactor < -1)
 			tree->right = rotate_right(tree->right);
 		return rotate_left(tree);
 	}

@@ -41,3 +41,6 @@ $(LIBDIR):
 	
 clean:
 	$(RM) *.o *.exe $(LIBDIR)/*.dll $(SRCDIR)/*.o
+	
+clean_app:
+	$(RM) $(SRCDIR)/main.o $(SRCDIR)/test.o *.exe 
