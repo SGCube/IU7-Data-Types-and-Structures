@@ -5,6 +5,7 @@ LIBDIR := lib
 
 LIBS := btree.dll file.dll
 BTREE_OBJ := $(SRCDIR)/btree.o $(SRCDIR)/avltree.o
+FILE_OBJ := $(SRCDIR)/file.o
 
 ifeq ($(mode), debug)
     CFLAGS += -g3 -ggdb
@@ -27,8 +28,8 @@ libs: $(LIBS)
 btree.dll: $(BTREE_OBJ) $(LIBDIR)
 	gcc -shared $(BTREE_OBJ) -Wl,--subsystem,windows -o $(LIBDIR)/$@
 	
-%.dll: $(SRCDIR)/%.o $(LIBDIR)
-	gcc -shared $< -Wl,--subsystem,windows -o $(LIBDIR)/$@
+file.dll: $(FILE_OBJ) $(LIBDIR)
+	gcc -shared $(FILE_OBJ) -Wl,--subsystem,windows -o $(LIBDIR)/$@
 	
 $(SRCDIR)/main.o: main.c
 	$(CC) $(CFLAGS) -c $< -o $@
