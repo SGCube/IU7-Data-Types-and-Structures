@@ -17,13 +17,13 @@ tick_t tick(void)
 	return d;
 }
 
-int time_measure(FILE *f, int len)
+int time_measure(int len)
 {
 	int rc = OK;
 	tick_t start = 0, end = 0;
 	
-	tick_t tpush_list = 0, tpop_list = 0, tsim_list = 0;
-	tick_t tpush_arr = 0, tpop_arr = 0, tsim_arr = 0;
+	tick_t tpush_list = 0, tpop_list = 0;
+	tick_t tpush_arr = 0, tpop_arr = 0;
 	
 	for (int j = 0; j < 100; j++)
 	{
@@ -39,10 +39,6 @@ int time_measure(FILE *f, int len)
 			tpush_list += end - start;
 		}
 		
-		start = tick();
-		simulate_list(1.0, 4.0, 1.0, 4.0);
-		end = tick();
-		tsim_list += end - start;
 		for (int k = 0; k < len; k++)
 		{
 			start = tick();
@@ -52,9 +48,8 @@ int time_measure(FILE *f, int len)
 		}
 	}
 	tpush_list /= 100;
-	tsim_list /= 100;
 	tpop_list /= 100;
-	fprintf(f, "%6lu %6lu %6lu ", tpush_list, tpop_list, tsim_list);
+	printf("%6lu %6lu ", tpush_list, tpop_list);
 	
 	for (int j = 0; j < 100; j++)
 	{
@@ -72,11 +67,6 @@ int time_measure(FILE *f, int len)
 			tpush_arr += end - start;
 		}
 		
-		start = tick();
-		simulate_arr(1.0, 4.0, 1.0, 4.0);
-		end = tick();
-		tsim_arr += end - start;
-		
 		for (int k = 0; k < len; k++)
 		{
 			start = tick();
@@ -87,46 +77,38 @@ int time_measure(FILE *f, int len)
 	}
 	tpush_arr /= 100;
 	tpop_arr /= 100;
-	tsim_arr /= 100;
-	fprintf(f, "%6lu %6lu %6lu ", tpush_arr, tpop_arr, tsim_arr);
+	printf("%6lu %6lu ", tpush_arr, tpop_arr);
 	
 	size_t mem_list = len * sizeof(list);
-	size_t mem_arr = len * sizeof(char) + sizeof(char *);
+	size_t mem_arr = len * sizeof(int) + 4 * sizeof(int *);
 	float tpush_eff = ((float)tpush_arr - tpush_list) / tpush_arr * 100;
 	float tpop_eff = ((float)tpop_arr - tpop_list) / tpop_arr * 100;
-	float tsim_eff = ((float)tsim_arr - tsim_list) / tsim_arr * 100;
 	float mem_eff = ((float)mem_arr - mem_list) / mem_arr * 100;
-	fprintf(f, "%7.2f%% %7.2f%% %7.2f%% %7.2f%%\n",
-		tpush_eff, tpop_eff, tsim_eff, mem_eff);
+	printf("%7.2f%% %7.2f%% %8lu %8lu %7.2f%%\n",
+		tpush_eff, tpop_eff, (long int)mem_list, (long int)mem_arr, mem_eff);
 	
 	return rc;
 }
 
 int main()
 {
-	FILE *f = fopen("time.txt", "w");
-	if (!f)
-		return -1;
 	srand(time(NULL));
 	int rc = OK;
 	setbuf(stdout, NULL);
-	int arrk[] = { 1, 5, 10, 20, 40, 75, 100 };
-	fprintf(f, "%4s %22s %22s %26s %s\n", "Len", "Stack by list",
+	int arrk[] = { 1, 5, 10, 20, 40, 75, 100, 250, 500, 1000 };
+	printf("%4s %13s %13s %17s %25s\n", "Len", "Stack by list",
 		"Stack by array", "Time eff", "Memory eff");
-	fprintf(f, "%4s %6s %6s %8s %6s %6s %8s %8s %8s %8s\n\n", " ",
-		"push", "pop", "simul",
-		"push", "pop", "simul",
-		"push", "pop", "simul");
+	printf("%4s %6s %6s %6s %6s %8s %8s %8s %8s\n\n", " ",
+		"push", "pop", "push", "pop", "push", "pop", "list", "arr");
 	for (int i = 0; i < sizeof(arrk)/sizeof(arrk[0]); i++)
 	{
-		fprintf(f, "%4d ", arrk[i]);
-		rc = time_measure(f, arrk[i]);
+		printf("%4d ", arrk[i]);
+		rc = time_measure(arrk[i]);
 		if (rc != OK)
 		{
 			errmsg(rc);
 			return rc;
 		}
 	}
-	fclose(f);
 	return rc;
 }	
