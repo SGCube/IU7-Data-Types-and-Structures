@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
+#include <windows.h>
+#include <string.h>
 #include "error.h"
 #include "btree.h"
 
@@ -44,13 +47,53 @@ ARR_DLL tree_t* ARR_DECL search(tree_t *root, int data)
 	return root;
 }
 
+void console_go_to_xy(short x, short y)
+{
+    HANDLE StdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD coord = {x, y};
+    SetConsoleCursorPosition(StdOut, coord);
+}
+
 ARR_DLL void ARR_DECL print_node(tree_t *node)
 {
 	printf("%d\n", node->data);
 }
 
+void print_tree(tree_t *root)
+{
+	if (root)
+	{
+		queue<BinaryTree*> nodesQueue;
+		int nodesInCurrentLevel = 1;
+		int nodesInNextLevel = 0;
+		nodesQueue.push(root);
+		while (!nodesQueue.empty())
+		{
+			BinaryTree *node = nodesQueue.front();
+			nodesQueue.pop();
+			nodesInCurrentLevel--;
+			if (node)
+			{
+				printf("%d ", node->data);
+				nodesQueue.push(node->left);
+				nodesQueue.push(node->right);
+				nodesInNextLevel += 2;
+			}
+			if (nodesInCurrentLevel == 0)
+			{
+				printf("\n");
+				nodesInCurrentLevel = nodesInNextLevel;
+				nodesInNextLevel = 0;
+			}
+		}
+	}
+}
+ 
+
 ARR_DLL void ARR_DECL print(tree_t *root, int depth)
 {
+	print_tree(root, 37, 5, 2, 'k');
+	/*printf("\n");
 	if (root)
 	{
 		if (depth != 0)
@@ -71,7 +114,7 @@ ARR_DLL void ARR_DECL print(tree_t *root, int depth)
 			printf("R: ");
 			print(root->right, depth + 1);
 		}
-	}
+	}*/
 }
 
 ARR_DLL tree_t* ARR_DECL tree_remove(tree_t *tree, int data)

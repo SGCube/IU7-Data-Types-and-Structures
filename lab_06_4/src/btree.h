@@ -20,6 +20,9 @@ ARR_DLL tree_t* ARR_DECL search(tree_t *root, int data);
 
 ARR_DLL tree_t* ARR_DECL tree_remove(tree_t *root, int data);
 
+void print_tree(tree_t *root, short x, short y,
+	short a, char c);
+
 ARR_DLL void ARR_DECL print_node(tree_t *node);
 
 ARR_DLL void ARR_DECL print(tree_t *root, int depth);
