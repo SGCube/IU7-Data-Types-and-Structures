@@ -1,0 +1,176 @@
+0.0 1.0  0.0 1.0
+Working time: 2459.913327
+Elements: in - 4901
+OA launch times: 4898
+OA downtime: 11.739860
+
+Working time: 2587.830500
+Elements: in - 5142
+OA launch times: 5127
+OA downtime: 7.752068
+
+0.0 1.0  0.0 2.0
+Working time: 4933.534715
+Elements: in - 4979
+OA launch times: 4881
+OA downtime: 0.000000
+
+Working time: 5045.593554
+Elements: in - 10010
+OA launch times: 5095
+OA downtime: 0.000000
+
+0.0 1.0  0.0 4.0
+Working time: 9792.764306
+Elements: in - 4978
+OA launch times: 4879
+OA downtime: 0.109378
+
+Working time: 9509.780084
+Elements: in - 18992
+OA launch times: 4743
+OA downtime: 0.000000
+
+0.0 1.0  0.0 6.0
+Working time: 14557.878353
+Elements: in - 4951
+OA launch times: 4852
+OA downtime: 0.000000
+
+Working time: 15456.982208
+Elements: in - 30888
+OA launch times: 5181
+OA downtime: 0.000000
+
+0.0 2.0  0.0 1.0
+Working time: 5026.131138
+Elements: in - 4992
+OA launch times: 4992
+OA downtime: 1981.800226
+
+Working time: 4903.918455
+Elements: in - 4845
+OA launch times: 4845
+OA downtime: 1928.724357
+
+0.0 2.0  0.0 2.0
+Working time: 4981.946043
+Elements: in - 5022
+OA launch times: 4985
+OA downtime: 15.590197
+
+Working time: 5059.219886
+Elements: in - 5101
+OA launch times: 4986
+OA downtime: 9.014313
+
+0.0 2.0  0.0 4.0
+Working time: 10072.985626
+Elements: in - 5134
+OA launch times: 5035
+OA downtime: 0.000000
+
+Working time: 10300.060793
+Elements: in - 10261
+OA launch times: 5142
+OA downtime: 0.000000
+
+0.0 2.0  0.0 6.0
+Working time: 14493.148045
+Elements: in - 5027
+OA launch times: 4928
+OA downtime: 0.428663
+
+Working time: 14991.036714
+Elements: in - 15048
+OA launch times: 5024
+OA downtime: 0.000000
+
+0.0 4.0  0.0 1.0
+Working time: 9651.089846
+Elements: in - 4850
+OA launch times: 4850
+OA downtime: 6519.633930
+
+Working time: 10269.103793
+Elements: in - 5077
+OA launch times: 5077
+OA downtime: 7016.910794
+
+0.0 4.0  0.0 2.0
+Working time: 10366.820399
+Elements: in - 5161
+OA launch times: 5161
+OA downtime: 4005.137364
+
+Working time: 10106.148564
+Elements: in - 5000
+OA launch times: 5000
+OA downtime: 3942.246223
+
+0.0 4.0  0.0 4.0
+Working time: 10040.389172
+Elements: in - 5020
+OA launch times: 4991
+OA downtime: 8.027467
+
+Working time: 10154.841029
+Elements: in - 5050
+OA launch times: 5022
+OA downtime: 15.255470
+
+0.0 4.0  0.0 6.0
+Working time: 15345.372173
+Elements: in - 5177
+OA launch times: 5079
+OA downtime: 0.000000
+
+Working time: 14958.881130
+Elements: in - 7491
+OA launch times: 5015
+OA downtime: 0.000000
+
+0.0 6.0  0.0 1.0
+Working time: 15515.819483
+Elements: in - 5151
+OA launch times: 5151
+OA downtime: 12144.849605
+
+Working time: 13893.414533
+Elements: in - 4661
+OA launch times: 4661
+OA downtime: 10837.706320
+
+0.0 6.0  0.0 2.0
+Working time: 14576.418653
+Elements: in - 4847
+OA launch times: 4847
+OA downtime: 8411.942686
+
+Working time: 14909.501022
+Elements: in - 5004
+OA launch times: 5004
+OA downtime: 8630.228034
+
+0.0 6.0  0.0 4.0
+Working time: 14486.951872
+Elements: in - 4810
+OA launch times: 4810
+OA downtime: 3204.069460
+
+Working time: 15881.264809
+Elements: in - 5302
+OA launch times: 5302
+OA downtime: 3469.888241
+
+0.0 6.0  0.0 6.0
+Working time: 14614.886868
+Elements: in - 4942
+OA launch times: 4871
+OA downtime: 5.931516
+
+Working time: 15361.159459
+Elements: in - 5127
+OA launch times: 5089
+OA downtime: 39.692618
+
