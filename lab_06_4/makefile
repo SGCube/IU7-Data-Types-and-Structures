@@ -4,7 +4,7 @@ SRCDIR := src
 LIBDIR := lib
 
 LIBS := btree.dll file.dll
-BTREE_OBJ := $(SRCDIR)/btree.o $(SRCDIR)/avltree.o
+BTREE_OBJ := $(SRCDIR)/queue.o $(SRCDIR)/btree.o $(SRCDIR)/avltree.o
 FILE_OBJ := $(SRCDIR)/file.o
 
 ifeq ($(mode), debug)

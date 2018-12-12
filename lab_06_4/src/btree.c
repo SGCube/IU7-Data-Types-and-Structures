@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <conio.h>
-#include <windows.h>
-#include <string.h>
 #include "error.h"
 #include "btree.h"
+#include "queue.h"
 
 ARR_DLL tree_t* ARR_DECL create_node(int data)
 {
@@ -47,13 +45,6 @@ ARR_DLL tree_t* ARR_DECL search(tree_t *root, int data)
 	return root;
 }
 
-void console_go_to_xy(short x, short y)
-{
-    HANDLE StdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD coord = {x, y};
-    SetConsoleCursorPosition(StdOut, coord);
-}
-
 ARR_DLL void ARR_DECL print_node(tree_t *node)
 {
 	printf("%d\n", node->data);
@@ -61,30 +52,28 @@ ARR_DLL void ARR_DECL print_node(tree_t *node)
 
 void print_tree(tree_t *root)
 {
-	if (root)
+	if (!root)
+		return;
+	
+	queue_t *pin = NULL, *pout = NULL;
+	int cur_level = 1, next_level = 0;
+	push((void *)root, &pin, &pout);
+	while (pout)
 	{
-		queue<BinaryTree*> nodesQueue;
-		int nodesInCurrentLevel = 1;
-		int nodesInNextLevel = 0;
-		nodesQueue.push(root);
-		while (!nodesQueue.empty())
+		tree_t *node = pop(&pin, &pout);
+		cur_level--;
+		if (node)
 		{
-			BinaryTree *node = nodesQueue.front();
-			nodesQueue.pop();
-			nodesInCurrentLevel--;
-			if (node)
-			{
-				printf("%d ", node->data);
-				nodesQueue.push(node->left);
-				nodesQueue.push(node->right);
-				nodesInNextLevel += 2;
-			}
-			if (nodesInCurrentLevel == 0)
-			{
-				printf("\n");
-				nodesInCurrentLevel = nodesInNextLevel;
-				nodesInNextLevel = 0;
-			}
+			printf("%d ", node->data);
+			push((void *)node->left, &pin, &pout);
+			push((void *)node->right, &pin, &pout);
+			next_level += 2;
+		}
+		if (cur_level == 0)
+		{
+			printf("\n");
+			cur_level = next_level;
+			next_level = 0;
 		}
 	}
 }
@@ -92,8 +81,6 @@ void print_tree(tree_t *root)
 
 ARR_DLL void ARR_DECL print(tree_t *root, int depth)
 {
-	print_tree(root, 37, 5, 2, 'k');
-	/*printf("\n");
 	if (root)
 	{
 		if (depth != 0)
@@ -114,7 +101,7 @@ ARR_DLL void ARR_DECL print(tree_t *root, int depth)
 			printf("R: ");
 			print(root->right, depth + 1);
 		}
-	}*/
+	}
 }
 
 ARR_DLL tree_t* ARR_DECL tree_remove(tree_t *tree, int data)
