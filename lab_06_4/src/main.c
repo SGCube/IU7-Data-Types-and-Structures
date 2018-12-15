@@ -19,6 +19,12 @@ typedef tree_t* (__cdecl *fn_balance_t)(tree_t *);
 typedef tree_t* (__cdecl *fn_balance_all_t)(tree_t *);
 typedef tree_t* (__cdecl *fn_avl_remove_t)(tree_t *, int);
 
+
+typedef int (__cdecl *fn_hread_t)(FILE*, hash_t*, int*);
+typedef int (__cdecl *fn_hsearch_t)(int, hash_t*, int);
+typedef int (__cdecl *fn_hremove_t)(int, hash_t*, int);
+typedef void (__cdecl *fn_hprint_t)(hash_t*, int);
+
 ///**************************************************************************
 
 int main(int argc, char **argv)
@@ -42,6 +48,12 @@ int main(int argc, char **argv)
 	fn_balance_all_t tree_balance;
 	fn_avl_remove_t avl_remove;
 	
+	HMODULE hashlib;
+	fn_hread_t hasht_read;
+	fn_hsearch_t hasht_search;
+	fn_hremove_t hasht_remove;
+	fn_hprint_t hasht_print;
+	
 	///*** file.dll *********************************************************
 	
 	filelib = LoadLibrary("lib\\file.dll");
@@ -63,7 +75,7 @@ int main(int argc, char **argv)
 	///*** btree.dll ********************************************************
 	
 	treelib = LoadLibrary("lib\\btree.dll");
-    if (!filelib)
+    if (!treelib)
     {
         fprintf(stderr, "Can not open btree.dll.\n");
 		FreeLibrary(filelib);
@@ -90,6 +102,31 @@ int main(int argc, char **argv)
         return ERR_LIB;
     }
 	
+	///*** hasht.dll ********************************************************
+	
+	hashlib = LoadLibrary("lib\\hasht.dll");
+	if (!hashlib)
+	{
+		printf(stderr, "Can not open btree.dll.\n");
+		FreeLibrary(filelib);
+		FreeLibrary(treelib);
+        return ERR_LIB;
+	}
+	
+	hasht_read = (fn_hread_t) GetProcAddress(hastlib, "read");
+	hasht_search = (fn_hsearch_t) GetProcAddress(hastlib, "search");
+	hasht_remove = (fn_hremove_t) GetProcAddress(hastlib, "remove");
+	hasht_print = (fn_hprint_t) GetProcAddress(hastlib, "print");
+	
+	if (!hasht_read || !hasht_search || !hasht_remove || !hasht_print)
+	{
+		printf("Can not load functions (hasht.dll).\n");
+		FreeLibrary(filelib);
+		FreeLibrary(treelib);
+		FreeLibrary(hashlib);
+        return ERR_LIB;
+	}
+	
 	///*** проверка входных аргументов **************************************
 	
 	if (argc < 2)
@@ -112,6 +149,8 @@ int main(int argc, char **argv)
 	///*** объявление структур **********************************************
 	
 	tree_t *tree = NULL;
+	hash_t ht[MAX_SIZE];
+	n = 23;
 	
 	///*** запуск основного меню ********************************************
 	
@@ -147,7 +186,11 @@ int main(int argc, char **argv)
 			{
 				int sc = fscanf(f, "%d", &x);
 				if (sc != 1 && rc != ERR_EMPTY)
+				{
 					rc = ERR_NUMB;
+					fprintf(stderr, "Invalid input!\n");
+					action = 0;
+				}
 				else
 				{
 					rc = OK;
@@ -163,10 +206,16 @@ int main(int argc, char **argv)
 				}
 			}
 			while (rc == OK && !feof(f));
+			if (rc == ERR_EMPTY)
+			{
+				fprintf(stderr, "File is empty!\n")
+				action = 0;
+			}
 		}
 		else if (action == '2')
 			tree = tree_balance(tree);
-		else if (action >= '3' && action <= '5')
+		else if ((action >= '3' && action <= '5') || (action == '8') ||
+			(action == '9'))
 		{
 			int x;
 			printf("Enter a number to search: ");
@@ -181,7 +230,7 @@ int main(int argc, char **argv)
 			{
 				tree_t *node = tree_search(tree, x);
 				if (!node)
-				printf("\nNumber was not found.\n");
+					printf("\nNumber was not found.\n");
 				else
 				{
 					printf("\nNumber is found!\nNumber:\t");
@@ -193,16 +242,46 @@ int main(int argc, char **argv)
 				tree = tree_remove(tree, x);
 			else if (action == '5')
 				tree = avl_remove(tree, x);
+			else if (action == '8')
+			{
+				int ind = hasht_search(x, ht, n);
+				if (ind == -1)
+					printf("\nNumber was not found.\n");
+				else
+				{
+					printf("\nNumber is found!\n);
+					printf("Index:\t%d\n", ind);
+				}
+			}
+			else if (action == '9')
+				ind = hasht_remove(x, ht, n);
 		}
 		else if (action == '6')
 		{
 			printf("\n");
 			print_tree(tree, 0);
 		}
+		else if (action == '7')
+		{
+			rc = hasht_read(f, ht, &n);
+			if (rc != OK)
+				action = 0;
+			if (rc == ERR_MEMORY)
+				fprintf(stderr, "Hash table cannot be rehashed!\n");
+			else if (rc == ERR_NUMB)
+				fprintf(stderr, "Invalid input!\n");
+			else if (rc == ERR_EMPTY)
+				fprintf(stderr, "File is empty!\n");
+		}
+		else if (action == '0')
+		{
+			printf("\n");
+			hasht_print(ht, n);
+		}
 		else
 			action = 0;
 		
-		if (action == '3' || action == '6')
+		if (action == '3' || action == '6' || action == '0')
 		{
 			printf("\nEnter any key to continue");
 			fflush(stdin);
