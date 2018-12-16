@@ -101,6 +101,11 @@ ARR_DLL tree_t* ARR_DECL avl_remove(tree_t *tree, int data)
 		tree_t *tmax = tmpl;
 		while (tmax->right)
 			tmax = tmax->right;
+		if (tmax == tmpl)
+		{
+			tmax->right = tmpr;
+			return balance(tmax);
+		}
 		//изъятие максимального элемента в левом поддереве
 		tree_t *tmp = tmpl;
 		while (tmp->right)

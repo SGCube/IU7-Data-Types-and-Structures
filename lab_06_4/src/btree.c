@@ -16,12 +16,13 @@ ARR_DLL tree_t* ARR_DECL create_node(int data)
 
 ARR_DLL void ARR_DECL free_all(tree_t *tree)
 {
-	if (tree)
-	{
-		free_all(tree->left);
-		free_all(tree->right);
-		free(tree);
-	}
+	if (!tree)
+		return;
+	tree_t *cur = tree;
+	tree_t *left = cur->left, *right = cur->right;
+	free_all(left);
+	free_all(right);
+	free(tree);
 }
 
 ARR_DLL tree_t* add(tree_t *root, tree_t *node)
@@ -45,9 +46,15 @@ ARR_DLL tree_t* ARR_DECL read(FILE *f, int *rc)
 	do
 	{
 		int sc = fscanf(f, "%d", &x);
+		if (sc == EOF && *rc != ERR_EMPTY)
+		{
+			*rc = OK;
+			return tree;
+		}
 		if (sc != 1 && *rc != ERR_EMPTY)
 		{
 			*rc = ERR_NUMB;
+			free_all(tree);
 			return NULL;
 		}
 		else
@@ -57,6 +64,7 @@ ARR_DLL tree_t* ARR_DECL read(FILE *f, int *rc)
 			if (!node)
 			{
 				*rc = ERR_MEMORY;
+				free_all(tree);
 				return NULL;
 			}
 			else
@@ -145,12 +153,21 @@ ARR_DLL tree_t* ARR_DECL tree_remove(tree_t *tree, int data)
 		tree_t *tmpr = tree->right;
 		free(tree);
 		//перестановка ветви при отсутствии левой
+		if (!tmpl && !tmpr)
+			return NULL;
 		if (!tmpl)
 			return tmpr;
+		if (!tmpr)
+			return tmpl;
 		//поиск максимального элемента в левом поддереве
 		tree_t *tmax = tmpl;
 		while (tmax->right)
 			tmax = tmax->right;
+		if (tmax == tmpl)
+		{
+			tmax->right = tmpr;
+			return tmax;
+		}
 		//изъятие максимального элемента в левом поддереве
 		tree_t *tmp = tmpl;
 		while (tmp->right)

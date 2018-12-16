@@ -16,6 +16,41 @@ tick_t tick(void)
 	return d;
 }
 
+void file_random(int n, FILE *f)
+{
+	if (!f || n <= 0)
+		return;
+	
+	int *arr = (int *) malloc(n * sizeof(int));
+	if (!arr)
+		return;
+	
+	int rmin = 1, rmax = n;
+	int rwidth = rmax - rmin + 1;
+	
+	int *arr2 = (int *) malloc(rwidth * sizeof(int));
+	if (!arr2)
+		return;
+	 
+	for (int i = 0; i < rwidth; i++)
+		arr2[i] = rmin + i;
+	 
+	int n2 = rwidth;
+	for (int i = 0; i < n; i++)
+	{
+		int index = rand() % n2;
+		arr[i] = arr2[index];
+		n2--;
+		arr2[index] = arr2[n2];
+	}
+	
+	for (int i = 0; i < n; i++)
+		fprintf(f, "%d ", arr[i]);
+	
+	free(arr);
+	free(arr2);
+}
+
 /// прототипы функций из библиотек ******************************************
 
 typedef int (__cdecl *fn_fsearch_t)(FILE *f, int);
@@ -40,6 +75,8 @@ typedef void (__cdecl *fn_hprint_t)(hash_t *, int);
 
 int main()
 {
+	srand(time(NULL));
+	
 	///*** объявления библиотек *********************************************
 	
 	HMODULE filelib;
@@ -141,13 +178,8 @@ int main()
 	}
 	
 	///*** запуск тестирования **********************************************
-	
-	char *str[] = { "test_time/in_10.txt", 
-					"test_time/in_25.txt",
-					"test_time/in_50.txt" };
 					
-	int sizes[] = { 10, 25, 50};
-	int keys[] = { 3, 8, 34 };
+	int sizes[] = { 10, 25, 50 };
 	
 	tick_t trmv_tree[5], tsrc_tree[5], trmv_avl[5], tsrc_avl[5],
 		trmv_hash[5], tsrc_hash[5];
@@ -164,13 +196,17 @@ int main()
 		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
 			tree_t *tree = NULL;
-			FILE *f = fopen(str[i], "r");
+			
+			FILE *f = fopen("test.txt", "w");
+			assert(f);
+			file_random(sizes[i], f);
+			fclose(f);
+			f = fopen("test.txt", "r");
 			assert(f);
 			
 			int rc = OK;
 			tree = tree_read(f, &rc);
 			assert(rc == OK);
-			
 			fclose(f);
 			
 			start = tick();
@@ -194,7 +230,12 @@ int main()
 		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
 			tree_t *tree = NULL;
-			FILE *f = fopen(str[i], "r");
+			
+			FILE *f = fopen("test.txt", "w");
+			assert(f);
+			file_random(sizes[i], f);
+			fclose(f);
+			f = fopen("test.txt", "r");
 			assert(f);
 			
 			int rc = OK;
@@ -226,7 +267,12 @@ int main()
 		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
 			n = 13;
-			FILE *f = fopen(str[i], "r");
+			
+			FILE *f = fopen("test.txt", "w");
+			assert(f);
+			file_random(sizes[i], f);
+			fclose(f);
+			f = fopen("test.txt", "r");
 			assert(f);
 			
 			int rc = hasht_read(f, ht, &n);

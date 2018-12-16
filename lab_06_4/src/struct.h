@@ -2,7 +2,7 @@
 
 #define __STRUCT__H__
 
-#define MAX_SIZE 100
+#define MAX_SIZE 5000
 #define MAX_SEARCH 4
 
 typedef struct tree_node tree_t;
