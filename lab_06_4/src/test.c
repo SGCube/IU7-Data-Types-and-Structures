@@ -161,7 +161,7 @@ int main()
 		trmv_tree[i] = 0;
 		tsrc_tree[i] = 0;
 		
-		for (int j = 0; j < 1000; j++)
+		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
 			tree_t *tree = NULL;
 			FILE *f = fopen(str[i], "r");
@@ -174,24 +174,24 @@ int main()
 			fclose(f);
 			
 			start = tick();
-			tree_search(tree, keys[i]);
+			tree_search(tree, key);
 			end = tick();
 			tsrc_tree[i] += end - start;
 			
 			start = tick();
-			tree = tree_remove(tree, keys[i]);
+			tree = tree_remove(tree, key);
 			end = tick();
 			trmv_tree[i] += end - start;
 			
 			free_tree(tree);
 		}
-		tsrc_tree[i] /= 1000;
-		trmv_tree[i] /= 1000;
+		tsrc_tree[i] /= sizes[i];
+		trmv_tree[i] /= sizes[i];
 		
 		trmv_avl[i] = 0;
 		tsrc_avl[i] = 0;
 		
-		for (int j = 0; j < 1000; j++)
+		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
 			tree_t *tree = NULL;
 			FILE *f = fopen(str[i], "r");
@@ -206,24 +206,24 @@ int main()
 			tree_balance(tree);
 			
 			start = tick();
-			tree_search(tree, keys[i]);
+			tree_search(tree, key);
 			end = tick();
 			tsrc_avl[i] += end - start;
 			
 			start = tick();
-			tree = avl_remove(tree, keys[i]);
+			tree = avl_remove(tree, key);
 			end = tick();
 			trmv_avl[i] += end - start;
 			
 			free_tree(tree);
 		}
-		tsrc_avl[i] /= 1000;
-		trmv_avl[i] /= 1000;
+		tsrc_avl[i] /= sizes[i];
+		trmv_avl[i] /= sizes[i];
 		
 		trmv_hash[i] = 0;
 		tsrc_hash[i] = 0;
 		
-		for (int j = 0; j < 1000; j++)
+		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
 			n = 13;
 			FILE *f = fopen(str[i], "r");
@@ -235,17 +235,17 @@ int main()
 			fclose(f);
 			
 			start = tick();
-			hasht_search(keys[i], ht, n);
+			hasht_search(key, ht, n);
 			end = tick();
 			tsrc_hash[i] += end - start;
 			
 			start = tick();
-			hasht_remove(keys[i], ht, n);
+			hasht_remove(key, ht, n);
 			end = tick();
 			trmv_hash[i] += end - start;
 		}
-		tsrc_hash[i] /= 1000;
-		trmv_hash[i] /= 1000;
+		tsrc_hash[i] /= sizes[i];
+		trmv_hash[i] /= sizes[i];
 	}
 	
 	printf("\t\tsearch\n\n");
