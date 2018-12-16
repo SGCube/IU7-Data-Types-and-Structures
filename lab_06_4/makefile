@@ -3,8 +3,9 @@ CFLAGS := -std=c99 -Wall -Werror
 SRCDIR := src
 LIBDIR := lib
 
-LIBS := btree.dll file.dll
-BTREE_OBJ := $(SRCDIR)/queue.o $(SRCDIR)/btree.o $(SRCDIR)/avltree.o
+LIBS := btree.dll file.dll hasht.dll
+BTREE_OBJ := $(SRCDIR)/btree.o $(SRCDIR)/avltree.o
+HASHT_OBJ := $(SRCDIR)/hasht.o
 FILE_OBJ := $(SRCDIR)/file.o
 
 ifeq ($(mode), debug)
@@ -30,6 +31,9 @@ btree.dll: $(BTREE_OBJ) $(LIBDIR)
 	
 file.dll: $(FILE_OBJ) $(LIBDIR)
 	gcc -shared $(FILE_OBJ) -Wl,--subsystem,windows -o $(LIBDIR)/$@
+	
+hasht.dll: $(HASHT_OBJ) $(LIBDIR)
+	gcc -shared $(HASHT_OBJ) -Wl,--subsystem,windows -o $(LIBDIR)/$@
 	
 $(SRCDIR)/main.o: main.c
 	$(CC) $(CFLAGS) -c $< -o $@

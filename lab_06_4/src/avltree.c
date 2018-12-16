@@ -112,4 +112,4 @@ ARR_DLL tree_t* ARR_DECL avl_remove(tree_t *tree, int data)
 		return balance(tmax);
 	}
 	return balance(tree);
-};
+}

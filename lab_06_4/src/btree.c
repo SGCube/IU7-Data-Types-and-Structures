@@ -1,9 +1,7 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "error.h"
 #include "btree.h"
-#include "queue.h"
 
 ARR_DLL tree_t* ARR_DECL create_node(int data)
 {
@@ -16,9 +14,14 @@ ARR_DLL tree_t* ARR_DECL create_node(int data)
 	return node;
 }
 
-ARR_DLL void ARR_DECL free_node(tree_t *node)
+ARR_DLL void ARR_DECL free_all(tree_t *tree)
 {
-	free(node);
+	if (tree)
+	{
+		free_all(tree->left);
+		free_all(tree->right);
+		free(tree);
+	}
 }
 
 ARR_DLL tree_t* add(tree_t *root, tree_t *node)
@@ -32,6 +35,36 @@ ARR_DLL tree_t* add(tree_t *root, tree_t *node)
 	else
 		root->right = add(root->right, node);
 	return root;
+}
+
+ARR_DLL tree_t* ARR_DECL read(FILE *f, int *rc)
+{
+	int x;
+	*rc = ERR_EMPTY;
+	tree_t *tree = NULL;
+	do
+	{
+		int sc = fscanf(f, "%d", &x);
+		if (sc != 1 && *rc != ERR_EMPTY)
+		{
+			*rc = ERR_NUMB;
+			return NULL;
+		}
+		else
+		{
+			*rc = OK;
+			tree_t *node = create_node(x);
+			if (!node)
+			{
+				*rc = ERR_MEMORY;
+				return NULL;
+			}
+			else
+				tree = add(tree, node);
+		}
+	}
+	while (*rc == OK && !feof(f));
+	return tree;
 }
 
 ARR_DLL tree_t* ARR_DECL search(tree_t *root, int data)
@@ -49,35 +82,6 @@ ARR_DLL void ARR_DECL print_node(tree_t *node)
 {
 	printf("%d\n", node->data);
 }
-
-void print_tree(tree_t *root)
-{
-	if (!root)
-		return;
-	
-	queue_t *pin = NULL, *pout = NULL;
-	int cur_level = 1, next_level = 0;
-	push((void *)root, &pin, &pout);
-	while (pout)
-	{
-		tree_t *node = pop(&pin, &pout);
-		cur_level--;
-		if (node)
-		{
-			printf("%d ", node->data);
-			push((void *)node->left, &pin, &pout);
-			push((void *)node->right, &pin, &pout);
-			next_level += 2;
-		}
-		if (cur_level == 0)
-		{
-			printf("\n");
-			cur_level = next_level;
-			next_level = 0;
-		}
-	}
-}
- 
 
 ARR_DLL void ARR_DECL print(tree_t *root, int depth)
 {
@@ -102,6 +106,27 @@ ARR_DLL void ARR_DECL print(tree_t *root, int depth)
 			print(root->right, depth + 1);
 		}
 	}
+}
+
+void to_dot(tree_t *tree, FILE *f)
+{
+	if (tree)
+	{
+		to_dot(tree->left, f);
+		if (tree->left)
+			fprintf(f, "%d -> %d;\n", tree->data, tree->left->data);
+
+		if (tree->right)
+			fprintf(f, "%d -> %d;\n", tree->data, tree->right->data);
+		to_dot(tree->right, f);
+	}
+}
+
+ARR_DLL void ARR_DECL export_to_dot(FILE *f, const char *name, tree_t *tree)
+{
+    fprintf(f, "digraph %s {\n", name);
+    to_dot(tree, f);
+    fprintf(f, "}\n");
 }
 
 ARR_DLL tree_t* ARR_DECL tree_remove(tree_t *tree, int data)
@@ -137,84 +162,4 @@ ARR_DLL tree_t* ARR_DECL tree_remove(tree_t *tree, int data)
 		return tmax;
 	}
 	return tree;
-};
-
-/*ARR_DLL tree_t* ARR_DECL remove(tree_t *root, int data)
-{
-	if (!*root)
-		return NULL;
-	
-	tree_t *par = NULL, *node = *root;
-	int br = 0;
-	while (node)
-	{
-		if (data < node->data)					//поиск в левом поддереве
-		{
-			br = -1;
-			par = node;
-			node = node->left;
-		}
-		else if (data > node->data)				//поиск в правом поддереве
-		{
-			br = 1;
-			par = node;
-			node = node->right;
-		}
-		else if (node->left && node->right)		//два сына
-		{
-			//поиск максимального элемента в левом поддереве
-			tree_t *lmax = node->left, *lmaxpar = node;
-			while (lmax->right)
-			{
-				lmaxpar = lmax;
-				lmax = lmax->right;
-			}
-			//изъятие элемента и установление его новых связей
-			tree_t *tmp = remove(&lmaxpar, lmax->data);
-			tmp->left = node->left;
-			tmp->right = node->right;
-			//новые связи родителя удаляемого узла
-			if (br < 0)
-				par->left = tmp;
-			else if (br > 0)
-				par->right = tmp;
-			else
-				*root = tmp;
-			return node;
-		}
-		else if (node->left)					//один сын (слева)
-		{
-			//новые связи родителя удаляемого узла
-			if (br < 0)
-				par->left = node->left;
-			else if (br > 0)
-				par->right = node->left;
-			else
-				*root = node->left;
-			return node;
-		}
-		else if (node->right)					//один сын (справа)
-		{
-			//новые связи родителя удаляемого узла
-			if (br < 0)
-				par->left = node->right;
-			else if (br > 0)
-				par->right = node->right;
-			else
-				*root = node->right;
-			return node;
-		}
-		else									//терминал
-		{
-			//новые связи родителя удаляемого узла
-			if (br < 0)
-				par->left = NULL;
-			else if (br > 0)
-				par->right = NULL;
-			else
-				*root = NULL;
-			return node;
-		}
-	}
-	return NULL;		//элемент не найден
-}*/
+}

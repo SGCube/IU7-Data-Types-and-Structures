@@ -10,6 +10,6 @@
 
 #define ARR_DECL __cdecl
 
-ARR_DLL int ARR_DECL fsearch(FILE *f, int numb, int *rc);
+ARR_DLL int ARR_DECL fsearch(FILE *f, int numb);
 
 #endif

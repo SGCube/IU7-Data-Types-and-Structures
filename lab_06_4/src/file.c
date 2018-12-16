@@ -6,31 +6,33 @@
 
 #define BUF_SIZE 20
 
-ARR_DLL int ARR_DECL fsearch(FILE *f, int numb, int *rc)
+ARR_DLL int ARR_DECL fsearch(FILE *f, int numb)
 {
 	if (!f)
-	{
-		*rc = ERR_FILE;
 		return ERR_FILE;
-	}
-	
-	*rc = OK;
+
 	int x;
 	if (fscanf(f, "%d", &x) == EOF)
-	{
-		*rc = ERR_EMPTY;
 		return ERR_EMPTY;
-	}
 	rewind(f);
 	
-	short int found = 0;
-	
-	while (fscanf(f, "%d", &x) == 1 && !found)
+	int k = 0;
+	while (fscanf(f, "%d", &x) == 1)
+	{
 		if (numb == x)
-			found = 1;
-		
-	if (found)
-		return numb;
-	*rc = NOT_FOUND;
-	return 0;
+			return k;
+		k++;
+	}
+	return NOT_FOUND;
+}
+
+ARR_DLL int ARR_DECL fremove(FILE *f, int numb)
+{
+	int ind = fsearch(f, numb);
+	rewind(f);
+	if (ind >= 0)
+	{
+		rewind(f);
+	}
+	return OK;
 }

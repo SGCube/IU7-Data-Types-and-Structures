@@ -1,12 +1,24 @@
 #include <stdio.h>
 #include <windows.h>
+#include <assert.h>
+#include <unistd.h>
+#include <time.h>
 
 #include "error.h"
 #include "struct.h"
 
+typedef unsigned long int tick_t;
+
+tick_t tick(void)
+{
+	tick_t d;
+	__asm__ __volatile__ ("rdtsc" : "=A" (d) );
+	return d;
+}
+
 /// прототипы функций из библиотек ******************************************
 
-typedef int (__cdecl *fn_fsearch_t)(FILE *, int);
+typedef int (__cdecl *fn_fsearch_t)(FILE *f, int);
 
 typedef tree_t* (__cdecl *fn_create_node_t)(int);
 typedef void (__cdecl *fn_free_tree_t)(tree_t *);
@@ -21,19 +33,13 @@ typedef tree_t* (__cdecl *fn_balance_t)(tree_t *);
 typedef tree_t* (__cdecl *fn_balance_all_t)(tree_t *);
 typedef tree_t* (__cdecl *fn_avl_remove_t)(tree_t *, int);
 
-typedef void (__cdecl *fn_export_t)(FILE *, const char *, tree_t*);
-
 typedef int (__cdecl *fn_hread_t)(FILE *, hash_t *, int *);
 typedef int (__cdecl *fn_hsearch_t)(int, hash_t *, int);
 typedef int (__cdecl *fn_hremove_t)(int, hash_t *, int);
 typedef void (__cdecl *fn_hprint_t)(hash_t *, int);
 
-///**************************************************************************
-
-int main(int argc, char **argv)
+int main()
 {
-	int rc = OK;	//код ошибки
-	
 	///*** объявления библиотек *********************************************
 	
 	HMODULE filelib;
@@ -52,8 +58,6 @@ int main(int argc, char **argv)
 	fn_balance_t balance;
 	fn_balance_all_t tree_balance;
 	fn_avl_remove_t avl_remove;
-	
-	fn_export_t tree_export;
 	
 	HMODULE hashlib;
 	fn_hread_t hasht_read;
@@ -100,7 +104,6 @@ int main(int argc, char **argv)
 	balance = (fn_balance_t) GetProcAddress(treelib, "balance");
 	tree_balance = (fn_balance_all_t) GetProcAddress(treelib, "balance_all");
 	avl_remove = (fn_avl_remove_t) GetProcAddress(treelib, "avl_remove");
-	tree_export = (fn_export_t) GetProcAddress(treelib, "export_to_dot");
 	
 	if (!create_node || !tree_add || !tree_search || !tree_remove ||
 		!print_tree || !print_node || !tree_height || !tree_balance ||
@@ -137,162 +140,126 @@ int main(int argc, char **argv)
         return ERR_LIB;
 	}
 	
-	///*** проверка входных аргументов **************************************
+	///*** запуск тестирования **********************************************
 	
-	if (argc < 2)
-	{
-		fprintf(stderr, "No input file.\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
-		return ERR_CMD;
-	}
-		
-	FILE *f = fopen(argv[1], "r");
-	if (!f)
-	{
-		fprintf(stderr, "Can not open a file.\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
-		return ERR_FILE;
-	}
+	char *str[] = { "test_time/in_10.txt", 
+					"test_time/in_25.txt",
+					"test_time/in_50.txt" };
+					
+	int sizes[] = { 10, 25, 50};
+	int keys[] = { 3, 8, 34 };
 	
-	///*** объявление структур **********************************************
+	tick_t trmv_tree[5], tsrc_tree[5], trmv_avl[5], tsrc_avl[5],
+		trmv_hash[5], tsrc_hash[5];
 	
-	tree_t *tree = NULL;
 	hash_t ht[MAX_SIZE];
-	int n = 23;
+	int n = 13;
 	
-	///*** запуск основного меню ********************************************
-	
-	char action = 0;
-	do
+	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
 	{
-		setbuf(stdout, NULL);
-		fflush(stdin);
-		printf("\n"
-			"BINARY SEARCH TREE ACTIONS:\n"
-			"===========================\n"
-			"1 - make tree from file\n"
-			"2 - balance tree\n"
-			"3 - search in tree\n"
-			"4 - delete from tree\n"
-			"5 - delete from avl tree\n"
-			"6 - print tree\n"
-			"===========================\n"
-			"HASH TABLE ACTIONS:\n"
-			"7 - make hash table from file\n"
-			"8 - search in hash table\n"
-			"9 - delete from hash table\n"
-			"0 - print hash table\n"
-			"===========================\n"
-			"Enter action: ");
-		scanf("%c", &action);
-		printf("\n");
-		rewind(f);
-		if (action == '1')
+		tick_t start = 0, end = 0;
+		trmv_tree[i] = 0;
+		tsrc_tree[i] = 0;
+		
+		for (int j = 0; j < 1000; j++)
 		{
+			tree_t *tree = NULL;
+			FILE *f = fopen(str[i], "r");
+			assert(f);
+			
 			int rc = OK;
 			tree = tree_read(f, &rc);
-			if (rc != OK)
-				action = 0;
-			if (rc == ERR_EMPTY)
-				fprintf(stderr, "File is empty!\n");
-			if (rc == ERR_NUMB)
-				fprintf(stderr, "Invalid input!\n");
-			if (rc == ERR_MEMORY)
-				fprintf(stderr, "Memory allocation error!\n");
-		}
-		else if (action == '2')
-			tree = tree_balance(tree);
-		else if ((action >= '3' && action <= '5') || (action == '8') ||
-			(action == '9'))
-		{
-			int x;
-			printf("Enter a number to search: ");
+			assert(rc == OK);
 			
-			if (scanf("%d", &x) != 1)
-			{
-				fprintf(stderr, "Number input error.\n");
-				action = 0;
-				rc = ERR_NUMB;
-			}
-			else if (action == '3')
-			{
-				tree_t *node = tree_search(tree, x);
-				if (!node)
-					printf("\nNumber was not found.\n");
-				else
-				{
-					printf("\nNumber is found!\nNumber:\t");
-					print_node(node);
-					printf("Address:\t%p\n", (void *)node);
-				}
-			}
-			else if (action == '4')
-				tree = tree_remove(tree, x);
-			else if (action == '5')
-				tree = avl_remove(tree, x);
-			else if (action == '8')
-			{
-				int ind = hasht_search(x, ht, n);
-				if (ind == -1)
-					printf("\nNumber was not found.\n");
-				else
-				{
-					printf("\nNumber is found!\n");
-					printf("Index:\t%d\n", ind);
-				}
-			}
-			else if (action == '9')
-				hasht_remove(x, ht, n);
+			fclose(f);
+			
+			start = tick();
+			tree_search(tree, keys[i]);
+			end = tick();
+			tsrc_tree[i] += end - start;
+			
+			start = tick();
+			tree = tree_remove(tree, keys[i]);
+			end = tick();
+			trmv_tree[i] += end - start;
+			
+			free_tree(tree);
 		}
-		else if (action == '6')
-		{
-			printf("\n");
-			print_tree(tree, 0);
-			FILE *dot = fopen("tree.gv", "w");
-			if (!dot)
-				fprintf(stderr, "Can't make dot file!\n");
-			else
-			{
-				tree_export(dot, "tree", tree);
-				fclose(dot);
-			}
-		}
-		else if (action == '7')
-		{
-			rc = hasht_read(f, ht, &n);
-			if (rc != OK)
-				action = 0;
-			if (rc == ERR_MEMORY)
-				fprintf(stderr, "Hash table cannot be rehashed!\n");
-			else if (rc == ERR_NUMB)
-				fprintf(stderr, "Invalid input!\n");
-			else if (rc == ERR_EMPTY)
-				fprintf(stderr, "File is empty!\n");
-		}
-		else if (action == '0')
-		{
-			printf("\n");
-			hasht_print(ht, n);
-		}
-		else
-			action = 0;
+		tsrc_tree[i] /= 1000;
+		trmv_tree[i] /= 1000;
 		
-		if (action == '3' || action == '6' || action == '0')
-		{
-			printf("\nEnter any key to continue");
-			fflush(stdin);
-			getchar();
-		}
+		trmv_avl[i] = 0;
+		tsrc_avl[i] = 0;
 		
+		for (int j = 0; j < 1000; j++)
+		{
+			tree_t *tree = NULL;
+			FILE *f = fopen(str[i], "r");
+			assert(f);
+			
+			int rc = OK;
+			tree = tree_read(f, &rc);
+			assert(rc == OK);
+			
+			fclose(f);
+			
+			tree_balance(tree);
+			
+			start = tick();
+			tree_search(tree, keys[i]);
+			end = tick();
+			tsrc_avl[i] += end - start;
+			
+			start = tick();
+			tree = avl_remove(tree, keys[i]);
+			end = tick();
+			trmv_avl[i] += end - start;
+			
+			free_tree(tree);
+		}
+		tsrc_avl[i] /= 1000;
+		trmv_avl[i] /= 1000;
+		
+		trmv_hash[i] = 0;
+		tsrc_hash[i] = 0;
+		
+		for (int j = 0; j < 1000; j++)
+		{
+			n = 13;
+			FILE *f = fopen(str[i], "r");
+			assert(f);
+			
+			int rc = hasht_read(f, ht, &n);
+			assert(rc == OK);
+			
+			fclose(f);
+			
+			start = tick();
+			hasht_search(keys[i], ht, n);
+			end = tick();
+			tsrc_hash[i] += end - start;
+			
+			start = tick();
+			hasht_remove(keys[i], ht, n);
+			end = tick();
+			trmv_hash[i] += end - start;
+		}
+		tsrc_hash[i] /= 1000;
+		trmv_hash[i] /= 1000;
 	}
-	while (action);
 	
-	free_tree(tree);
-	fclose(f);
-	FreeLibrary(filelib);
-	FreeLibrary(treelib);
-	FreeLibrary(hashlib);
-	return rc;
+	printf("\t\tsearch\n\n");
+	printf("%3s\t%7s\t%7s\t%7s\n", "N", "bintree", "avltree", "hashtab");
+	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
+		printf("%3d\t%7lu\t%7lu\t%7lu\n", sizes[i], tsrc_tree[i],
+		tsrc_avl[i], tsrc_hash[i]);
+	
+	printf("\n\t\tremove\n\n");
+	printf("%3s\t%7s\t%7s\t%7s\n", "N", "bintree", "avltree", "hashtab");
+	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
+		printf("%3d\t%7lu\t%7lu\t%7lu\n", sizes[i], trmv_tree[i],
+		trmv_avl[i], trmv_hash[i]);
+	printf("\n");
+	
+	return 0;
 }

@@ -1,8 +1,11 @@
 #include "hasht.h"
+#include "error.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #define P 43
 
-int init(hash_t *ht, int n)
+void init(hash_t *ht, int n)
 {
 	for (int i = 0; i < n; i++)
 		ht[i].flag = 0;
@@ -25,46 +28,61 @@ int is_prime(int x)
 
 int rehash(hash_t *ht, int *n)
 {
-	hash_t ht_old[MAX_SIZE];
+	hash_t *ht_old = malloc(MAX_SIZE * sizeof(hash_t));
+	if (!ht_old)
+		return ERR_MEMORY;
 	for (int i = 0; i < *n; i++)
 		ht_old[i] = ht[i];
-	*n == *n * 2 + 1;
+	int nn = *n;
+	*n = *n * 2 + 1;
 	while (!is_prime(*n))
 		*n += 2;
 	if (*n > MAX_SIZE)
 		return ERR_MEMORY;
 	
 	init(ht, *n);
-	for (int i = 0; i < *n; i++)
+	for (int i = 0; i < nn; i++)
 	{
-		int hashval = hashf(key, *n);
-		int kcmp = 0;					// количество сравнений
-		int i = hashval;				// текущий индекс
-		while (kcmp < MAX_SEARCH)
+		if (ht_old[i].flag == 1)
 		{
-			if (ht[i].flag != 1)	// пустая или удалённая ячейка
+			int key = ht_old[i].value;
+			int hashval = hashf(key, *n);
+			int kcmp = 0;					// количество сравнений
+			int j = hashval;				// текущий индекс
+			while (kcmp < MAX_SEARCH)
 			{
-				ht[i].value = key;
-				ht[i].flag = 1;
-				break;
-			}
-			else if (ht[i].value = key)	// значение уже добавлено
-				break;
-			else
-			{
-				i++;
-				if (i == n) // граница выделенной области памяти
-					i = 0;
-				kcmp++;
+				if (ht[j].flag != 1)	// пустая или удалённая ячейка
+				{
+					ht[j].value = key;
+					ht[j].flag = 1;
+					break;
+				}
+				else if (ht[j].value == key)	// значение уже добавлено
+					break;
+				else
+				{
+					j++;
+					if (j == *n) // граница выделенной области памяти
+						j = 0;
+					kcmp++;
+				}
+				if (kcmp == MAX_SEARCH)
+				{
+					int sc = rehash(ht, n);
+					if (sc != OK)
+						return sc;
+					kcmp = 0;
+					hashval = hashf(key, *n);
+					j = hashval;
+				}
 			}
 		}
-		if (kcmp == MAX_SEARCH)
-			return rehash(ht, n);
 	}
+	free(ht_old);
 	return OK;
 }
 
-ARR_DLL int ARR_DECL read(FILE *f, hash_t *ht, int *n)
+ARR_DLL int ARR_DECL hread(FILE *f, hash_t *ht, int *n)
 {
 	if (!f)
 		return ERR_FILE;
@@ -75,13 +93,16 @@ ARR_DLL int ARR_DECL read(FILE *f, hash_t *ht, int *n)
 	
 	int key;
 	if (fscanf(f, "%d", &key) == EOF)
-		return EMPTY_FILE;
+		return ERR_EMPTY;
 	rewind(f);
 	
 	init(ht, *n);
-	while (!feof(f))
+	int sc = 1;
+	while (sc == 1)
 	{
-		int sc = fscanf(f, "%d", &key);
+		sc = fscanf(f, "%d", &key);
+		if (sc == EOF)
+			return OK;
 		if (sc != 1)
 			return ERR_NUMB;
 		int hashval = hashf(key, *n);
@@ -95,27 +116,30 @@ ARR_DLL int ARR_DECL read(FILE *f, hash_t *ht, int *n)
 				ht[i].flag = 1;
 				break;
 			}
-			else if (ht[i].value = key)	// значение уже добавлено
+			else if (ht[i].value == key)	// значение уже добавлено
 				break;
 			else
 			{
 				i++;
-				if (i == n) // граница выделенной области памяти
+				if (i == *n) // граница выделенной области памяти
 					i = 0;
 				kcmp++;
 			}
 			if (kcmp == MAX_SEARCH)
 			{
-				rc = rehash(ht, n);
+				int rc = rehash(ht, n);
 				if (rc != OK)
 					return rc;
+				kcmp = 0;
+				hashval = hashf(key, *n);
+				i = hashval;
 			}
 		}
 	}
 	return OK;
 }
 
-ARR_DLL int ARR_DECL search(int key, hash_t *ht, int n)
+ARR_DLL int ARR_DECL hsearch(int key, hash_t *ht, int n)
 {
 	int hashval = hashf(key, n);		// вычисление значения хэш-функции
 	int kcmp = 1;						// количество сравнений
@@ -134,9 +158,9 @@ ARR_DLL int ARR_DECL search(int key, hash_t *ht, int n)
 	return -1;
 }
 
-ARR_DLL int ARR_DECL remove(int key, hash_t *ht, int n)
+ARR_DLL int ARR_DECL hremove(int key, hash_t *ht, int n)
 {
-	int ind = search(int key, hash_t *ht, int n);	//индекс элемента
+	int ind = hsearch(key, ht, n);	//индекс элемента
 	if (ind != -1)	//элемент существует
 	{
 		ht[ind].flag = -1;
@@ -145,7 +169,7 @@ ARR_DLL int ARR_DECL remove(int key, hash_t *ht, int n)
 	return -1;
 }
 
-ARR_DLL void ARR_DECL print(hash_t *ht, int n)
+ARR_DLL void ARR_DECL hprint(hash_t *ht, int n)
 {
 	for (int i = 0; i < n; i++)
 		if (ht[i].flag == 1)
