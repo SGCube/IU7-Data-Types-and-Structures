@@ -179,10 +179,10 @@ int main()
 	
 	///*** запуск тестирования **********************************************
 					
-	int sizes[] = { 10, 25, 50 };
+	int sizes[] = { 10, 25, 50, 100, 250, 500 };
 	
-	tick_t trmv_tree[5], tsrc_tree[5], trmv_avl[5], tsrc_avl[5],
-		trmv_hash[5], tsrc_hash[5];
+	tick_t trmv_tree[7], tsrc_tree[7], trmv_avl[7], tsrc_avl[7],
+		trmv_hash[7], tsrc_hash[7];
 	
 	hash_t ht[MAX_SIZE];
 	int n = 13;
