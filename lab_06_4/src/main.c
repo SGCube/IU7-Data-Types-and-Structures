@@ -258,6 +258,8 @@ int main(int argc, char **argv)
 				tree_export(dot, "tree", tree);
 				fclose(dot);
 			}
+			system("dot.exe -Tpng tree.gv -o tree.png");
+			system(".\\tree.png");
 		}
 		else if (action == '7')
 		{

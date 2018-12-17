@@ -306,6 +306,6 @@ int main()
 		printf("%3d\t%7lu\t%7lu\t%7lu\n", sizes[i], trmv_tree[i],
 		trmv_avl[i], trmv_hash[i]);
 	printf("\n");
-	
+	system("rm.exe test.txt");
 	return 0;
 }
