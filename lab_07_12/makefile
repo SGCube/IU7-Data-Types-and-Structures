@@ -24,4 +24,4 @@ test.exe: $(OBJS) $(SRCDIR)/test.o
 	$(CC) $(CFLAGS) -c $< -o $@
 	
 clean:
-	$(RM) *.o *.exe $(SRCDIR)/*.o *.exe
+	$(RM) *.o *.exe $(SRCDIR)/*.o *.exe *.gv *.png

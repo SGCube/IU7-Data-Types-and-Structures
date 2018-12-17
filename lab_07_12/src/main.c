@@ -117,14 +117,6 @@ int main(int argc, char **argv)
 		return ERR_MEMORY;
 	}
 	
-	printf("Short distances for town #%d:\n", node_i);
-	for (int i = 0; i < node_n; i++)
-		if (d[i] >= 0)
-			printf("%d ", d[i]);
-		else
-			printf("- ");
-	printf("\n");
-	
 	printf("Towns on distance more than T:\n");
 	for (int i = 0; i < node_n; i++)
 		if (towns[i])

@@ -88,7 +88,6 @@ int *short_dist(int *adj, int n, int node_i)
 				min = d[i];
 				imin = i;
 			}
-		printf("%d - %d\t", imin, min);
 		if (imin != -1)
 		{
 			for (int i = 0; i < n; i++)
@@ -100,14 +99,6 @@ int *short_dist(int *adj, int n, int node_i)
 				}
 			v[imin] = 1;
 		}
-		
-		for (int i = 0; i < n; i++)
-		if (d[i] >= 0)
-			printf("%d ", d[i]);
-		else
-			printf("- ");
-		printf("\n");
-		
 	}
 	while (imin != -1);
 	free(v);
