@@ -54,6 +54,7 @@ void file_random(int n, FILE *f)
 /// прототипы функций из библиотек ******************************************
 
 typedef int (__cdecl *fn_fsearch_t)(FILE *f, int);
+typedef void (__cdecl *fn_fremove_t)(char *fname, int);
 
 typedef tree_t* (__cdecl *fn_create_node_t)(int);
 typedef void (__cdecl *fn_free_tree_t)(tree_t *);
@@ -81,6 +82,7 @@ int main()
 	
 	HMODULE filelib;
 	fn_fsearch_t fsearch;
+	fn_fremove_t fremove;
 	
 	HMODULE treelib;
 	fn_create_node_t create_node;
@@ -112,8 +114,9 @@ int main()
     }
 	
 	fsearch = (fn_fsearch_t) GetProcAddress(filelib, "fsearch");
+	fremove = (fn_fremove_t) GetProcAddress(filelib, "fremove");
 	
-	if (!fsearch)
+	if (!fsearch || !fremove)
 	{
         printf("Can not load functions (file.dll).\n");
 		FreeLibrary(filelib);
@@ -179,10 +182,10 @@ int main()
 	
 	///*** запуск тестирования **********************************************
 					
-	int sizes[] = { 10, 25, 50, 100, 250, 500 };
+	int sizes[] = { 25, 50, 100, 250, 500 };
 	
 	tick_t trmv_tree[7], tsrc_tree[7], trmv_avl[7], tsrc_avl[7],
-		trmv_hash[7], tsrc_hash[7];
+		trmv_hash[7], tsrc_hash[7], trmv_file[7], tsrc_file[7];
 	
 	hash_t ht[MAX_SIZE];
 	int n = 13;
@@ -292,19 +295,47 @@ int main()
 		}
 		tsrc_hash[i] /= sizes[i];
 		trmv_hash[i] /= sizes[i];
+		
+		tsrc_file[i] = 0;
+		trmv_file[i] = 0;
+		
+		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
+		{
+			FILE *f = fopen("test.txt", "w");
+			assert(f);
+			file_random(sizes[i], f);
+			fclose(f);
+			
+			f = fopen("test.txt", "r");
+			assert(f);
+			start = tick();
+			fsearch(f, n);
+			end = tick();
+			tsrc_file[i] += end - start;
+			fclose(f);
+			
+			start = tick();
+			fremove("test.txt", n);
+			end = tick();
+			trmv_file[i] += end - start;
+		}
+		tsrc_file[i] /= sizes[i];
+		trmv_file[i] /= sizes[i];
 	}
 	
 	printf("\t\tsearch\n\n");
-	printf("%3s\t%7s\t%7s\t%7s\n", "N", "bintree", "avltree", "hashtab");
+	printf("%3s\t%7s\t%7s\t%7s\t%7s\n", "N", "bintree", "avltree",
+		"hashtab", "file");
 	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
-		printf("%3d\t%7lu\t%7lu\t%7lu\n", sizes[i], tsrc_tree[i],
-		tsrc_avl[i], tsrc_hash[i]);
+		printf("%3d\t%7lu\t%7lu\t%7lu\t%7lu\n", sizes[i], tsrc_tree[i],
+		tsrc_avl[i], tsrc_hash[i], tsrc_file[i]);
 	
 	printf("\n\t\tremove\n\n");
-	printf("%3s\t%7s\t%7s\t%7s\n", "N", "bintree", "avltree", "hashtab");
+	printf("%3s\t%7s\t%7s\t%7s\t%7s\n", "N", "bintree", "avltree",
+		"hashtab", "file");
 	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
-		printf("%3d\t%7lu\t%7lu\t%7lu\n", sizes[i], trmv_tree[i],
-		trmv_avl[i], trmv_hash[i]);
+		printf("%3d\t%7lu\t%7lu\t%7lu\t%7lu\n", sizes[i], trmv_tree[i],
+		trmv_avl[i], trmv_hash[i], trmv_file[i]);
 	printf("\n");
 	system("rm.exe test.txt");
 	return 0;

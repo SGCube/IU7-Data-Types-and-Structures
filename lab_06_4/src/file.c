@@ -4,35 +4,53 @@
 #include "error.h"
 #include "file.h"
 
-#define BUF_SIZE 20
+#define MAX_SIZE 1000
 
 ARR_DLL int ARR_DECL fsearch(FILE *f, int numb)
 {
-	if (!f)
-		return ERR_FILE;
-
-	int x;
-	if (fscanf(f, "%d", &x) == EOF)
-		return ERR_EMPTY;
-	rewind(f);
-	
-	int k = 0;
-	while (fscanf(f, "%d", &x) == 1)
+	int x, k = 0;
+	do 
 	{
-		if (numb == x)
+		fscanf(f, "%d", &x);
+		if (x == numb)
 			return k;
 		k++;
 	}
+	while (!feof(f));
 	return NOT_FOUND;
 }
 
-ARR_DLL int ARR_DECL fremove(FILE *f, int numb)
+ARR_DLL int ARR_DECL fremove(char *fname, int numb)
 {
-	int ind = fsearch(f, numb);
-	rewind(f);
+	int *arr = malloc(MAX_SIZE * sizeof(int));
+	if (!arr)
+		return ERR_MEMORY;
+	
+	FILE *f = fopen(fname, "r");
+	if (!f)
+		return ERR_FILE;
+	
+	short int found = 0;
+	int ind = 0, n = 0;
+	while (found == 0 && fscanf(f, "%d", &arr[n]) == 1)
+	{
+		if (numb == arr[n])
+			found = 1;
+		n++;
+		ind++;
+	}
+	while (fscanf(f, "%d", &arr[n]) == 1)
+		n++;
+	fclose(f);
+	
 	if (ind >= 0)
 	{
-		rewind(f);
+		FILE *g = fopen(fname, "w");
+		for (int i = 0; i < ind; i++)
+			fprintf(f, "%d ", arr[i]);
+		for (int i = ind + 1; i < n; i++)
+			fprintf(f, "%d ", arr[i]);
+		fclose(g);
 	}
 	return OK;
 }

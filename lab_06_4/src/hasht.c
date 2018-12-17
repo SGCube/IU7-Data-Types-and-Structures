@@ -38,7 +38,10 @@ int rehash(hash_t *ht, int *n)
 	while (!is_prime(*n))
 		*n += 2;
 	if (*n > MAX_SIZE)
+	{
+		free(ht_old);
 		return ERR_MEMORY;
+	}
 	
 	init(ht, *n);
 	for (int i = 0; i < nn; i++)
@@ -70,7 +73,10 @@ int rehash(hash_t *ht, int *n)
 				{
 					int sc = rehash(ht, n);
 					if (sc != OK)
+					{
+						free(ht_old);
 						return sc;
+					}
 					kcmp = 0;
 					hashval = hashf(key, *n);
 					j = hashval;
@@ -174,9 +180,13 @@ ARR_DLL void ARR_DECL hprint(hash_t *ht, int n)
 	for (int i = 0; i < n; i++)
 		if (ht[i].flag == 1)
 			printf("%4d ", i);
+		else
+			printf("---- ");
 	printf("\n");
 	for (int i = 0; i < n; i++)
 		if (ht[i].flag == 1)
 			printf("%4d ", ht[i].value);
+		else
+			printf("---- ");
 	printf("\n");
 }

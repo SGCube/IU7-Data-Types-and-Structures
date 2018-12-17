@@ -12,4 +12,6 @@
 
 ARR_DLL int ARR_DECL fsearch(FILE *f, int numb);
 
+ARR_DLL int ARR_DECL fremove(char *fname, int numb);
+
 #endif
