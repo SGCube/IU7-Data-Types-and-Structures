@@ -3,7 +3,7 @@
 #include "error.h"
 #include "btree.h"
 
-ARR_DLL tree_t* ARR_DECL create_node(int data)
+tree_t *create_node(int data)
 {
 	tree_t *node = malloc(sizeof(tree_t));
 	if (!node)
@@ -14,31 +14,31 @@ ARR_DLL tree_t* ARR_DECL create_node(int data)
 	return node;
 }
 
-ARR_DLL void ARR_DECL free_all(tree_t *tree)
+void tree_free(tree_t *tree)
 {
 	if (!tree)
 		return;
 	tree_t *cur = tree;
 	tree_t *left = cur->left, *right = cur->right;
-	free_all(left);
-	free_all(right);
+	tree_free(left);
+	tree_free(right);
 	free(tree);
 }
 
-ARR_DLL tree_t* add(tree_t *root, tree_t *node)
+tree_t* tree_add(tree_t *root, tree_t *node)
 {
 	if (!root)
 		return node;
 	if (node->data == root->data)
 		return NULL;
 	else if (node->data < root->data)
-		root->left = add(root->left, node);
+		root->left = tree_add(root->left, node);
 	else
-		root->right = add(root->right, node);
+		root->right = tree_add(root->right, node);
 	return root;
 }
 
-ARR_DLL tree_t* ARR_DECL read(FILE *f, int *rc)
+tree_t *tree_read(FILE *f, int *rc)
 {
 	int x;
 	*rc = ERR_EMPTY;
@@ -54,7 +54,7 @@ ARR_DLL tree_t* ARR_DECL read(FILE *f, int *rc)
 		if (sc != 1 && *rc != ERR_EMPTY)
 		{
 			*rc = ERR_NUMB;
-			free_all(tree);
+			tree_free(tree);
 			return NULL;
 		}
 		else
@@ -64,54 +64,50 @@ ARR_DLL tree_t* ARR_DECL read(FILE *f, int *rc)
 			if (!node)
 			{
 				*rc = ERR_MEMORY;
-				free_all(tree);
+				tree_free(tree);
 				return NULL;
 			}
 			else
-				tree = add(tree, node);
+				tree = tree_add(tree, node);
 		}
 	}
 	while (*rc == OK && !feof(f));
 	return tree;
 }
 
-ARR_DLL tree_t* ARR_DECL search(tree_t *root, int data)
+tree_t *tree_search(tree_t *root, int data, int *kcmp)
 {
 	if (!root)
 		return NULL;
+	*kcmp += 1;
 	if (data < root->data)
-		return search(root->left, data);
+		return tree_search(root->left, data, kcmp);
 	if (data > root->data)
-		return search(root->right, data);
+		return tree_search(root->right, data, kcmp);
 	return root;
 }
 
-ARR_DLL void ARR_DECL print_node(tree_t *node)
-{
-	printf("%d\n", node->data);
-}
-
-ARR_DLL void ARR_DECL print(tree_t *root, int depth)
+void tree_print(tree_t *root, int depth)
 {
 	if (root)
 	{
 		if (depth != 0)
 			printf("\t");
-		print_node(root);
+		printf("%d\n", root->data);
 		
 		if (root->left)
 		{
 			for (int d = 0; d < depth; d++)
 				printf("\t");
 			printf("L: ");
-			print(root->left, depth + 1);
+			tree_print(root->left, depth + 1);
 		}
 		if (root->right)
 		{
 			for (int d = 0; d < depth; d++)
 				printf("\t");
 			printf("R: ");
-			print(root->right, depth + 1);
+			tree_print(root->right, depth + 1);
 		}
 	}
 }
@@ -122,30 +118,33 @@ void to_dot(tree_t *tree, FILE *f)
 	{
 		to_dot(tree->left, f);
 		if (tree->left)
-			fprintf(f, "%d -> %d;\n", tree->data, tree->left->data);
+			fprintf(f, "%d -> %d [color=blue];\n",
+				tree->data, tree->left->data);
 
 		if (tree->right)
-			fprintf(f, "%d -> %d;\n", tree->data, tree->right->data);
+			fprintf(f, "%d -> %d [color=green];\n",
+				tree->data, tree->right->data);
 		to_dot(tree->right, f);
 	}
 }
 
-ARR_DLL void ARR_DECL export_to_dot(FILE *f, const char *name, tree_t *tree)
+void export_to_dot(FILE *f, const char *name, tree_t *tree)
 {
     fprintf(f, "digraph %s {\n", name);
     to_dot(tree, f);
     fprintf(f, "}\n");
 }
 
-ARR_DLL tree_t* ARR_DECL tree_remove(tree_t *tree, int data)
+tree_t *tree_remove(tree_t *tree, int data, int *kcmp)
 {
 	if (!tree)
 		return NULL;
 	//поиск вершины
+	*kcmp += 1;
 	if (data < tree->data)
-		tree->left = tree_remove(tree->left, data);
+		tree->left = tree_remove(tree->left, data, kcmp);
 	else if (data > tree->data)
-		tree->right = tree_remove(tree->right, data);
+		tree->right = tree_remove(tree->right, data, kcmp);
 	else //вершина найдена
 	{
 		//сохранение поддеревьев

@@ -21,7 +21,7 @@ tree_t *rotate_right(tree_t *node)
 	return tmp;
 }
 
-ARR_DLL int ARR_DECL height(tree_t *root)
+int height(tree_t *root)
 {
 	if (!root)
 		return 0;
@@ -33,7 +33,7 @@ ARR_DLL int ARR_DECL height(tree_t *root)
 	return (hleft < hright) ? hright + 1 : hleft + 1;
 }
 
-ARR_DLL tree_t* ARR_DECL balance(tree_t *tree)
+tree_t *balance(tree_t *tree)
 {
 	if (!tree)
 		return NULL;
@@ -56,38 +56,39 @@ ARR_DLL tree_t* ARR_DECL balance(tree_t *tree)
 	return tree;
 }
 
-ARR_DLL tree_t* ARR_DECL balance_all(tree_t *tree)
+tree_t *tree_balance(tree_t *tree)
 {
 	if (!tree)
 		return NULL;
 	
 	if (tree->left)
-		tree->left = balance_all(tree->left);
+		tree->left = tree_balance(tree->left);
 	
 	if (tree->right)
-		tree->right = balance_all(tree->right);
+		tree->right = tree_balance(tree->right);
 	
 	while (abs(height(tree->right) - height(tree->left)) > 1)
 		tree = balance(tree);
 	
 	if (tree->left)
-		tree->left = balance_all(tree->left);
+		tree->left = tree_balance(tree->left);
 		
 	if (tree->right)
-		tree->right = balance_all(tree->right);
+		tree->right = tree_balance(tree->right);
 	
 	return tree;
 }
 
-ARR_DLL tree_t* ARR_DECL avl_remove(tree_t *tree, int data)
+tree_t *avl_remove(tree_t *tree, int data, int *kcmp)
 {
 	if (!tree)
 		return NULL;
 	//поиск вершины
+	*kcmp += 1;
 	if (data < tree->data)
-		tree->left = avl_remove(tree->left, data);
+		tree->left = avl_remove(tree->left, data, kcmp);
 	else if (data > tree->data)
-		tree->right = avl_remove(tree->right, data);
+		tree->right = avl_remove(tree->right, data, kcmp);
 	else //вершина найдена
 	{
 		//сохранение поддеревьев

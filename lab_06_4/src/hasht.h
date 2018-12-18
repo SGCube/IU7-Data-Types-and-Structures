@@ -2,16 +2,16 @@
 
 #define __HASHT__H__
 
-#ifdef ARR_EXPORTS
-#define ARR_DLL __declspec(dllexport)
-#else
-#define ARR_DLL __declspec(dllimport)
-#endif
-
-#define ARR_DECL __cdecl
-
 #include <stdio.h>
-#include "struct.h"
+
+#define MAX_SIZE 10000
+#define MAX_SEARCH 4
+
+typedef struct hash
+{
+	int value;
+	signed char flag;
+} hash_t;
 
 void init(hash_t *ht, int n);
 
@@ -21,12 +21,12 @@ int is_prime(int x);
 
 int rehash(hash_t *ht, int *n);
 
-ARR_DLL int ARR_DECL hread(FILE *f, hash_t *ht, int *n);
+int hread(FILE *f, hash_t *ht, int *n);
 
-ARR_DLL int ARR_DECL hsearch(int key, hash_t *ht, int n);
+int hsearch(int key, hash_t *ht, int n, int *kcmp);
 
-ARR_DLL int ARR_DECL hremove(int key, hash_t *ht, int n);
+int hremove(int key, hash_t *ht, int n, int *kcmp);
 
-ARR_DLL void ARR_DECL hprint(hash_t *ht, int n);
+void hprint(hash_t *ht, int n);
 
 #endif

@@ -1,26 +1,28 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "error.h"
 #include "file.h"
 
 #define MAX_SIZE 1000
 
-ARR_DLL int ARR_DECL fsearch(FILE *f, int numb)
+int fsearch(FILE *f, int numb, int *kcmp)
 {
 	int x, k = 0;
 	do 
 	{
 		fscanf(f, "%d", &x);
 		if (x == numb)
+		{
+			*kcmp = k;
 			return k;
+		}
 		k++;
 	}
 	while (!feof(f));
+	*kcmp = k - 1;
 	return NOT_FOUND;
 }
 
-ARR_DLL int ARR_DECL fremove(char *fname, int numb)
+int fremove(char *fname, int numb, int *kcmp)
 {
 	int *arr = malloc(MAX_SIZE * sizeof(int));
 	if (!arr)
@@ -39,6 +41,7 @@ ARR_DLL int ARR_DECL fremove(char *fname, int numb)
 		n++;
 		ind++;
 	}
+	*kcmp = ind;
 	while (fscanf(f, "%d", &arr[n]) == 1)
 		n++;
 	fclose(f);

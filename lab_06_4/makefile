@@ -1,12 +1,8 @@
 CC := gcc
 CFLAGS := -std=c99 -Wall -Werror
 SRCDIR := src
-LIBDIR := lib
 
-LIBS := btree.dll file.dll hasht.dll
-BTREE_OBJ := $(SRCDIR)/btree.o $(SRCDIR)/avltree.o
-HASHT_OBJ := $(SRCDIR)/hasht.o
-FILE_OBJ := $(SRCDIR)/file.o
+OBJS := $(SRCDIR)/file.o $(SRCDIR)/btree.o $(SRCDIR)/avltree.o $(SRCDIR)/hasht.o
 
 ifeq ($(mode), debug)
     CFLAGS += -g3 -ggdb
@@ -18,37 +14,14 @@ endif
 
 vpath %.c $(SRCDIR)
 	
-app.exe: $(SRCDIR)/main.o
+app.exe: $(OBJS) $(SRCDIR)/main.o
 	$(CC) $^ -o $@
 	
-test.exe: $(SRCDIR)/test.o
+test.exe: $(OBJS) $(SRCDIR)/test.o
 	$(CC) $^ -o $@
-	
-libs: $(LIBS)
-
-btree.dll: $(BTREE_OBJ) $(LIBDIR)
-	gcc -shared $(BTREE_OBJ) -Wl,--subsystem,windows -o $(LIBDIR)/$@
-	
-file.dll: $(FILE_OBJ) $(LIBDIR)
-	gcc -shared $(FILE_OBJ) -Wl,--subsystem,windows -o $(LIBDIR)/$@
-	
-hasht.dll: $(HASHT_OBJ) $(LIBDIR)
-	gcc -shared $(HASHT_OBJ) -Wl,--subsystem,windows -o $(LIBDIR)/$@
-	
-$(SRCDIR)/main.o: main.c
-	$(CC) $(CFLAGS) -c $< -o $@
-	
-$(SRCDIR)/test.o: test.c
-	$(CC) $(CFLAGS) -c $< -o $@
 	
 %.o: %.c
-	$(CC) $(CFLAGS) -D ARR_EXPORTS -c $< -o $@
-	
-$(LIBDIR):
-	mkdir $(LIBDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 	
 clean:
-	$(RM) *.o *.exe $(LIBDIR)/*.dll $(SRCDIR)/*.o
-	
-clean_app:
-	$(RM) $(SRCDIR)/main.o $(SRCDIR)/test.o *.exe 
+	$(RM) $(SRCDIR)/*.o *.exe *.gv *.png

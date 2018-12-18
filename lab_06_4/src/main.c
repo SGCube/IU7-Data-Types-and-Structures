@@ -1,149 +1,21 @@
 #include <stdio.h>
-#include <windows.h>
+#include <stdlib.h>
 
 #include "error.h"
-#include "struct.h"
-
-/// прототипы функций из библиотек ******************************************
-
-typedef int (__cdecl *fn_fsearch_t)(FILE *, int);
-
-typedef tree_t* (__cdecl *fn_create_node_t)(int);
-typedef void (__cdecl *fn_free_tree_t)(tree_t *);
-typedef tree_t* (__cdecl *fn_tree_add_t)(tree_t *, tree_t *);
-typedef tree_t* (__cdecl *fn_tree_read_t)(FILE *, int *);
-typedef tree_t* (__cdecl *fn_tree_search_t)(tree_t *, int);
-typedef tree_t* (__cdecl *fn_tree_remove_t)(tree_t *, int);
-typedef void (__cdecl *fn_print_node_t)(tree_t *);
-typedef void (__cdecl *fn_tree_print_t)(tree_t *, int);
-typedef int (__cdecl *fn_height_t)(tree_t *);
-typedef tree_t* (__cdecl *fn_balance_t)(tree_t *);
-typedef tree_t* (__cdecl *fn_balance_all_t)(tree_t *);
-typedef tree_t* (__cdecl *fn_avl_remove_t)(tree_t *, int);
-
-typedef void (__cdecl *fn_export_t)(FILE *, const char *, tree_t*);
-
-typedef int (__cdecl *fn_hread_t)(FILE *, hash_t *, int *);
-typedef int (__cdecl *fn_hsearch_t)(int, hash_t *, int);
-typedef int (__cdecl *fn_hremove_t)(int, hash_t *, int);
-typedef void (__cdecl *fn_hprint_t)(hash_t *, int);
-
-///**************************************************************************
+#include "file.h"
+#include "btree.h"
+#include "avltree.h"
+#include "hasht.h"
 
 int main(int argc, char **argv)
 {
 	int rc = OK;	//код ошибки
-	
-	///*** объявления библиотек *********************************************
-	
-	HMODULE filelib;
-	fn_fsearch_t fsearch;
-	
-	HMODULE treelib;
-	fn_create_node_t create_node;
-	fn_free_tree_t free_tree;
-	fn_tree_add_t tree_add;
-	fn_tree_read_t tree_read;
-	fn_tree_search_t tree_search;
-	fn_tree_remove_t tree_remove;
-	fn_tree_print_t print_tree;
-	fn_print_node_t print_node;
-	fn_height_t tree_height;
-	fn_balance_t balance;
-	fn_balance_all_t tree_balance;
-	fn_avl_remove_t avl_remove;
-	
-	fn_export_t tree_export;
-	
-	HMODULE hashlib;
-	fn_hread_t hasht_read;
-	fn_hsearch_t hasht_search;
-	fn_hremove_t hasht_remove;
-	fn_hprint_t hasht_print;
-	
-	///*** file.dll *********************************************************
-	
-	filelib = LoadLibrary("lib\\file.dll");
-    if (!filelib)
-    {
-        fprintf(stderr, "Can not open file.dll.\n");
-        return ERR_LIB;
-    }
-	
-	fsearch = (fn_fsearch_t) GetProcAddress(filelib, "fsearch");
-	
-	if (!fsearch)
-	{
-        printf("Can not load functions (file.dll).\n");
-		FreeLibrary(filelib);
-        return ERR_LIB;
-    }
-	
-	///*** btree.dll ********************************************************
-	
-	treelib = LoadLibrary("lib\\btree.dll");
-    if (!treelib)
-    {
-        fprintf(stderr, "Can not open btree.dll.\n");
-		FreeLibrary(filelib);
-        return ERR_LIB;
-    }
-	create_node = (fn_create_node_t) GetProcAddress(treelib, "create_node");
-	free_tree = (fn_free_tree_t) GetProcAddress(treelib, "free_all");
-	tree_add = (fn_tree_add_t) GetProcAddress(treelib, "add");
-	tree_read = (fn_tree_read_t) GetProcAddress(treelib, "read");
-	tree_search = (fn_tree_search_t) GetProcAddress(treelib, "search");
-	tree_remove = (fn_tree_remove_t) GetProcAddress(treelib, "tree_remove");
-	print_node = (fn_print_node_t) GetProcAddress(treelib, "print_node");
-	print_tree = (fn_tree_print_t) GetProcAddress(treelib, "print");
-	tree_height = (fn_height_t) GetProcAddress(treelib, "height");
-	balance = (fn_balance_t) GetProcAddress(treelib, "balance");
-	tree_balance = (fn_balance_all_t) GetProcAddress(treelib, "balance_all");
-	avl_remove = (fn_avl_remove_t) GetProcAddress(treelib, "avl_remove");
-	tree_export = (fn_export_t) GetProcAddress(treelib, "export_to_dot");
-	
-	if (!create_node || !tree_add || !tree_search || !tree_remove ||
-		!print_tree || !print_node || !tree_height || !tree_balance ||
-		!balance || !avl_remove || !free_tree)
-	{
-        printf("Can not load functions (btree.dll).\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
-        return ERR_LIB;
-    }
-	
-	///*** hasht.dll ********************************************************
-	
-	hashlib = LoadLibrary("lib\\hasht.dll");
-	if (!hashlib)
-	{
-		fprintf(stderr, "Can not open hasht.dll.\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
-        return ERR_LIB;
-	}
-	
-	hasht_read = (fn_hread_t) GetProcAddress(hashlib, "hread");
-	hasht_search = (fn_hsearch_t) GetProcAddress(hashlib, "hsearch");
-	hasht_remove = (fn_hremove_t) GetProcAddress(hashlib, "hremove");
-	hasht_print = (fn_hprint_t) GetProcAddress(hashlib, "hprint");
-	
-	if (!hasht_read || !hasht_search || !hasht_remove || !hasht_print)
-	{
-		printf("Can not load functions (hasht.dll).\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
-		FreeLibrary(hashlib);
-        return ERR_LIB;
-	}
 	
 	///*** проверка входных аргументов **************************************
 	
 	if (argc < 2)
 	{
 		fprintf(stderr, "No input file.\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
 		return ERR_CMD;
 	}
 		
@@ -151,20 +23,29 @@ int main(int argc, char **argv)
 	if (!f)
 	{
 		fprintf(stderr, "Can not open a file.\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
 		return ERR_FILE;
 	}
 	
+	char action = 0;
+	int sc = fscanf(f, "%c", &action);
+	if (sc == EOF)
+	{
+		fprintf(stderr, "File is empty.\n");
+		fclose(f);
+		return ERR_EMPTY;
+	}
+	rewind(f);
+	
 	///*** объявление структур **********************************************
 	
-	tree_t *tree = NULL;
-	hash_t ht[MAX_SIZE];
-	int n = 23;
+	tree_t *tree = NULL;		// двоичное дерево поиска
+	hash_t ht[MAX_SIZE];		// хэш-таблица
+	int n = 23;					// текуший размер хэш-таблицы
+	int kcmp = 0;				// количество сравнений
 	
 	///*** запуск основного меню ********************************************
 	
-	char action = 0;
+	action = 0;
 	do
 	{
 		setbuf(stdout, NULL);
@@ -211,30 +92,26 @@ int main(int argc, char **argv)
 			printf("Enter a number to search: ");
 			
 			if (scanf("%d", &x) != 1)
-			{
 				fprintf(stderr, "Number input error.\n");
-				action = 0;
-				rc = ERR_NUMB;
-			}
 			else if (action == '3')
 			{
-				tree_t *node = tree_search(tree, x);
+				tree_t *node = tree_search(tree, x, &kcmp);
 				if (!node)
 					printf("\nNumber was not found.\n");
 				else
 				{
 					printf("\nNumber is found!\nNumber:\t");
-					print_node(node);
+					printf("%d\n", node->data);
 					printf("Address:\t%p\n", (void *)node);
 				}
 			}
 			else if (action == '4')
-				tree = tree_remove(tree, x);
+				tree = tree_remove(tree, x, &kcmp);
 			else if (action == '5')
-				tree = avl_remove(tree, x);
+				tree = avl_remove(tree, x, &kcmp);
 			else if (action == '8')
 			{
-				int ind = hasht_search(x, ht, n);
+				int ind = hsearch(x, ht, n, &kcmp);
 				if (ind == -1)
 					printf("\nNumber was not found.\n");
 				else
@@ -244,18 +121,18 @@ int main(int argc, char **argv)
 				}
 			}
 			else if (action == '9')
-				hasht_remove(x, ht, n);
+				hremove(x, ht, n, &kcmp);
 		}
 		else if (action == '6')
 		{
 			printf("\n");
-			print_tree(tree, 0);
+			tree_print(tree, 0);
 			FILE *dot = fopen("tree.gv", "w");
 			if (!dot)
 				fprintf(stderr, "Can't make dot file!\n");
 			else
 			{
-				tree_export(dot, "tree", tree);
+				export_to_dot(dot, "tree", tree);
 				fclose(dot);
 			}
 			system("dot.exe -Tpng tree.gv -o tree.png");
@@ -263,7 +140,7 @@ int main(int argc, char **argv)
 		}
 		else if (action == '7')
 		{
-			rc = hasht_read(f, ht, &n);
+			rc = hread(f, ht, &n);
 			if (rc != OK)
 				action = 0;
 			if (rc == ERR_MEMORY)
@@ -276,7 +153,7 @@ int main(int argc, char **argv)
 		else if (action == '0')
 		{
 			printf("\n");
-			hasht_print(ht, n);
+			hprint(ht, n);
 		}
 		else
 			action = 0;
@@ -291,10 +168,9 @@ int main(int argc, char **argv)
 	}
 	while (action);
 	
-	free_tree(tree);
-	fclose(f);
-	FreeLibrary(filelib);
-	FreeLibrary(treelib);
-	FreeLibrary(hashlib);
+	if (tree)
+		tree_free(tree);
+	if (f)
+		fclose(f);
 	return rc;
 }

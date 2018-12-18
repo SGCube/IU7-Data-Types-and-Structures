@@ -1,9 +1,7 @@
-#include "hasht.h"
-#include "error.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-#define P 43
+#include "hasht.h"
+#include "error.h"
 
 void init(hash_t *ht, int n)
 {
@@ -88,7 +86,7 @@ int rehash(hash_t *ht, int *n)
 	return OK;
 }
 
-ARR_DLL int ARR_DECL hread(FILE *f, hash_t *ht, int *n)
+int hread(FILE *f, hash_t *ht, int *n)
 {
 	if (!f)
 		return ERR_FILE;
@@ -145,10 +143,10 @@ ARR_DLL int ARR_DECL hread(FILE *f, hash_t *ht, int *n)
 	return OK;
 }
 
-ARR_DLL int ARR_DECL hsearch(int key, hash_t *ht, int n)
+int hsearch(int key, hash_t *ht, int n, int *kcmp)
 {
 	int hashval = hashf(key, n);		// вычисление значения хэш-функции
-	int kcmp = 1;						// количество сравнений
+	*kcmp = 1;							// количество сравнений
 	int i = hashval;					// текущий индекс
 	do
 	{
@@ -160,13 +158,13 @@ ARR_DLL int ARR_DECL hsearch(int key, hash_t *ht, int n)
 		if (i == n)	// граница выделенной области памяти
 			i = 0;
 	}
-	while (kcmp < MAX_SEARCH && i != hashval);
+	while (*kcmp < MAX_SEARCH && i != hashval);
 	return -1;
 }
 
-ARR_DLL int ARR_DECL hremove(int key, hash_t *ht, int n)
+int hremove(int key, hash_t *ht, int n, int *kcmp)
 {
-	int ind = hsearch(key, ht, n);	//индекс элемента
+	int ind = hsearch(key, ht, n, kcmp);	//индекс элемента
 	if (ind != -1)	//элемент существует
 	{
 		ht[ind].flag = -1;
@@ -175,7 +173,7 @@ ARR_DLL int ARR_DECL hremove(int key, hash_t *ht, int n)
 	return -1;
 }
 
-ARR_DLL void ARR_DECL hprint(hash_t *ht, int n)
+void hprint(hash_t *ht, int n)
 {
 	for (int i = 0; i < n; i++)
 		if (ht[i].flag == 1)
