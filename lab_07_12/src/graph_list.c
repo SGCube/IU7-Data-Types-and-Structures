@@ -26,7 +26,12 @@ int read_lgraph(FILE *f, node_t *adj[], int node_n)
 		node_t *node = create_node(j - 1, w);
 		if (!node)
 			return ERR_MEMORY;
-		adj[i] = push_back(adj[i], node);
+		
+		adj[i - 1] = push_back(adj[i - 1], node);
+		node = create_node(i - 1, w);
+		if (!node)
+			return ERR_MEMORY;
+		adj[j - 1] = push_back(adj[j - 1], node);
 		k++;
 	}
 	return OK;
@@ -52,8 +57,9 @@ void list_to_dot(FILE *f, const char *name, node_t *adj[], int n,
 		node_t *cur = adj[i];
 		while (cur)
 		{
-			fprintf(f, "%d -- %d [label=%d];\n",
-					i + 1, cur->no + 1, cur->w);
+			if (cur->no > i)
+				fprintf(f, "%d -- %d [label=%d];\n",
+						i + 1, cur->no + 1, cur->w);
 			cur = cur->next;
 		}
 	}

@@ -42,3 +42,10 @@ void free_list(node_t **head)
 	}
 	*head = NULL;
 }
+
+void free_all(node_t **adj, int n)
+{
+	for (int i = 0; i < n; i++)
+		free_list(&adj[i]);
+	free(adj);
+}

@@ -2,6 +2,7 @@
 #define __GRAPH__LIST__H__
 
 #include <stdio.h>
+#include "list.h"
 
 void init_lgraph(node_t *adj[], int node_n);
 

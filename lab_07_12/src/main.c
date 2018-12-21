@@ -5,6 +5,8 @@
 #include "error.h"
 #include "matrix.h"
 #include "graph.h"
+#include "list.h"
+#include "graph_list.h"
 
 
 int main(int argc, char **argv)
@@ -27,12 +29,14 @@ int main(int argc, char **argv)
 	///*** объявление структур **********************************************
 	
 	FILE *f = NULL;				//исходный файл
-	int *adj_matr = NULL;		//матрица смежности графа
+	//int *adj_matr = NULL;		//матрица смежности графа
 	int node_n = 0;				//количество вершин графа
 	int node_i = 0;				//заданная вершнина
 	int mindist = 0; 			//заданное минимальное расстояние
 	int *d = NULL;				//массив кратчайших расстояний
 	int *towns = NULL;			//множество городов-решений
+	
+	node_t **adj_list = NULL;	//список смежностей графа
 	
 	int rc = OK;				//код ошибки
 	
@@ -59,22 +63,39 @@ int main(int argc, char **argv)
 		return ERR_DATA;
 	}
 	
-	adj_matr = alloc_matrix(node_n, node_n);
+	/*adj_matr = alloc_matrix(node_n, node_n);
 	if (!adj_matr)
+	{
+		printf("Memory allocation error!\n");
+		fclose(f);
+		return ERR_MEMORY;
+	}*/
+	
+	adj_list = calloc(node_n, sizeof(node_t *));
+	if (!adj_list)
 	{
 		printf("Memory allocation error!\n");
 		fclose(f);
 		return ERR_MEMORY;
 	}
 	
-	init_graph(adj_matr, node_n);
-	
+	/*init_graph(adj_matr, node_n);
 	rc = read_graph(f, adj_matr, node_n);
 	fclose(f);
 	if (rc == ERR_DATA)
 	{
 		printf("Invalid data!\n");
 		free_matrix(adj_matr);
+		return ERR_DATA;
+	}*/
+	
+	init_lgraph(adj_list, node_n);
+	rc = read_lgraph(f, adj_list, node_n);
+	fclose(f);
+	if (rc == ERR_DATA)
+	{
+		printf("Invalid data!\n");
+		free_all(adj_list, node_n);
 		return ERR_DATA;
 	}
 	
@@ -85,7 +106,7 @@ int main(int argc, char **argv)
 	if (rc != 1 || node_i < 1 || node_i > node_n)
 	{
 		printf("Invalid data!\n");
-		free_matrix(adj_matr);
+		free_all(adj_list, node_n);
 		return ERR_DATA;
 	}
 	
@@ -94,17 +115,17 @@ int main(int argc, char **argv)
 	if (rc != 1 || mindist < 0)
 	{
 		printf("Invalid data!\n");
-		free_matrix(adj_matr);
+		free_all(adj_list, node_n);
 		return ERR_DATA;
 	}
 	
 	///*** поиск кратчайших путей и анализ данных ***************************
 	
-	d = short_dist(adj_matr, node_n, node_i - 1);
+	d = short_ldist(adj_list, node_n, node_i - 1);
 	if (!d)
 	{
 		printf("Memory allocation error!\n");
-		free_matrix(adj_matr);
+		free_all(adj_list, node_n);
 		return ERR_MEMORY;
 	}
 	
@@ -112,7 +133,7 @@ int main(int argc, char **argv)
 	if (!towns)
 	{
 		printf("Memory allocation error!\n");
-		free_matrix(adj_matr);
+		free_all(adj_list, node_n);
 		free(d);
 		return ERR_MEMORY;
 	}
@@ -130,7 +151,7 @@ int main(int argc, char **argv)
 		printf("Can't make graph file\n");
 	else
 	{
-		matr_to_dot(gv, "roads", adj_matr, node_n, node_i, towns);
+		list_to_dot(gv, "roads", adj_list, node_n, node_i, towns);
 		fclose(gv);
 		system("dot.exe -Tpng graph.gv -o graph.png");
 		system(".\\graph.png");
@@ -138,7 +159,7 @@ int main(int argc, char **argv)
 	
 	///*** освобождение памяти **********************************************
 	
-	free_matrix(adj_matr);
+	free_all(adj_list, node_n);
 	free(d);
 	free(towns);
 	

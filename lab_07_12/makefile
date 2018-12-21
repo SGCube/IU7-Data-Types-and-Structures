@@ -2,7 +2,7 @@ CC := gcc
 CFLAGS := -std=c99 -Wall -Werror
 SRCDIR := src
 
-OBJS := $(SRCDIR)/matrix.o $(SRCDIR)/graph.o
+OBJS := $(SRCDIR)/matrix.o $(SRCDIR)/graph.o $(SRCDIR)/list.o $(SRCDIR)/graph_list.o
 
 ifeq ($(mode), debug)
     CFLAGS += -g3 -ggdb
