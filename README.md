@@ -12,8 +12,8 @@
 | 3 | Разреженные матрицы | Сдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/jlrs7haxjnytpbf/AAA9sXrwqBSX4uvu6zWfQGCta?dl=0)|
 | 4 | Стеки | Сдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/mk8ldo99oxg4pac/AACYfLgqa1Jpu7um5wDaJd8ga?dl=0)|
 | 5 | Очереди | Сдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/l4pf0yjlx1gdbkb/AADlY2lvLTB4Ev0pTLWUrB8Fa?dl=0)|
-| 6 | Двоичные деревья | Выдана | Выполнена | Не оформлен ||[Dropbox](https://www.dropbox.com/sh/eq6c15pqxwn0iet/AAB2XWkIdDiunTgAKxF3emjXa?dl=0)|
-| 7 | Графы | Выдана | В процессе | Не оформлен | Реализована только посредством матрицы смежности|[Dropbox](https://www.dropbox.com/sh/rq6a66zdcg78u6y/AAB4YyeFcQR3r9KGG7KUjj37a?dl=0)|
+| 6 | Двоичные деревья | Сдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/eq6c15pqxwn0iet/AAB2XWkIdDiunTgAKxF3emjXa?dl=0)|
+| 7 | Графы | Выдана | Сдана | Не оформлен ||[Dropbox](https://www.dropbox.com/sh/rq6a66zdcg78u6y/AAB4YyeFcQR3r9KGG7KUjj37a?dl=0)|
 
 
 ### Ссылки
