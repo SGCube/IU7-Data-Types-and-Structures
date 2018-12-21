@@ -1,11 +1,14 @@
 #include <stdio.h>
-#include <windows.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <unistd.h>
 #include <time.h>
 
 #include "error.h"
-#include "struct.h"
+#include "file.h"
+#include "btree.h"
+#include "avltree.h"
+#include "hasht.h"
 
 typedef unsigned long int tick_t;
 
@@ -51,138 +54,21 @@ void file_random(int n, FILE *f)
 	free(arr2);
 }
 
-/// прототипы функций из библиотек ******************************************
-
-typedef int (__cdecl *fn_fsearch_t)(FILE *f, int);
-
-typedef tree_t* (__cdecl *fn_create_node_t)(int);
-typedef void (__cdecl *fn_free_tree_t)(tree_t *);
-typedef tree_t* (__cdecl *fn_tree_add_t)(tree_t *, tree_t *);
-typedef tree_t* (__cdecl *fn_tree_read_t)(FILE *, int *);
-typedef tree_t* (__cdecl *fn_tree_search_t)(tree_t *, int);
-typedef tree_t* (__cdecl *fn_tree_remove_t)(tree_t *, int);
-typedef void (__cdecl *fn_print_node_t)(tree_t *);
-typedef void (__cdecl *fn_tree_print_t)(tree_t *, int);
-typedef int (__cdecl *fn_height_t)(tree_t *);
-typedef tree_t* (__cdecl *fn_balance_t)(tree_t *);
-typedef tree_t* (__cdecl *fn_balance_all_t)(tree_t *);
-typedef tree_t* (__cdecl *fn_avl_remove_t)(tree_t *, int);
-
-typedef int (__cdecl *fn_hread_t)(FILE *, hash_t *, int *);
-typedef int (__cdecl *fn_hsearch_t)(int, hash_t *, int);
-typedef int (__cdecl *fn_hremove_t)(int, hash_t *, int);
-typedef void (__cdecl *fn_hprint_t)(hash_t *, int);
-
 int main()
 {
 	srand(time(NULL));
 	
-	///*** объявления библиотек *********************************************
-	
-	HMODULE filelib;
-	fn_fsearch_t fsearch;
-	
-	HMODULE treelib;
-	fn_create_node_t create_node;
-	fn_free_tree_t free_tree;
-	fn_tree_add_t tree_add;
-	fn_tree_read_t tree_read;
-	fn_tree_search_t tree_search;
-	fn_tree_remove_t tree_remove;
-	fn_tree_print_t print_tree;
-	fn_print_node_t print_node;
-	fn_height_t tree_height;
-	fn_balance_t balance;
-	fn_balance_all_t tree_balance;
-	fn_avl_remove_t avl_remove;
-	
-	HMODULE hashlib;
-	fn_hread_t hasht_read;
-	fn_hsearch_t hasht_search;
-	fn_hremove_t hasht_remove;
-	fn_hprint_t hasht_print;
-	
-	///*** file.dll *********************************************************
-	
-	filelib = LoadLibrary("lib\\file.dll");
-    if (!filelib)
-    {
-        fprintf(stderr, "Can not open file.dll.\n");
-        return ERR_LIB;
-    }
-	
-	fsearch = (fn_fsearch_t) GetProcAddress(filelib, "fsearch");
-	
-	if (!fsearch)
-	{
-        printf("Can not load functions (file.dll).\n");
-		FreeLibrary(filelib);
-        return ERR_LIB;
-    }
-	
-	///*** btree.dll ********************************************************
-	
-	treelib = LoadLibrary("lib\\btree.dll");
-    if (!treelib)
-    {
-        fprintf(stderr, "Can not open btree.dll.\n");
-		FreeLibrary(filelib);
-        return ERR_LIB;
-    }
-	create_node = (fn_create_node_t) GetProcAddress(treelib, "create_node");
-	free_tree = (fn_free_tree_t) GetProcAddress(treelib, "free_all");
-	tree_add = (fn_tree_add_t) GetProcAddress(treelib, "add");
-	tree_read = (fn_tree_read_t) GetProcAddress(treelib, "read");
-	tree_search = (fn_tree_search_t) GetProcAddress(treelib, "search");
-	tree_remove = (fn_tree_remove_t) GetProcAddress(treelib, "tree_remove");
-	print_node = (fn_print_node_t) GetProcAddress(treelib, "print_node");
-	print_tree = (fn_tree_print_t) GetProcAddress(treelib, "print");
-	tree_height = (fn_height_t) GetProcAddress(treelib, "height");
-	balance = (fn_balance_t) GetProcAddress(treelib, "balance");
-	tree_balance = (fn_balance_all_t) GetProcAddress(treelib, "balance_all");
-	avl_remove = (fn_avl_remove_t) GetProcAddress(treelib, "avl_remove");
-	
-	if (!create_node || !tree_add || !tree_search || !tree_remove ||
-		!print_tree || !print_node || !tree_height || !tree_balance ||
-		!balance || !avl_remove || !free_tree)
-	{
-        printf("Can not load functions (btree.dll).\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
-        return ERR_LIB;
-    }
-	
-	///*** hasht.dll ********************************************************
-	
-	hashlib = LoadLibrary("lib\\hasht.dll");
-	if (!hashlib)
-	{
-		fprintf(stderr, "Can not open hasht.dll.\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
-        return ERR_LIB;
-	}
-	
-	hasht_read = (fn_hread_t) GetProcAddress(hashlib, "hread");
-	hasht_search = (fn_hsearch_t) GetProcAddress(hashlib, "hsearch");
-	hasht_remove = (fn_hremove_t) GetProcAddress(hashlib, "hremove");
-	hasht_print = (fn_hprint_t) GetProcAddress(hashlib, "hprint");
-	
-	if (!hasht_read || !hasht_search || !hasht_remove || !hasht_print)
-	{
-		printf("Can not load functions (hasht.dll).\n");
-		FreeLibrary(filelib);
-		FreeLibrary(treelib);
-		FreeLibrary(hashlib);
-        return ERR_LIB;
-	}
-	
 	///*** запуск тестирования **********************************************
 					
-	int sizes[] = { 10, 25, 50, 100, 250, 500 };
+	int sizes[] = { 25, 50, 100, 250, 500 };
 	
-	tick_t trmv_tree[7], tsrc_tree[7], trmv_avl[7], tsrc_avl[7],
-		trmv_hash[7], tsrc_hash[7];
+	tick_t trmv_tree[5], tsrc_tree[5], trmv_avl[5], tsrc_avl[5],
+		trmv_hash[5], tsrc_hash[5], trmv_file[5], tsrc_file[5];
+		
+	int krmv_tree[5], ksrc_tree[5], krmv_avl[5], ksrc_avl[5],
+		krmv_hash[5], ksrc_hash[5], krmv_file[5], ksrc_file[5];
+	
+	unsigned int file_size[5];
 	
 	hash_t ht[MAX_SIZE];
 	int n = 13;
@@ -190,11 +76,17 @@ int main()
 	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
 	{
 		tick_t start = 0, end = 0;
+		
+		///***** BTREE **********************
 		trmv_tree[i] = 0;
 		tsrc_tree[i] = 0;
+		krmv_tree[i] = 0;
+		ksrc_tree[i] = 0;
 		
 		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
+			int kcmp = 0;
+			
 			tree_t *tree = NULL;
 			
 			FILE *f = fopen("test.txt", "w");
@@ -210,25 +102,36 @@ int main()
 			fclose(f);
 			
 			start = tick();
-			tree_search(tree, key);
+			tree_search(tree, key, &kcmp);
 			end = tick();
 			tsrc_tree[i] += end - start;
+			ksrc_tree[i] += kcmp;
+			
+			kcmp = 0;
 			
 			start = tick();
-			tree = tree_remove(tree, key);
+			tree = tree_remove(tree, key, &kcmp);
 			end = tick();
 			trmv_tree[i] += end - start;
+			krmv_tree[i] += kcmp;
 			
-			free_tree(tree);
+			tree_free(tree);
 		}
 		tsrc_tree[i] /= sizes[i];
 		trmv_tree[i] /= sizes[i];
+		ksrc_tree[i] /= sizes[i];
+		krmv_tree[i] /= sizes[i];
 		
+		///***** AVL **********************
 		trmv_avl[i] = 0;
 		tsrc_avl[i] = 0;
+		krmv_avl[i] = 0;
+		ksrc_avl[i] = 0;
 		
 		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
+			int kcmp = 0;
+			
 			tree_t *tree = NULL;
 			
 			FILE *f = fopen("test.txt", "w");
@@ -247,25 +150,35 @@ int main()
 			tree_balance(tree);
 			
 			start = tick();
-			tree_search(tree, key);
+			tree_search(tree, key, &kcmp);
 			end = tick();
 			tsrc_avl[i] += end - start;
+			ksrc_avl[i] += kcmp;
+			
+			kcmp = 0;
 			
 			start = tick();
-			tree = avl_remove(tree, key);
+			tree = avl_remove(tree, key, &kcmp);
 			end = tick();
 			trmv_avl[i] += end - start;
+			krmv_avl[i] += kcmp;
 			
-			free_tree(tree);
+			tree_free(tree);
 		}
 		tsrc_avl[i] /= sizes[i];
 		trmv_avl[i] /= sizes[i];
+		ksrc_avl[i] /= sizes[i];
+		krmv_avl[i] /= sizes[i];
 		
+		///***** HTABLE **********************
 		trmv_hash[i] = 0;
 		tsrc_hash[i] = 0;
+		krmv_hash[i] = 0;
+		ksrc_hash[i] = 0;
 		
 		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
 		{
+			int kcmp = 0;
 			n = 13;
 			
 			FILE *f = fopen("test.txt", "w");
@@ -275,36 +188,111 @@ int main()
 			f = fopen("test.txt", "r");
 			assert(f);
 			
-			int rc = hasht_read(f, ht, &n);
+			int rc = hread(f, ht, &n);
 			assert(rc == OK);
 			
 			fclose(f);
 			
 			start = tick();
-			hasht_search(key, ht, n);
+			hsearch(key, ht, n, &kcmp);
 			end = tick();
 			tsrc_hash[i] += end - start;
+			ksrc_hash[i] += kcmp;
+			
+			kcmp = 0;
 			
 			start = tick();
-			hasht_remove(key, ht, n);
+			hremove(key, ht, n, &kcmp);
 			end = tick();
 			trmv_hash[i] += end - start;
+			krmv_hash[i] += kcmp;
 		}
 		tsrc_hash[i] /= sizes[i];
 		trmv_hash[i] /= sizes[i];
+		ksrc_hash[i] /= sizes[i];
+		krmv_hash[i] /= sizes[i];
+		
+		///***** FILE **********************
+		tsrc_file[i] = 0;
+		trmv_file[i] = 0;
+		ksrc_file[i] = 0;
+		krmv_file[i] = 0;
+		
+		for (int j = 0, key = 1; j < sizes[i]; j++, key++)
+		{
+			int kcmp = 0;
+			
+			FILE *f = fopen("test.txt", "w");
+			assert(f);
+			file_random(sizes[i], f);
+			fclose(f);
+			
+			f = fopen("test.txt", "r");
+			assert(f);
+			start = tick();
+			fsearch(f, n, &kcmp);
+			end = tick();
+			tsrc_file[i] += end - start;
+			ksrc_file[i] += kcmp;
+			fseek(f, 0, SEEK_END);
+			file_size[i] = ftell(f);
+			fclose(f);
+			
+			kcmp = 0;
+			
+			start = tick();
+			fremove("test.txt", n, &kcmp);
+			end = tick();
+			krmv_file[i] += kcmp;
+			trmv_file[i] += end - start;
+		}
+		tsrc_file[i] /= sizes[i];
+		trmv_file[i] /= sizes[i];
+		ksrc_file[i] /= sizes[i];
+		krmv_file[i] /= sizes[i];
 	}
 	
-	printf("\t\tsearch\n\n");
-	printf("%3s\t%7s\t%7s\t%7s\n", "N", "bintree", "avltree", "hashtab");
+	printf("\t\t\t\tsearch\n\n");
+	printf("%3s\t%12s\t%12s\t%12s\t%12s\n", "N", "bintree", "avltree",
+		"hashtable", "file");
+		
 	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
-		printf("%3d\t%7lu\t%7lu\t%7lu\n", sizes[i], tsrc_tree[i],
-		tsrc_avl[i], tsrc_hash[i]);
+	{
+		printf("%3d\t%9.5lf ms\t%9.5lf ms\t%9.5lf ms\t%9.4lf ms\n", sizes[i],
+			(double) tsrc_tree[i] / CLOCKS_PER_SEC,
+			(double) tsrc_avl[i] / CLOCKS_PER_SEC,
+			(double) tsrc_hash[i] / CLOCKS_PER_SEC,
+			(double) tsrc_file[i] / CLOCKS_PER_SEC);
+		printf("\t%8d cmp\t%8d cmp\t%8d cmp\t%8d cmp\n",
+			ksrc_tree[i], ksrc_avl[i], ksrc_hash[i], ksrc_file[i]);
+		printf("\t%6u bytes\t%6u bytes\t%6u bytes\t%6u bytes\n",
+			(unsigned) (sizes[i] * sizeof(tree_t)),
+			(unsigned) (sizes[i] * sizeof(tree_t)),
+			(unsigned) (sizes[i] * sizeof(hash_t)),
+			file_size[i]);
+	}
+		
 	
-	printf("\n\t\tremove\n\n");
-	printf("%3s\t%7s\t%7s\t%7s\n", "N", "bintree", "avltree", "hashtab");
+	printf("\n\t\t\t\tremove\n\n");
+	printf("%3s\t%12s\t%12s\t%12s\t%12s\n", "N", "bintree", "avltree",
+		"hashtable", "file");
+		
 	for (int i = 0; i < sizeof(sizes)/sizeof(sizes[0]); i++)
-		printf("%3d\t%7lu\t%7lu\t%7lu\n", sizes[i], trmv_tree[i],
-		trmv_avl[i], trmv_hash[i]);
+	{
+		printf("%3d\t%9.5lf ms\t%9.5lf ms\t%9.5lf ms\t%9.4lf ms\n", sizes[i],
+			(double) trmv_tree[i] / CLOCKS_PER_SEC,
+			(double) trmv_avl[i] / CLOCKS_PER_SEC,
+			(double) trmv_hash[i] / CLOCKS_PER_SEC,
+			(double) trmv_file[i] / CLOCKS_PER_SEC);
+		printf("\t%8d cmp\t%8d cmp\t%8d cmp\t%8d cmp\n",
+			krmv_tree[i], krmv_avl[i], krmv_hash[i], krmv_file[i]);
+		printf("\t%6u bytes\t%6u bytes\t%6u bytes\t%6u bytes\n",
+			(unsigned) (sizes[i] * sizeof(tree_t)),
+			(unsigned) (sizes[i] * sizeof(tree_t)),
+			(unsigned) (sizes[i] * sizeof(hash_t)),
+			file_size[i]);
+	}
+		
 	printf("\n");
 	system("rm.exe test.txt");
 	return 0;

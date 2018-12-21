@@ -2,14 +2,10 @@
 
 #define __FILE__H__
 
-#ifdef ARR_EXPORTS
-#define ARR_DLL __declspec(dllexport)
-#else
-#define ARR_DLL __declspec(dllimport)
-#endif
+#include <stdio.h>
 
-#define ARR_DECL __cdecl
+int fsearch(FILE *f, int numb, int *kcmp);
 
-ARR_DLL int ARR_DECL fsearch(FILE *f, int numb);
+int fremove(char *fname, int numb, int *kcmp);
 
 #endif
