@@ -1,7 +1,7 @@
 graph roads {
-1 [style=filled, fillcolor=green];
-2 [style=filled, fillcolor=red];
-3 [style=filled, fillcolor=green];
+1 [style=filled, fillcolor=red];
+2;
+3;
 4 [style=filled, fillcolor=green];
 5;
 1 -- 2 [label=4];
