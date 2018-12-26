@@ -13,7 +13,7 @@
 | 4 | Стеки | Сдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/mk8ldo99oxg4pac/AACYfLgqa1Jpu7um5wDaJd8ga?dl=0)|
 | 5 | Очереди | Сдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/l4pf0yjlx1gdbkb/AADlY2lvLTB4Ev0pTLWUrB8Fa?dl=0)|
 | 6 | Двоичные деревья | Сдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/eq6c15pqxwn0iet/AAB2XWkIdDiunTgAKxF3emjXa?dl=0)|
-| 7 | Графы | Выдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/rq6a66zdcg78u6y/AAB4YyeFcQR3r9KGG7KUjj37a?dl=0)|
+| 7 | Графы | Сдана | Сдана | Сдан ||[Dropbox](https://www.dropbox.com/sh/rq6a66zdcg78u6y/AAB4YyeFcQR3r9KGG7KUjj37a?dl=0)|
 
 Зачёт получен. Общая сумма баллов: 99 / 100.
 
